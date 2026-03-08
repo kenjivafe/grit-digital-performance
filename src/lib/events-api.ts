@@ -161,14 +161,20 @@ export async function getEvent(eventId: string, organizationId?: string): Promis
 export async function updateEvent(eventId: string, organizationId: string, data: Partial<Event>): Promise<ApiResponse<Event>> {
   try {
     // Remove organizationId from the update data since it's used in the where clause
-    const { organizationId: _, ...updateData } = data
+    const { organizationId: _, customFields, ...updateData } = data
+    
+    // Handle customFields separately if present
+    const finalUpdateData: any = { ...updateData }
+    if (customFields !== undefined) {
+      finalUpdateData.customFields = customFields
+    }
     
     const event = await eventsApiPrisma.event.update({
       where: { 
         id: eventId,
         organizationId 
       },
-      data: updateData
+      data: finalUpdateData
     })
 
     return { success: true, data: event }
