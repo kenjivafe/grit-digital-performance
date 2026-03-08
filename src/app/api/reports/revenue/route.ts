@@ -60,13 +60,6 @@ export async function GET(request: NextRequest) {
               name: true,
               startDate: true
             }
-          },
-          participant: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true
-            }
           }
         }
       })
@@ -85,6 +78,19 @@ export async function GET(request: NextRequest) {
       const transactionsWithDetails = transactions.map((transaction: any) => ({
         ...transaction,
         registration: registrations.find((reg: any) => reg.id === transaction.registrationId)
+      }))
+
+      // Add participant info to registration structure for API compatibility
+      const enhancedTransactions = transactionsWithDetails.map((transaction: any) => ({
+        ...transaction,
+        registration: transaction.registration ? {
+          ...transaction.registration,
+          participant: {
+            firstName: transaction.registration.firstName,
+            lastName: transaction.registration.lastName,
+            email: transaction.registration.email
+          }
+        } : null
       }))
 
       // Calculate monthly breakdown
@@ -112,7 +118,7 @@ export async function GET(request: NextRequest) {
 
       data = {
         ...data,
-        transactions: transactionsWithDetails,
+        transactions: enhancedTransactions,
         monthlyBreakdown: Object.values(monthlyBreakdown),
         filters: {
           startDate,
