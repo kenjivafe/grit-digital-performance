@@ -244,11 +244,16 @@ function RegistrationFormComponent({ event, apiKey, onSuccess, onError }: Regist
           throw new Error('Stripe not loaded')
         }
 
+        const cardElement = elements.getElement(CardElement)
+        if (!cardElement) {
+          throw new Error('Card element not found')
+        }
+
         const { error: paymentError } = await stripe.confirmCardPayment(
           registration.paymentIntent.clientSecret,
           {
             payment_method: {
-              card: elements.getElement(CardElement),
+              card: cardElement,
               billing_details: {
                 name: `${formData.firstName} ${formData.lastName}`,
                 email: formData.email
