@@ -7,6 +7,10 @@ export type AdminEventRecord = {
   registrationStatus: 'Open' | 'Closed'
   price: number
   registrationsCount: number
+  description?: string
+  schedule?: string
+  registrationLimit?: number
+  bannerImage?: string
 }
 
 const STORAGE_KEY = 'grit_admin_events_v1'
@@ -21,6 +25,9 @@ const defaultEvents: AdminEventRecord[] = [
     registrationStatus: 'Open',
     price: 499,
     registrationsCount: 45,
+    description: 'High-intensity training camp focused on speed, stamina, and ball control.',
+    schedule: 'Day 1: Technical drills\nDay 2: Small-sided games\nDay 3: Match play',
+    registrationLimit: 60,
   },
   {
     id: 'evt_2',
@@ -31,6 +38,9 @@ const defaultEvents: AdminEventRecord[] = [
     registrationStatus: 'Closed',
     price: 199,
     registrationsCount: 32,
+    description: 'Weekend tournament featuring top clubs in the region.',
+    schedule: 'Fri: Check-in\nSat: Group stage\nSun: Finals',
+    registrationLimit: 32,
   },
   {
     id: 'evt_3',
@@ -41,6 +51,9 @@ const defaultEvents: AdminEventRecord[] = [
     registrationStatus: 'Open',
     price: 299,
     registrationsCount: 28,
+    description: 'Skills camp covering fundamentals, film review, and strength sessions.',
+    schedule: 'Morning: Position work\nAfternoon: Conditioning',
+    registrationLimit: 40,
   },
 ]
 
@@ -95,6 +108,7 @@ export function exportEventsCsv(events: AdminEventRecord[]) {
     'Registration Status',
     'Price',
     'Registrations Count',
+    'Registration Limit',
   ]
 
   const rows = events.map((e) => [
@@ -105,6 +119,7 @@ export function exportEventsCsv(events: AdminEventRecord[]) {
     e.registrationStatus,
     String(e.price),
     String(e.registrationsCount),
+    e.registrationLimit == null ? '' : String(e.registrationLimit),
   ])
 
   const csv = [header, ...rows]

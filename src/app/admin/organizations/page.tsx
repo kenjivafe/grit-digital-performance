@@ -1,233 +1,170 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { 
   BuildingOffice,
-  Users,
-  Calendar,
-  CurrencyDollar,
   Plus,
-  Pencil,
-  Trash,
-  Eye
+  MagnifyingGlass,
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-
-interface Organization {
-  id: string
-  name: string
-  email: string
-  phone: string
-  status: 'active' | 'inactive'
-  eventsCount: number
-  totalRevenue: number
-  createdAt: string
-  contactPerson: string
-}
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import AdminPageHeader from '@/components/admin/admin-page-header'
+import {
+  getAdminOrganizations,
+  deleteAdminOrganization,
+  type AdminOrganizationRecord,
+} from '@/lib/admin-organizations-store'
+import { formatDateShort } from '@/lib/admin-utils'
 
 export default function OrganizationsManagement() {
-  const [organizations, setOrganizations] = useState<Organization[]>([])
-  const [loading, setLoading] = useState(true)
+  const [organizations, setOrganizations] = useState<AdminOrganizationRecord[]>(() =>
+    getAdminOrganizations()
+  )
   const [searchTerm, setSearchTerm] = useState('')
 
-  useEffect(() => {
-    fetchOrganizations()
-  }, [])
+  const [filterType, setFilterType] = useState<'all' | AdminOrganizationRecord['type']>('all')
 
-  const fetchOrganizations = async () => {
-    try {
-      // Mock data for now
-      const mockOrganizations: Organization[] = [
-        {
-          id: '1',
-          name: 'Denver Soccer Academy',
-          email: 'info@denversoccer.com',
-          phone: '(303) 555-0123',
-          status: 'active',
-          eventsCount: 12,
-          totalRevenue: 125000,
-          createdAt: '2024-01-15T10:30:00Z',
-          contactPerson: 'John Smith'
-        },
-        {
-          id: '2',
-          name: 'Colorado Sports League',
-          email: 'admin@cosportsleague.com',
-          phone: '(720) 555-0456',
-          status: 'active',
-          eventsCount: 8,
-          totalRevenue: 95000,
-          createdAt: '2024-02-20T14:45:00Z',
-          contactPerson: 'Sarah Johnson'
-        },
-        {
-          id: '3',
-          name: 'Elite Athletes Academy',
-          email: 'contact@eliteathletes.com',
-          phone: '(303) 555-0789',
-          status: 'inactive',
-          eventsCount: 5,
-          totalRevenue: 45000,
-          createdAt: '2024-03-10T09:20:00Z',
-          contactPerson: 'Mike Davis'
-        }
-      ]
-      setOrganizations(mockOrganizations)
-    } catch (error) {
-      console.error('Failed to fetch organizations:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const types = useMemo(() => {
+    return Array.from(new Set(organizations.map((o) => o.type)))
+  }, [organizations])
 
-  const filteredOrganizations = organizations.filter(org =>
-    org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    org.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    org.contactPerson.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredOrganizations = organizations.filter((org) => {
+    const matchesSearch =
+      org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      org.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      org.contactPerson.toLowerCase().includes(searchTerm.toLowerCase())
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
+    const matchesType = filterType === 'all' || org.type === filterType
+
+    return matchesSearch && matchesType
+  })
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Organizations</h2>
-        </div>
-        <Button className="bg-blue-950 hover:bg-blue-900">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Organization
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Organizations"
+        description="Manage sports organizations / clients"
+        actions={
+          <Button asChild>
+            <Link href="/admin/organizations/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Organization
+            </Link>
+          </Button>
+        }
+      />
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Organizations</CardTitle>
-            <BuildingOffice className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{organizations.length}</div>
-            <p className="text-xs text-muted-foreground">
-              +2 from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{organizations.filter(o => o.status === 'active').length}</div>
-            <p className="text-xs text-muted-foreground">
-              Currently active
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{organizations.reduce((sum, o) => sum + o.eventsCount, 0)}</div>
-            <p className="text-xs text-muted-foreground">
-              All time events
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <CurrencyDollar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${organizations.reduce((sum, o) => sum + o.totalRevenue, 0).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              All time revenue
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search */}
+      {/* Search + Filters */}
       <Card>
-        <CardContent className="p-6">
-          <div className="relative">
-            <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search organizations..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        <CardContent className="p-4">
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="relative">
+              <MagnifyingGlass className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search organizations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            <Select value={filterType} onValueChange={(v) => setFilterType(v as typeof filterType)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {types.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchTerm('')
+                setFilterType('all')
+              }}
+            >
+              Clear
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Organizations List */}
+      {/* Organizations Table */}
       <Card>
         <CardContent className="p-0">
-          <div className="divide-y">
-            {filteredOrganizations.map((org) => (
-              <div key={org.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <BuildingOffice className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <h3 className="text-lg font-medium">{org.name}</h3>
-                        <p className="text-sm text-muted-foreground">{org.email}</p>
-                      </div>
-                      <Badge variant={org.status === 'active' ? 'default' : 'secondary'}>
-                        {org.status}
-                      </Badge>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Organization Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Contact Person</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead className="text-right">Total Events Hosted</TableHead>
+                <TableHead className="text-right">Created</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredOrganizations.map((org) => (
+                <TableRow key={org.id}>
+                  <TableCell className="font-medium">{org.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{org.type}</Badge>
+                  </TableCell>
+                  <TableCell>{org.contactPerson}</TableCell>
+                  <TableCell>{org.email}</TableCell>
+                  <TableCell>{org.phone}</TableCell>
+                  <TableCell className="text-right">{org.totalEventsHosted}</TableCell>
+                  <TableCell className="text-right">{formatDateShort(org.createdAt)}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="inline-flex items-center gap-2">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/admin/organizations/${org.id}`}>View</Link>
+                      </Button>
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/admin/organizations/${org.id}/edit`}>Edit</Link>
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          deleteAdminOrganization(org.id)
+                          setOrganizations(getAdminOrganizations())
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </div>
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span>{org.phone}</span>
-                      <span>•</span>
-                      <span>Contact: {org.contactPerson}</span>
-                      <span>•</span>
-                      <span>Joined: {new Date(org.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span>{org.eventsCount} events</span>
-                      <span>•</span>
-                      <span>${org.totalRevenue.toLocaleString()} revenue</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Pencil className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                    <Button variant="destructive" size="sm">
-                      <Trash className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
           {filteredOrganizations.length === 0 && (
             <div className="text-center py-12">
@@ -242,9 +179,11 @@ export default function OrganizationsManagement() {
                 }
               </p>
               {!searchTerm && (
-                <Button className="bg-blue-950 hover:bg-blue-900">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Organization
+                <Button asChild>
+                  <Link href="/admin/organizations/new">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Organization
+                  </Link>
                 </Button>
               )}
             </div>

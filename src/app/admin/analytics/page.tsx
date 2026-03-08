@@ -6,14 +6,32 @@ import {
   Users,
   Calendar,
   CurrencyDollar,
-  TrendingUp,
-  TrendingDown,
   ArrowUpRight,
   ArrowDownRight
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import LoadingSpinner from '@/components/ui/loading-spinner'
+import AdminPageHeader from '@/components/admin/admin-page-header'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 
 interface AnalyticsData {
   totalRevenue: number
@@ -48,6 +66,7 @@ interface AnalyticsData {
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [dateRange, setDateRange] = useState('30d')
 
   useEffect(() => {
     fetchAnalytics()
@@ -95,25 +114,60 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <LoadingSpinner size="lg" />
       </div>
     )
   }
 
   if (!data) return null
 
+  const exportReportCsv = () => {
+    const header = ['Month', 'Revenue', 'Events', 'Users', 'Registrations']
+    const rows = data.monthlyData.map((row) => [
+      row.month,
+      String(row.revenue),
+      String(row.events),
+      String(row.users),
+      String(row.registrations),
+    ])
+
+    const csv = [header, ...rows]
+      .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `analytics-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 pt-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Analytics</h2>
-        </div>
-        <Button variant="outline">
-          <ChartBar className="h-4 w-4 mr-2" />
-          Export Report
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Analytics"
+        description="Performance insights and reporting"
+        actions={
+          <div className="flex items-center gap-2">
+            <Select value={dateRange} onValueChange={setDateRange}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Date range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">Last 7 days</SelectItem>
+                <SelectItem value="30d">Last 30 days</SelectItem>
+                <SelectItem value="90d">Last 90 days</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" onClick={exportReportCsv}>
+              <ChartBar className="h-4 w-4 mr-2" />
+              Export Report
+            </Button>
+          </div>
+        }
+      />
 
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -204,50 +258,63 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Revenue Overview</CardTitle>
+            <CardDescription>Revenue by month</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {data.monthlyData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{item.month}</span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-24 bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-blue-950 h-2 rounded-full" 
-                        style={{ width: `${(item.revenue / 52000) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm text-muted-foreground w-16 text-right">
-                      ${item.revenue.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <div className="h-[240px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data.monthlyData} margin={{ left: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
+                  <YAxis tickLine={false} axisLine={false} fontSize={12} width={40} />
+                  <Tooltip
+                    cursor={{ stroke: 'hsl(var(--border))' }}
+                    contentStyle={{
+                      borderRadius: 8,
+                      border: '1px solid hsl(var(--border))',
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      fontSize: 12,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
-
+        
         <Card>
           <CardHeader>
-            <CardTitle>Growth Metrics</CardTitle>
+            <CardTitle>Registration Trends</CardTitle>
+            <CardDescription>Registrations by month</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {data.monthlyData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{item.month}</span>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <Users className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground w-8">{item.users}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground w-8">{item.events}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="h-[240px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.monthlyData} margin={{ left: 8, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
+                  <YAxis tickLine={false} axisLine={false} fontSize={12} width={40} />
+                  <Tooltip
+                    cursor={{ fill: 'hsl(var(--muted) / 0.4)' }}
+                    contentStyle={{
+                      borderRadius: 8,
+                      border: '1px solid hsl(var(--border))',
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      fontSize: 12,
+                    }}
+                  />
+                  <Bar dataKey="registrations" fill="hsl(var(--accent))" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
