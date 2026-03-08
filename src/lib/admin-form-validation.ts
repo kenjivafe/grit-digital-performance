@@ -234,7 +234,7 @@ export function useForm<T = unknown>(config: FormConfig<T>) {
   }, [formData, config.fields])
 
   const validateAllFields = React.useCallback(() => {
-    const results = validateForm(formData, config)
+    const results = validateForm(formData, config as FormConfig<Record<string, unknown>>)
     const hasErrors = hasFormErrors(results)
     
     const newErrors: Record<string, string> = {}
