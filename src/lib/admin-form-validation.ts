@@ -6,7 +6,7 @@ export type ValidationResult = {
   error?: string
 }
 
-export type FieldValidator = (value: unknown) => ValidationResult
+export type FieldValidator = (value: unknown, ...args: any[]) => ValidationResult
 
 export type FormFieldConfig = {
   name: string
@@ -38,48 +38,62 @@ export const validators: Record<string, FieldValidator> = {
     isValid: validateRequired(String(value)),
     error: validateRequired(String(value)) ? undefined : 'This field is required',
   }),
-  email: (value: string): ValidationResult => ({
-    isValid: validateEmail(value),
-    error: validateEmail(value) ? undefined : 'Please enter a valid email address',
-  }),
-  phone: (value: string): ValidationResult => ({
-    isValid: validatePhone(value),
-    error: validatePhone(value) ? undefined : 'Please enter a valid phone number (e.g., (555) 123-4567)',
-  }),
-  currency: (value: string): ValidationResult => ({
-    isValid: validateCurrency(value),
-    error: validateCurrency(value) ? undefined : 'Please enter a valid amount (e.g., 99.99)',
-  }),
-  positiveCurrency: (value: string): ValidationResult => {
-    const valid = validateCurrency(value) && Number(value) > 0
+  email: (value: unknown): ValidationResult => {
+    const stringValue = String(value)
+    return {
+      isValid: validateEmail(stringValue),
+      error: validateEmail(stringValue) ? undefined : 'Please enter a valid email address',
+    }
+  },
+  phone: (value: unknown): ValidationResult => {
+    const stringValue = String(value)
+    return {
+      isValid: validatePhone(stringValue),
+      error: validatePhone(stringValue) ? undefined : 'Please enter a valid phone number (e.g., (555) 123-4567)',
+    }
+  },
+  currency: (value: unknown): ValidationResult => {
+    const stringValue = String(value)
+    return {
+      isValid: validateCurrency(stringValue),
+      error: validateCurrency(stringValue) ? undefined : 'Please enter a valid amount (e.g., 99.99)',
+    }
+  },
+  positiveCurrency: (value: unknown): ValidationResult => {
+    const stringValue = String(value)
+    const valid = validateCurrency(stringValue) && Number(stringValue) > 0
     return {
       isValid: valid,
       error: valid ? undefined : 'Please enter a positive amount',
     }
   },
-  minLength: (value: string, min: number): ValidationResult => {
-    const valid = !value || value.length >= min
+  minLength: (value: unknown, min: number): ValidationResult => {
+    const stringValue = String(value)
+    const valid = !stringValue || stringValue.length >= min
     return {
       isValid: valid,
       error: valid ? undefined : `Must be at least ${min} characters`,
     }
   },
-  maxLength: (value: string, max: number): ValidationResult => {
-    const valid = !value || value.length <= max
+  maxLength: (value: unknown, max: number): ValidationResult => {
+    const stringValue = String(value)
+    const valid = !stringValue || stringValue.length <= max
     return {
       isValid: valid,
       error: valid ? undefined : `Must not exceed ${max} characters`,
     }
   },
-  min: (value: number, min: number): ValidationResult => {
-    const valid = value === undefined || value >= min
+  min: (value: unknown, min: number): ValidationResult => {
+    const numValue = Number(value)
+    const valid = isNaN(numValue) || numValue >= min
     return {
       isValid: valid,
       error: valid ? undefined : `Must be at least ${min}`,
     }
   },
-  max: (value: number, max: number): ValidationResult => {
-    const valid = value === undefined || value <= max
+  max: (value: unknown, max: number): ValidationResult => {
+    const numValue = Number(value)
+    const valid = isNaN(numValue) || numValue <= max
     return {
       isValid: valid,
       error: valid ? undefined : `Must not exceed ${max}`,
@@ -163,7 +177,8 @@ export function validateForm<T extends Record<string, unknown>>(
   const results = {} as Record<keyof T, ValidationResult>
   
   for (const field of config.fields) {
-    results[field.name as keyof T] = validateField(values[field.name], field)
+    const result = validateField(values[field.name], field)
+    results[field.name as keyof T] = result
   }
   
   return results
@@ -202,7 +217,7 @@ export function useForm<T = unknown>(config: FormConfig<T>) {
     }
   }, [errors])
 
-  const validateField = React.useCallback((name: string) => {
+  const validateSingleField = React.useCallback((name: string) => {
     const field = config.fields.find(f => f.name === name)
     if (!field) return
 
@@ -218,7 +233,7 @@ export function useForm<T = unknown>(config: FormConfig<T>) {
     }
   }, [formData, config.fields])
 
-  const validateForm = React.useCallback(() => {
+  const validateAllFields = React.useCallback(() => {
     const results = validateForm(formData, config)
     const hasErrors = hasFormErrors(results)
     
@@ -236,7 +251,7 @@ export function useForm<T = unknown>(config: FormConfig<T>) {
   const handleSubmit = React.useCallback(async (e?: React.FormEvent) => {
     e?.preventDefault()
     
-    const isValid = validateForm()
+    const isValid = validateAllFields()
     if (!isValid) return
 
     setIsSubmitting(true)
@@ -258,7 +273,7 @@ export function useForm<T = unknown>(config: FormConfig<T>) {
     } finally {
       setIsSubmitting(false)
     }
-  }, [formData, config, validateForm])
+  }, [formData, config, validateAllFields])
 
   const reset = React.useCallback(() => {
     const resetData: Record<string, any> = {}
