@@ -1,0 +1,153 @@
+@layer base {
+  :root {
+    /* Sports-focused color palette */
+    --grit-primary: 15 23 42; /* slate-900 - strong, professional */
+    --grit-secondary: 239 68 68; /* red-500 - dynamic, energetic */
+    --grit-accent: 59 130 246; /* blue-500 - trustworthy, modern */
+    --grit-success: 34 197 94; /* green-500 - achievement, winning */
+    --grit-warning: 251 146 60; /* orange-400 - caution, alert */
+
+    /* Typography scale */
+    --font-heading: "Inter", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-display: "Inter", sans-serif;
+  }
+}
+
+@layer components {
+  /* Sports-themed button styles */
+  .btn-primary {
+    background: linear-gradient(to right, rgb(220 38 38), rgb(185 28 28));
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(to right, rgb(185 28 28), rgb(153 27 27));
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background-color: rgb(15 23 42);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background-color: rgb(30 41 59);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  }
+
+  .btn-outline {
+    border: 2px solid rgb(15 23 42);
+    color: rgb(15 23 42);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    background-color: transparent;
+  }
+
+  .btn-outline:hover {
+    background-color: rgb(15 23 42);
+    color: white;
+  }
+
+  /* Card components for sports content */
+  .card-sport {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.3s;
+    border: 1px solid rgb(229 231 235);
+    overflow: hidden;
+  }
+
+  .card-sport:hover {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  }
+
+  .card-sport-header {
+    background: linear-gradient(to right, rgb(15 23 42), rgb(30 41 59));
+    color: white;
+    padding: 1.5rem;
+  }
+
+  /* Sports statistics styling */
+  .stat-number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: rgb(220 38 38);
+    font-family: var(--font-display);
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgb(71 85 105);
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities for sports dynamics */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar for sports theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
