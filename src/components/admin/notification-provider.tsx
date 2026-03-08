@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useCallback } from 'react'
+import { useNotifications as useAppNotifications } from './notifications'
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info'
 
@@ -31,42 +32,20 @@ export function useNotifications() {
 }
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const { addNotification } = useAppNotifications()
+
   const notify = useCallback((type: NotificationType, options: NotificationOptions) => {
     const { title, description, duration, action } = options
-    const message = title || description || ''
-    const descriptionText = title && description ? description : undefined
-
-    switch (type) {
-      case 'success':
-        sonnerToast.success(message, {
-          description: descriptionText,
-          duration,
-          action: action ? { label: action.label, onClick: action.onClick } : undefined,
-        })
-        break
-      case 'error':
-        sonnerToast.error(message, {
-          description: descriptionText,
-          duration,
-          action: action ? { label: action.label, onClick: action.onClick } : undefined,
-        })
-        break
-      case 'warning':
-        sonnerToast.warning(message, {
-          description: descriptionText,
-          duration,
-          action: action ? { label: action.label, onClick: action.onClick } : undefined,
-        })
-        break
-      case 'info':
-        sonnerToast.info(message, {
-          description: descriptionText,
-          duration,
-          action: action ? { label: action.label, onClick: action.onClick } : undefined,
-        })
-        break
-    }
-  }, [])
+    
+    addNotification({
+      type,
+      title: title || 'Notification',
+      message: description,
+      duration: duration || 5000,
+      action,
+      dismissible: true
+    })
+  }, [addNotification])
 
   const success = useCallback((options: NotificationOptions) => notify('success', options), [notify])
   const error = useCallback((options: NotificationOptions) => notify('error', options), [notify])
