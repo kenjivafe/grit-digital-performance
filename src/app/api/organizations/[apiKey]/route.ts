@@ -3,11 +3,14 @@ import { getOrganizationByApiKey, getRevenueReport } from '@/lib/events-api'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { apiKey: string } }
+  { params }: { params: Promise<{ apiKey: string }> }
 ) {
   try {
+    // Await params to get the apiKey
+    const { apiKey } = await params
+
     // Get organization details
-    const orgResponse = await getOrganizationByApiKey(params.apiKey)
+    const orgResponse = await getOrganizationByApiKey(apiKey)
     if (!orgResponse.success) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
     }

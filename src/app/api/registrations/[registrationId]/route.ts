@@ -3,13 +3,16 @@ import { getOrganizationByApiKey, getRegistration, refundRegistration } from '@/
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { registrationId: string } }
+  { params }: { params: Promise<{ registrationId: string }> }
 ) {
   try {
     const apiKey = request.headers.get('x-api-key')
     if (!apiKey) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
     }
+
+    // Await params to get the registrationId
+    const { registrationId } = await params
 
     // Verify organization
     const orgResponse = await getOrganizationByApiKey(apiKey)
@@ -18,7 +21,7 @@ export async function GET(
     }
 
     // Get registration
-    const registrationResponse = await getRegistration(params.registrationId, orgResponse.data!.id)
+    const registrationResponse = await getRegistration(registrationId, orgResponse.data!.id)
     if (!registrationResponse.success) {
       return NextResponse.json({ error: registrationResponse.error }, { status: 404 })
     }
@@ -35,13 +38,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { registrationId: string } }
+  { params }: { params: Promise<{ registrationId: string }> }
 ) {
   try {
     const apiKey = request.headers.get('x-api-key')
     if (!apiKey) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
     }
+
+    // Await params to get the registrationId
+    const { registrationId } = await params
 
     // Verify organization
     const orgResponse = await getOrganizationByApiKey(apiKey)
@@ -54,7 +60,7 @@ export async function PUT(
 
     if (action === 'refund') {
       // Process refund
-      const refundResponse = await refundRegistration(params.registrationId, amount)
+      const refundResponse = await refundRegistration(registrationId, amount)
       if (!refundResponse.success) {
         return NextResponse.json({ error: refundResponse.error }, { status: 400 })
       }
