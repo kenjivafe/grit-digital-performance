@@ -44,15 +44,21 @@
   }
 
   /* Override specific elements */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: "Druk Wide Trial", sans-serif;
-    font-weight: 700;
-  }
+ h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Druk Wide Trial", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h2 { font-size: 55px; }
+h3 { font-size: 44px; }
+h4 { font-size: 35px; }
+h5 { font-size: 28px; }
 
   /* Apply Druk Wide to display elements */
   .text-display,
@@ -67,6 +73,13 @@
   div {
     font-family: "Druk Wide Trial", sans-serif;
   }
+  p {
+  font-family: "Barlow", sans-serif;
+  font-weight: 400;
+}  a {
+  font-family: "Barlow", sans-serif;
+  font-weight: 400;
+}
 
   /* Fallback to ensure fonts load */
   html {
