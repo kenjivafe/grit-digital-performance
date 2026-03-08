@@ -3,6 +3,8 @@ import SportsStats from "@/components/ui/sports-stats";
 import SportsCard from "@/components/ui/sports-card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Trophy } from "lucide-react";
+import Hero from "./home/sections/hero";
+import CTASection from "@/components/cta";
 
 export default function Home() {
   const services = [
@@ -40,89 +42,7 @@ export default function Home() {
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-900">
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/85 to-red-900/80" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Content */}
-            <div className="space-y-8">
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-600 text-white">
-                Industry Leaders
-              </div>
-
-              <div className="space-y-4">
-                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
-                  Digital Excellence for Sports Organizations
-                </h1>
-
-                <h2 className="text-xl lg:text-2xl text-red-400 font-semibold">
-                  We Build Champions Online
-                </h2>
-              </div>
-
-              <p className="text-xl text-slate-200 leading-relaxed max-w-lg">
-                Transform your sports organization with cutting-edge websites
-                and event registration systems that drive engagement and
-                revenue.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="btn-primary text-lg px-8 py-4">
-                  Get Started
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="btn-outline text-lg px-8 py-4"
-                >
-                  View Our Work
-                </Button>
-              </div>
-            </div>
-
-            {/* Visual Element */}
-            {/* <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-red-600/80 to-slate-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl flex items-center justify-center border border-white/10">
-                <div className="text-center text-white p-8">
-                  <Trophy className="w-16 h-16 mx-auto mb-4 text-red-300" />
-                  <div className="text-2xl font-bold mb-2">
-                    Champion Results
-                  </div>
-                  <div className="text-slate-300">
-                    Trusted by 50+ Sports Organizations
-                  </div>
-                </div>
-              </div>
-            </div> */}
-
-            <div className="relative">
-              {/* Background Image */}
-              <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
-                style={{ backgroundImage: "url('/duterts.png')" }}
-              />
-              {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/50 rounded-xl" />
-
-              <div className="aspect-square rounded-xl overflow-hidden shadow-2xl flex items-center justify-center border border-white/10">
-                <div className="text-center text-white p-8 z-10">
-                  <Trophy className="w-16 h-16 mx-auto mb-4 text-red-300" />
-                  <div className="text-2xl font-bold mb-2 drop-shadow-lg">
-                    Champion Results
-                  </div>
-                  <div className="text-slate-200 drop-shadow-md font-medium">
-                    Trusted by 50+ Sports Organizations
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       {/* Stats Section */}
       <SportsStats />
@@ -161,33 +81,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-3xl mx-auto">
-            <Trophy className="w-16 h-16 text-red-500 mx-auto mb-6" />
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Ready to Champion Your Digital Presence?
-            </h2>
-            <p className="text-xl text-slate-300 mb-8">
-              Join 50+ sports organizations that trust Grit Digital Performance
-              to deliver exceptional digital experiences.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="btn-primary text-lg px-8 py-4">
-                Start Your Project
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button
-                variant="outline"
-                className="btn-outline text-lg px-8 py-4 text-white border-white hover:bg-white hover:text-slate-900"
-              >
-                Schedule Consultation
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CTASection />
     </Layout>
   );
 }

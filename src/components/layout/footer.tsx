@@ -1,14 +1,5 @@
 import Link from "next/link";
-import GritLogo from "../../app/grit.ico";
-import {
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -34,6 +25,8 @@ const Footer = () => {
     ],
   };
 
+  // test feature push
+
   const socialLinks = [
     { icon: Facebook, href: "#", label: "Facebook" },
     { icon: Twitter, href: "#", label: "Twitter" },
@@ -48,14 +41,10 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <img
-                src={GritLogo.src}
-                alt="Grit Logo"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <span className="font-bold text-xl">
-                Grit Digital Performance
-              </span>
+              <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-slate-700 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">G</span>
+              </div>
+              <span className="font-bold text-xl">Grit Digital Performance</span>
             </div>
 
             <p className="text-slate-300 mb-6 leading-relaxed">
