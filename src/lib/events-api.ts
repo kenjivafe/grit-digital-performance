@@ -314,7 +314,7 @@ export async function confirmRegistration(registrationId: string, paymentIntentI
     await createTransaction({
       registrationId,
       stripePaymentId: paymentIntentId,
-      amount: registration.amount,
+      amount: Number(registration.amount),
       currency: registration.currency,
       status: 'completed'
     })
