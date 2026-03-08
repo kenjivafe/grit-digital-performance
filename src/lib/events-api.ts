@@ -215,7 +215,8 @@ export async function createRegistration(params: CreateRegistrationParams): Prom
       return { success: false, error: 'Event not found' }
     }
 
-    // Check registration limits
+    // Check if event is full
+    let registrationStatus: string = 'confirmed'
     if (event.data.maxParticipants) {
       const confirmedRegistrations = await eventsApiPrisma.registration.count({
         where: {
@@ -228,7 +229,7 @@ export async function createRegistration(params: CreateRegistrationParams): Prom
         if (!event.data.waitlistEnabled) {
           return { success: false, error: 'Event is full' }
         }
-        params.status = 'waitlisted'
+        registrationStatus = 'waitlisted'
       }
     }
 
@@ -256,7 +257,7 @@ export async function createRegistration(params: CreateRegistrationParams): Prom
         ...params,
         amount: price,
         currency: event.data.currency,
-        status: params.requiresApproval ? 'pending' : 'confirmed'
+        status: event.data.requiresApproval ? 'pending' : registrationStatus
       }
     })
 
