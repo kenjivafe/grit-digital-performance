@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     "Admin dashboard for managing sports organizations, events, registrations, and analytics. Complete control over your digital sports platform.",
   icons: {
     icon: [
-      { url: "/favicon/favicon-admin.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon/favicon-admin.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-admin.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-admin.png", sizes: "32x32", type: "image/png" },
     ],
-    apple: "/favicon/favicon-admin.png",
-    shortcut: "/favicon/favicon-admin.png",
+    apple: "/favicon-admin.png",
+    shortcut: "/favicon-admin.png",
   },
 };
 
