@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrganizationByApiKey, getRegistration, refundRegistration } from '@/lib/events-api'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ registrationId: string }> }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createOrganization } from '@/lib/events-api'
+import { getOrganizationByApiKey, createOrganization } from '@/lib/events-api'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {

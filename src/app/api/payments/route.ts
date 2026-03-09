@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { confirmRegistration } from '@/lib/events-api'
 import { constructWebhookEvent } from '@/lib/stripe'
 import { eventsApiPrisma } from '@/lib/events-api'
+import { createPaymentIntent, confirmPayment } from '@/lib/stripe'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getOrganizationByApiKey, getRevenueReport } from '@/lib/events-api'
 import { eventsApiPrisma } from '@/lib/events-api'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const apiKey = request.headers.get('x-api-key')
