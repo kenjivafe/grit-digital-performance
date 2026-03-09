@@ -425,7 +425,7 @@ export async function refundRegistration(registrationId: string, amount?: number
     })
 
     // Create refund transaction record
-    const transaction = await createTransaction({
+    const transactionResult = await createTransaction({
       registrationId,
       stripePaymentId: refund.id,
       amount: -(amount || Number(registration.data.amount)),
@@ -433,7 +433,11 @@ export async function refundRegistration(registrationId: string, amount?: number
       status: 'refunded'
     })
 
-    return { success: true, data: transaction }
+    if (!transactionResult.success || !transactionResult.data) {
+      return { success: false, error: 'Failed to create refund transaction' }
+    }
+
+    return { success: true, data: transactionResult.data }
   } catch (error) {
     console.error('Error refunding registration:', error)
     return { success: false, error: 'Failed to refund registration' }
@@ -462,10 +466,7 @@ export async function getRevenueReport(organizationId: string, startDate?: Date,
     }
 
     const transactions = await eventsApiPrisma.transaction.findMany({
-      where,
-      include: {
-        registration: true
-      }
+      where
     })
 
     const totalRevenue = transactions.reduce((sum, t) => sum + Number(t.amount), 0)

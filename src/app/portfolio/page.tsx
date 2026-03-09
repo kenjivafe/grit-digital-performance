@@ -6,6 +6,8 @@ import { getPortfolioProjects, getSportCategories, getProjectTypes, type Portfol
 import PortfolioFilterComponent from "@/components/portfolio/portfolio-filter";
 import PortfolioProjectCard from "@/components/portfolio/portfolio-project-card";
 
+export const dynamic = 'force-dynamic'
+
 export default async function PortfolioPage() {
   // Fetch initial data
   const projects = await getPortfolioProjects();
