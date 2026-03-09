@@ -155,8 +155,8 @@ grit-digital-performance/
    ```
 
 4. **Run development servers**
-
    ```bash
+
    # Start all applications
    npm run dev
 
