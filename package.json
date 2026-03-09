@@ -1,12 +1,19 @@
 {
-  "name": "grit-digital-performance",
+  "name": "grit-root",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/ui",
+    "packages/utils",
+    "packages/config/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "lint": "eslint",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "db:generate": "prisma generate",
     "db:seed": "tsx prisma/simple-seed.ts",
     "db:studio": "prisma studio"
   },
@@ -54,6 +61,7 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
+    "turbo": "^2.8.14",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,274 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import Link from 'next/link'
+import { MagnifyingGlass } from '@phosphor-icons/react'
+import { Button } from '@repo/ui'
+import { Badge } from '@repo/ui'
+import { Card, CardContent } from '@repo/ui'
+import { Input } from '@repo/ui'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@repo/ui'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@repo/ui'
+import AdminPageHeader from '@/components/admin/admin-page-header'
+import { mockEvents } from '@/lib/admin-mock-data'
+import { formatCurrency } from '@/lib/admin-utils'
+import {
+  exportPaymentsCsv,
+  getAdminPayments,
+  updatePaymentStatus,
+  type AdminPaymentRecord,
+} from '@/lib/admin-payments-store'
+
+const paymentStatusVariant = (status: string) => {
+  if (status === 'Paid') return 'default'
+  if (status === 'Refunded') return 'secondary'
+  if (status === 'Failed') return 'destructive'
+  return 'outline'
+}
+
+export default function PaymentsPage() {
+  const [search, setSearch] = useState('')
+  const [eventId, setEventId] = useState<string>('all')
+  const [paymentStatus, setPaymentStatus] = useState<string>('all')
+  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({})
+  const [bulkStatus, setBulkStatus] = useState<string>('')
+  const [refundAmount, setRefundAmount] = useState<number>(0)
+  const [refundReason, setRefundReason] = useState<string>('')
+
+  const events = useMemo(() => mockEvents, [])
+
+  const payments = useMemo(() => {
+    return getAdminPayments().filter((p) => {
+      const matchesSearch =
+        !search ||
+        p.participantName.toLowerCase().includes(search.toLowerCase()) ||
+        p.eventName.toLowerCase().includes(search.toLowerCase()) ||
+        p.transactionId.toLowerCase().includes(search.toLowerCase())
+
+      const matchesEvent = eventId === 'all' || p.eventId === eventId
+      const matchesPayment = paymentStatus === 'all' || p.paymentStatus === paymentStatus
+
+      return matchesSearch && matchesEvent && matchesPayment
+    })
+  }, [eventId, paymentStatus, search])
+
+  const selectedPayments = useMemo(() => {
+    return payments.filter((p) => selectedIds[p.id])
+  }, [payments, selectedIds])
+
+  const allVisibleSelected =
+    payments.length > 0 && payments.every((p) => Boolean(selectedIds[p.id]))
+
+  const toggleSelectAllVisible = (checked: boolean) => {
+    const next: Record<string, boolean> = { ...selectedIds }
+    payments.forEach((p) => {
+      next[p.id] = checked
+    })
+    setSelectedIds(next)
+  }
+
+  const toggleRow = (id: string, checked: boolean) => {
+    setSelectedIds((prev) => ({ ...prev, [id]: checked }))
+  }
+
+  const applyBulkStatus = () => {
+    if (!bulkStatus) return
+    selectedPayments.forEach((p) => {
+      updatePaymentStatus(p.id, bulkStatus as AdminPaymentRecord['paymentStatus'])
+    })
+    setSelectedIds({})
+    setBulkStatus('')
+  }
+
+  const applyBulkRefund = () => {
+    if (!refundAmount || !refundReason) return
+    selectedPayments.forEach((p) => {
+      updatePaymentStatus(p.id, 'Refunded', refundAmount, refundReason)
+    })
+    setSelectedIds({})
+    setRefundAmount(0)
+    setRefundReason('')
+  }
+
+  return (
+    <div className="flex-1 space-y-4 p-4 pt-4">
+      <AdminPageHeader
+        title="Payments"
+        description="Track Stripe payments and transaction status"
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => exportPaymentsCsv(payments)}
+              disabled={payments.length === 0}
+            >
+              Export CSV
+            </Button>
+          </div>
+        }
+      />
+
+      <Card>
+        <CardContent className="p-4">
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="relative">
+              <MagnifyingGlass className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search participant, event, or transaction..."
+                className="pl-10"
+              />
+            </div>
+
+            <Select value={eventId} onValueChange={setEventId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Event" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Events</SelectItem>
+                {events.map((e) => (
+                  <SelectItem key={e.id} value={e.id}>
+                    {e.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Payment Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Payment Status</SelectItem>
+                <SelectItem value="Paid">Paid</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Failed">Failed</SelectItem>
+                <SelectItem value="Refunded">Refunded</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-0">
+          {selectedPayments.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b p-3">
+              <div className="text-sm text-muted-foreground">
+                {selectedPayments.length} selected
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select value={bulkStatus} onValueChange={setBulkStatus}>
+                  <SelectTrigger className="h-9 w-[200px]">
+                    <SelectValue placeholder="Set payment status..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Paid">Paid</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Failed">Failed</SelectItem>
+                    <SelectItem value="Refunded">Refunded</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={applyBulkStatus} disabled={!bulkStatus}>
+                  Apply
+                </Button>
+                <Input
+                  placeholder="Refund amount"
+                  type="number"
+                  min={0}
+                  value={refundAmount || ''}
+                  onChange={(e) => setRefundAmount(Number(e.target.value))}
+                  className="w-[140px]"
+                />
+                <Input
+                  placeholder="Refund reason"
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                  className="w-[200px]"
+                />
+                <Button onClick={applyBulkRefund} disabled={!refundAmount || !refundReason}>
+                  Refund Selected
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => exportPaymentsCsv(selectedPayments)}
+                >
+                  Export Selected
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[44px]">
+                  <input
+                    aria-label="Select all"
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={(e) => toggleSelectAllVisible(e.target.checked)}
+                  />
+                </TableHead>
+                <TableHead>Participant</TableHead>
+                <TableHead>Event</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Payment Status</TableHead>
+                <TableHead>Transaction ID</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {payments.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell>
+                    <input
+                      aria-label={`Select payment for ${p.participantName}`}
+                      type="checkbox"
+                      checked={Boolean(selectedIds[p.id])}
+                      onChange={(e) => toggleRow(p.id, e.target.checked)}
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{p.participantName}</TableCell>
+                  <TableCell>{p.eventName}</TableCell>
+                  <TableCell>{formatCurrency(p.amount)}</TableCell>
+                  <TableCell>
+                    <Badge variant={paymentStatusVariant(p.paymentStatus)}>
+                      {p.paymentStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">{p.transactionId}</TableCell>
+                  <TableCell className="text-right">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/admin/payments/${p.id}`}>View</Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          {payments.length === 0 ? (
+            <div className="p-6 text-sm text-muted-foreground">No payments found.</div>
+          ) : null}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+
