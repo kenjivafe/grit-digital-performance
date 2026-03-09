@@ -51,5 +51,10 @@ next-env.d.ts
 # cache
 /cache
 
+# Next.js build cache
+.next/
+out/
+build/
+
 # Turborepo
 .turbo
