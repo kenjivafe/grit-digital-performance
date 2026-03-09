@@ -30,7 +30,7 @@ export default function AdminSignIn() {
       } else {
         const session = await getSession()
         if (session?.user?.role === 'admin') {
-          router.push('/admin')
+          router.push('/')
         } else {
           setError('Access denied. Admin role required.')
         }
