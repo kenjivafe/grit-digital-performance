@@ -102,6 +102,40 @@ export async function createOrganization(data: {
 
 export async function getOrganizationByApiKey(apiKey: string): Promise<ApiResponse<Organization>> {
   try {
+    // Handle test API key for playground
+    if (apiKey === 'test-api-key-for-playground') {
+      // Return a mock organization for testing
+      const mockOrganization = {
+        id: 'org_test_123',
+        name: 'Test Organization',
+        slug: 'test-org',
+        email: 'test@example.com',
+        phone: '+1234567890',
+        website: 'https://test.example.com',
+        logo: null,
+        description: 'Test organization for API playground',
+        sportCategory: 'Basketball',
+        domain: 'test.example.com',
+        address: '123 Test St',
+        city: 'Test City',
+        state: 'TS',
+        zipCode: '12345',
+        country: 'USA',
+        apiKey: 'test-api-key-for-playground',
+        webhookUrl: null,
+        stripeAccountId: null,
+        billingEmail: 'billing@test.com',
+        active: true,
+        verified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        events: [],
+        registrations: [],
+      } as Organization
+      
+      return { success: true, data: mockOrganization }
+    }
+
     const organization = await eventsApiPrisma.organization.findUnique({
       where: { apiKey },
       include: {
@@ -124,6 +158,43 @@ export async function getOrganizationByApiKey(apiKey: string): Promise<ApiRespon
 // Event Management
 export async function createEvent(params: CreateEventParams): Promise<ApiResponse<Event>> {
   try {
+    // Handle test API key for playground
+    if (params.organizationId === 'org_test_123') {
+      // Create a mock event for testing
+      const mockEvent = {
+        id: `evt_test_${Date.now()}`,
+        organizationId: params.organizationId,
+        name: params.name,
+        slug: params.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        description: params.description || null,
+        startDate: params.startDate,
+        endDate: params.endDate,
+        location: params.location || null,
+        address: params.address || null,
+        city: params.city || null,
+        state: params.state || null,
+        zipCode: params.zipCode || null,
+        country: params.country || null,
+        virtual: params.virtual || false,
+        maxParticipants: params.maxParticipants || null,
+        price: params.price as unknown as any, // Convert to unknown then any to handle Decimal type mismatch
+        currency: params.currency || 'USD',
+        earlyBirdPrice: params.earlyBirdPrice as unknown as any || null,
+        earlyBirdDeadline: params.earlyBirdDeadline || null,
+        registrationStart: params.registrationStart,
+        registrationEnd: params.registrationEnd || null,
+        waitlistEnabled: params.waitlistEnabled || false,
+        requiresApproval: params.requiresApproval || false,
+        customFields: params.customFields || null,
+        status: 'published',
+        publishedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as unknown as Event
+      
+      return { success: true, data: mockEvent }
+    }
+
     const slug = params.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     
     const event = await eventsApiPrisma.event.create({

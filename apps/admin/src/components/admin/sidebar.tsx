@@ -12,9 +12,10 @@ import {
   ChartBar, 
   UserCircle,
   CreditCard,
-  Gear, 
   SignOut,
-  FileText
+  Key,
+  Code,
+  Gear,
 } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback } from '@repo/ui'
 import {
@@ -25,6 +26,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
 } from '@repo/ui'
 import {
   DropdownMenu,
@@ -35,7 +39,7 @@ import {
 import { ThemeToggle } from '@/components/dashboard/theme-toggle'
 
 // Navigation items
-const items = [
+const homeItems = [
   {
     title: "Dashboard",
     url: "/",
@@ -46,21 +50,29 @@ const items = [
     url: "/portfolio",
     icon: Images,
   },
-  {
-    title: "Events",
-    url: "/events",
-    icon: Calendar,
-  },
+]
+
+// Organization Management
+const organizationItems = [
   {
     title: "Organizations",
     url: "/organizations",
     icon: Users,
   },
   {
+    title: "Events",
+    url: "/events",
+    icon: Calendar,
+  },
+  {
     title: "Participants",
     url: "/participants",
     icon: UserCircle,
   },
+]
+
+// Operations
+const operationsItems = [
   {
     title: "Payments",
     url: "/payments",
@@ -71,6 +83,24 @@ const items = [
     url: "/analytics",
     icon: ChartBar,
   },
+]
+
+// API navigation group
+const apiItems = [
+  {
+    title: "API Keys",
+    url: "/api/api-keys",
+    icon: Key,
+  },
+  {
+    title: "API Playground",
+    url: "/api/playground",
+    icon: Code,
+  },
+]
+
+// Settings navigation group
+const settingsItems = [
   {
     title: "Settings",
     url: "/settings",
@@ -116,23 +146,125 @@ export default function AdminSidebar() {
       </SidebarHeader>
       
       <SidebarContent>
-        <SidebarMenu role="navigation" aria-label="Admin navigation">
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton 
-                asChild 
-                isActive={pathname === item.url}
-                aria-label={item.title}
-                aria-current={pathname === item.url ? 'page' : undefined}
-              >
-                <Link href={item.url}>
-                  <item.icon aria-hidden="true" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        {/* Home Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Home</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu role="navigation" aria-label="Admin navigation">
+              {homeItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.url}
+                    aria-label={item.title}
+                    aria-current={pathname === item.url ? 'page' : undefined}
+                  >
+                    <Link href={item.url}>
+                      <item.icon aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Organization Management Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Organization</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {organizationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.url}
+                    aria-label={item.title}
+                    aria-current={pathname === item.url ? 'page' : undefined}
+                  >
+                    <Link href={item.url}>
+                      <item.icon aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Operations Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Operations</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {operationsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.url}
+                    aria-label={item.title}
+                    aria-current={pathname === item.url ? 'page' : undefined}
+                  >
+                    <Link href={item.url}>
+                      <item.icon aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* API Navigation Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>API</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {apiItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.url}
+                    aria-label={item.title}
+                    aria-current={pathname === item.url ? 'page' : undefined}
+                  >
+                    <Link href={item.url}>
+                      <item.icon aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* System Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>System</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={pathname === item.url}
+                    aria-label={item.title}
+                    aria-current={pathname === item.url ? 'page' : undefined}
+                  >
+                    <Link href={item.url}>
+                      <item.icon aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       
       <SidebarFooter>

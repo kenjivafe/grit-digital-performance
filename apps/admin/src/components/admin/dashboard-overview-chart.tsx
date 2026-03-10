@@ -44,18 +44,12 @@ export default function DashboardOverviewChart({
             tick={{ fontSize: 10 }}
           />
           <Tooltip
-            cursor={{ fill: 'oklch(20.8% 0.042 265.755)' }}
+            cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null
               return (
-                <div
-                  className="rounded-lg border px-3 py-2 text-sm shadow-md"
-                  style={{
-                    backgroundColor: 'oklch(21% 0.034 264.665)',
-                    borderColor: 'oklch(37.2% 0.044 257.287)',
-                  }}
-                >
-                  <p className="font-medium mb-1" style={{ color: 'white' }}>
+                <div className="rounded-lg border px-3 py-2 text-sm shadow-md bg-background border-border">
+                  <p className="font-medium mb-1">
                     {label}
                   </p>
                   {payload.map((entry, index) => (
