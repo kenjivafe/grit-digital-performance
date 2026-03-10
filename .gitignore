@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+**/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -48,6 +49,9 @@ next-env.d.ts
 # openspec
 /openspec
 
+# windsurf
+/.windsurf
+
 # cache
 /cache
 
@@ -56,5 +60,14 @@ next-env.d.ts
 out/
 build/
 
-# Turborepo
+# Additional build caches
 .turbo
+dist/
+.nuxt/
+.vite/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
