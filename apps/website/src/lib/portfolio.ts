@@ -118,7 +118,7 @@ export async function getSportCategories(): Promise<{ name: string; displayName:
     orderBy: { sortOrder: 'asc' }
   })
 
-  return categories.map(cat => ({
+  return categories.map((cat: { name: string; displayName: string }) => ({
     name: cat.name,
     displayName: cat.displayName
   }))
@@ -130,7 +130,7 @@ export async function getProjectTypes(): Promise<{ name: string; displayName: st
     orderBy: { sortOrder: 'asc' }
   })
 
-  return types.map(type => ({
+  return types.map((type: { name: string; displayName: string }) => ({
     name: type.name,
     displayName: type.displayName
   }))

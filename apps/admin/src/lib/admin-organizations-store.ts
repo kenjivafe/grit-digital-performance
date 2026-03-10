@@ -5,6 +5,7 @@ export type AdminOrganizationRecord = {
   contactPerson: string
   email: string
   phone: string
+  domain?: string
   totalEventsHosted: number
   logoUrl?: string
   createdAt: string
@@ -20,6 +21,7 @@ const defaultOrganizations: AdminOrganizationRecord[] = [
     contactPerson: 'John Smith',
     email: 'info@denversoccer.com',
     phone: '(303) 555-0123',
+    domain: 'denversoccer.com',
     totalEventsHosted: 12,
     createdAt: '2024-01-15',
   },
@@ -30,6 +32,7 @@ const defaultOrganizations: AdminOrganizationRecord[] = [
     contactPerson: 'Sarah Johnson',
     email: 'admin@cosportsleague.com',
     phone: '(720) 555-0456',
+    domain: 'cosportsleague.com',
     totalEventsHosted: 8,
     createdAt: '2024-02-20',
   },
@@ -40,6 +43,7 @@ const defaultOrganizations: AdminOrganizationRecord[] = [
     contactPerson: 'Mike Davis',
     email: 'contact@eliteathletes.com',
     phone: '(303) 555-0789',
+    domain: 'eliteathletes.com',
     totalEventsHosted: 5,
     createdAt: '2024-03-10',
   },
