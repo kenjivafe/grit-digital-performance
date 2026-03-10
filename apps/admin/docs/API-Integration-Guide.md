@@ -2,7 +2,13 @@
 
 This guide explains how to integrate your client website with the Grit Digital Performance API server for event registration and data management.
 
-## 🚀 Quick Start
+## � Documentation
+
+- **[API Quick Start](./API-Quick-Start.md)** - Get started in 5 minutes
+- **[API Developer Guide](./API-Developer-Guide.md)** - Complete API documentation
+- **[API Playground](/api/playground)** - Test endpoints interactively
+
+## �🚀 Quick Start
 
 ### 1. Include the API Client Library
 
@@ -18,36 +24,36 @@ This guide explains how to integrate your client website with the Grit Digital P
 
 ```javascript
 // Initialize with your organization slug
-const api = new GritAPIClient('https://admin.gritdp.com/api');
-api.setOrganization('your-organization-slug');
+const api = new GritAPIClient("https://admin.gritdp.com/api");
+api.setOrganization("your-organization-slug");
 ```
 
 ### 3. Create a Registration Form
 
 ```html
 <form id="registrationForm">
-  <input type="hidden" name="event_id" value="evt_123">
-  
+  <input type="hidden" name="event_id" value="evt_123" />
+
   <div>
     <label>Name:</label>
-    <input type="text" name="name" required>
+    <input type="text" name="name" required />
   </div>
-  
+
   <div>
     <label>Email:</label>
-    <input type="email" name="email" required>
+    <input type="email" name="email" required />
   </div>
-  
+
   <div>
     <label>Phone:</label>
-    <input type="tel" name="phone">
+    <input type="tel" name="phone" />
   </div>
-  
+
   <div>
     <label>Team:</label>
-    <input type="text" name="team">
+    <input type="text" name="team" />
   </div>
-  
+
   <button type="submit">Register</button>
 </form>
 
@@ -56,8 +62,8 @@ api.setOrganization('your-organization-slug');
 
 ```javascript
 // Handle form submission
-const form = document.getElementById('registrationForm');
-const result = document.getElementById('result');
+const form = document.getElementById("registrationForm");
+const result = document.getElementById("result");
 
 const handler = api.createFormHandler(form, {
   onSuccess: (data) => {
@@ -74,7 +80,7 @@ const handler = api.createFormHandler(form, {
         ❌ Registration failed: ${error.message}
       </div>
     `;
-  }
+  },
 });
 ```
 
@@ -88,15 +94,16 @@ Register a participant for an event.
 
 ```javascript
 const registration = await api.registerForEvent({
-  event_id: 'evt_123',
-  name: 'John Doe',
-  email: 'john@example.com',
-  phone: '09123456789',
-  team: 'Team Name'
+  event_id: "evt_123",
+  name: "John Doe",
+  email: "john@example.com",
+  phone: "09123456789",
+  team: "Team Name",
 });
 ```
 
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -123,6 +130,7 @@ const events = await api.getEvents();
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -153,7 +161,7 @@ const events = await api.getEvents();
 Get detailed information about a specific event.
 
 ```javascript
-const event = await api.getEvent('evt_123');
+const event = await api.getEvent("evt_123");
 ```
 
 ## 🔐 Authentication & Security
@@ -164,13 +172,14 @@ For enhanced security, you can use API keys instead of organization slugs:
 
 ```javascript
 // Initialize with API key
-const api = new GritAPIClient('https://admin.gritdp.com/api');
-api.setApiKey('your-api-key-here');
+const api = new GritAPIClient("https://admin.gritdp.com/api");
+api.setApiKey("your-api-key-here");
 ```
 
 ### CORS Configuration
 
 The API supports cross-origin requests from approved domains. Ensure your domain is:
+
 1. Added to your organization record in the admin panel
 2. Configured in the CORS settings
 
@@ -179,10 +188,10 @@ The API supports cross-origin requests from approved domains. Ensure your domain
 The API automatically handles CORS headers, but you can add custom headers:
 
 ```javascript
-const response = await api.request('/events', {
+const response = await api.request("/events", {
   headers: {
-    'X-Custom-Header': 'value'
-  }
+    "X-Custom-Header": "value",
+  },
 });
 ```
 
@@ -194,12 +203,14 @@ const response = await api.request('/events', {
 <div id="eventsList"></div>
 
 <script>
-async function loadEvents() {
-  try {
-    const response = await api.getEvents();
-    const events = response.data.events;
-    
-    const eventsHtml = events.map(event => `
+  async function loadEvents() {
+    try {
+      const response = await api.getEvents();
+      const events = response.data.events;
+
+      const eventsHtml = events
+        .map(
+          (event) => `
       <div class="event-card">
         <h3>${event.name}</h3>
         <p>${event.description}</p>
@@ -208,29 +219,32 @@ async function loadEvents() {
         <p><strong>Fee:</strong> ₱${event.entry_fee}</p>
         <p><strong>Spots:</strong> ${event.current_participants}/${event.max_participants}</p>
         
-        ${event.registration_status === 'open' ? 
-          `<button onclick="openRegistration('${event.id}')">Register Now</button>` :
-          `<span class="closed">Registration Closed</span>`
+        ${
+          event.registration_status === "open"
+            ? `<button onclick="openRegistration('${event.id}')">Register Now</button>`
+            : `<span class="closed">Registration Closed</span>`
         }
       </div>
-    `).join('');
-    
-    document.getElementById('eventsList').innerHTML = eventsHtml;
-  } catch (error) {
-    document.getElementById('eventsList').innerHTML = 
-      `<p>Error loading events: ${error.message}</p>`;
+    `,
+        )
+        .join("");
+
+      document.getElementById("eventsList").innerHTML = eventsHtml;
+    } catch (error) {
+      document.getElementById("eventsList").innerHTML =
+        `<p>Error loading events: ${error.message}</p>`;
+    }
   }
-}
 
-function openRegistration(eventId) {
-  // Set the event ID in the form
-  document.querySelector('input[name="event_id"]').value = eventId;
-  // Show registration form modal or scroll to form
-  document.getElementById('registrationForm').scrollIntoView();
-}
+  function openRegistration(eventId) {
+    // Set the event ID in the form
+    document.querySelector('input[name="event_id"]').value = eventId;
+    // Show registration form modal or scroll to form
+    document.getElementById("registrationForm").scrollIntoView();
+  }
 
-// Load events when page loads
-loadEvents();
+  // Load events when page loads
+  loadEvents();
 </script>
 ```
 
@@ -240,7 +254,7 @@ loadEvents();
 const handler = api.createFormHandler(form, {
   onSubmit: () => {
     // Show loading state
-    result.innerHTML = '<div>Processing registration...</div>';
+    result.innerHTML = "<div>Processing registration...</div>";
   },
   onSuccess: (data) => {
     result.innerHTML = `
@@ -254,16 +268,16 @@ const handler = api.createFormHandler(form, {
   },
   onError: (error) => {
     let errorMessage = error.message;
-    
+
     // Handle specific error cases
-    if (error.message.includes('email')) {
-      errorMessage = 'Please enter a valid email address';
-    } else if (error.message.includes('required')) {
-      errorMessage = 'Please fill in all required fields';
-    } else if (error.message.includes('event')) {
-      errorMessage = 'This event is no longer accepting registrations';
+    if (error.message.includes("email")) {
+      errorMessage = "Please enter a valid email address";
+    } else if (error.message.includes("required")) {
+      errorMessage = "Please fill in all required fields";
+    } else if (error.message.includes("event")) {
+      errorMessage = "This event is no longer accepting registrations";
     }
-    
+
     result.innerHTML = `
       <div class="error-message">
         <h3>❌ Registration Failed</h3>
@@ -271,12 +285,12 @@ const handler = api.createFormHandler(form, {
         <button onclick="resetForm()">Try Again</button>
       </div>
     `;
-  }
+  },
 });
 
 function resetForm() {
   form.reset();
-  result.innerHTML = '';
+  result.innerHTML = "";
 }
 ```
 
@@ -359,9 +373,9 @@ You can send custom analytics events:
 
 ```javascript
 // Track custom events (coming soon)
-await api.trackEvent('form_viewed', {
-  event_id: 'evt_123',
-  form_type: 'registration'
+await api.trackEvent("form_viewed", {
+  event_id: "evt_123",
+  form_type: "registration",
 });
 ```
 
@@ -370,18 +384,22 @@ await api.trackEvent('form_viewed', {
 ### Common Issues
 
 **CORS Errors**
+
 - Ensure your domain is added to your organization record
 - Check that you're using HTTPS in production
 
 **401 Unauthorized**
+
 - Verify your organization slug is correct
 - Check if your API key is valid (if using API keys)
 
 **400 Bad Request**
+
 - Ensure all required fields are included
 - Check field formats (email, phone, etc.)
 
 **404 Not Found**
+
 - Verify the event ID exists
 - Check that the event is still open for registration
 
@@ -403,12 +421,12 @@ Always implement proper error handling:
 ```javascript
 try {
   const result = await api.registerForEvent(data);
-  console.log('Success:', result);
+  console.log("Success:", result);
 } catch (error) {
-  console.error('API Error:', error);
-  
+  console.error("API Error:", error);
+
   // Show user-friendly error message
-  alert('Registration failed. Please try again later.');
+  alert("Registration failed. Please try again later.");
 }
 ```
 
@@ -429,4 +447,4 @@ For integration support:
 
 ---
 
-*Last updated: March 11, 2026*
+_Last updated: March 11, 2026_
