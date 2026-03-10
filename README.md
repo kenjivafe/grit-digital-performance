@@ -12,7 +12,33 @@ Grit Digital Performance specializes in creating cutting-edge digital solutions 
 - Event registration systems with payment processing
 - Portfolio management
 - Admin dashboard for organization management
+- Client site integrations and API services
 - Digital consulting services
+
+## 🚀 Architecture
+
+### Two-App System
+
+**1️⃣ Main Website** (gritdp.com)
+
+- Marketing and portfolio showcase
+- Service descriptions and pricing
+- Company information and contact
+- Public-facing content
+
+**2️⃣ Admin + API Server** (admin.gritdp.com)
+
+- Admin dashboard for management
+- Centralized API endpoints
+- Database operations
+- Client site integrations
+
+**3️⃣ Client Websites** (Custom domains)
+
+- Organization-specific sites
+- API integrations with admin server
+- Event registration forms
+- Branded experiences
 
 ## 🚀 Features
 
@@ -23,18 +49,27 @@ Grit Digital Performance specializes in creating cutting-edge digital solutions 
 - **About** - Company story, team profiles, and values
 - **Contact** - Multi-channel contact with inquiry forms
 - **Portfolio** - Project showcase with filtering capabilities
-- **Events** - Tournament listings with registration
 
-### Admin Application
+### Admin + API Server
 
 - **Dashboard** - Overview with metrics and analytics
 - **Portfolio Management** - CRUD operations for portfolio projects
 - **Event Management** - Create and manage tournaments and events
-- **Organization Management** - Manage sports organizations and clients
-- **Participant Management** - Track athletes and participants
+- **Organization Management** - Manage sports organizations and domains
+- **Participant Management** - Track athletes and registration sources
 - **Payment Processing** - Monitor transactions and revenue
-- **Analytics** - Detailed insights and reporting
+- **Cross-Site Analytics** - Registration source tracking
+- **API Key Management** - Client site access control
+- **API Monitoring** - Real-time performance tracking
 - **Settings** - Application configuration
+
+### Client Site Integration
+
+- **API Client Library** - JavaScript library for easy integration
+- **Event Registration** - Cross-origin registration forms
+- **Organization Domains** - Custom domain management
+- **Source Tracking** - Registration origin analytics
+- **CORS Support** - Secure cross-origin requests
 
 ### Technical Features
 
@@ -80,7 +115,7 @@ Grit Digital Performance specializes in creating cutting-edge digital solutions 
 ```
 grit-digital-performance/
 ├── apps/                          # Applications
-│   ├── website/                   # Public website
+│   ├── website/                   # Public website (gritdp.com)
 │   │   ├── src/
 │   │   │   ├── app/              # Next.js pages
 │   │   │   ├── components/       # Website components
@@ -88,20 +123,32 @@ grit-digital-performance/
 │   │   │   └── styles/           # Global styles
 │   │   ├── public/               # Static assets
 │   │   └── package.json
-│   └── admin/                    # Admin dashboard
+│   └── admin/                    # Admin + API Server (admin.gritdp.com)
 │       ├── src/
-│       │   ├── app/              # Next.js pages (no /admin prefix)
+│       │   ├── app/              # Next.js pages and API routes
+│       │   │   ├── api/          # API endpoints (/api/*)
+│       │   │   │   ├── events/    # Event management APIs
+│       │   │   │   ├── participants/ # Registration APIs
+│       │   │   │   ├── organizations/ # Organization APIs
+│       │   │   │   └── ...       # Other API endpoints
 │       │   │   ├── auth/         # Authentication pages
-│       │   │   ├── portfolio/    # Portfolio management
-│       │   │   ├── events/       # Event management
+│       │   │   ├── dashboard/    # Admin dashboard
 │       │   │   ├── organizations/ # Organization management
+│       │   │   ├── events/       # Event management
 │       │   │   ├── participants/ # Participant management
 │       │   │   ├── payments/     # Payment management
-│       │   │   ├── analytics/    # Analytics dashboard
+│       │   │   ├── analytics/    # Analytics dashboards
+│       │   │   │   ├── cross-site/ # Cross-site analytics
+│       │   │   │   └── api-monitoring/ # API monitoring
 │       │   │   └── settings/     # Settings
+│       │   │       └── api-keys/ # API key management
 │       │   ├── components/       # Admin components
 │       │   ├── lib/              # Admin utilities
+│       │   ├── middleware.ts     # CORS and API middleware
 │       │   └── types/            # TypeScript definitions
+│       ├── docs/                 # API documentation
+│       │   ├── API.md           # Complete API reference
+│       │   └── grit-api-client.js # Client library
 │       ├── public/               # Static assets
 │       └── package.json
 ├── packages/                     # Shared packages
@@ -114,6 +161,9 @@ grit-digital-performance/
 │       ├── eslint/              # ESLint configs
 │       ├── tailwind/            # TailwindCSS configs
 │       └── typescript/          # TypeScript configs
+├── prisma/                       # Database schema and migrations
+│   ├── schema.prisma            # Database schema
+│   └── migrations/              # Database migrations
 ├── turbo.json                    # Turborepo configuration
 ├── package.json                  # Root package.json
 └── README.md
@@ -155,6 +205,7 @@ grit-digital-performance/
    ```
 
 4. **Run development servers**
+
    ```bash
 
    # Start all applications
