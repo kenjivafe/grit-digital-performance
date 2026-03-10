@@ -125,6 +125,7 @@ export default function OrganizationsManagement() {
                   <TableHead className="min-w-[80px] hidden sm:table-cell">Type</TableHead>
                   <TableHead className="min-w-[120px] hidden md:table-cell">Contact Person</TableHead>
                   <TableHead className="min-w-[120px] hidden lg:table-cell">Email</TableHead>
+                  <TableHead className="min-w-[150px] hidden xl:table-cell">Domain</TableHead>
                   <TableHead className="min-w-[100px] hidden xl:table-cell">Phone</TableHead>
                   <TableHead className="min-w-[80px] text-right hidden sm:table-cell">Events</TableHead>
                   <TableHead className="min-w-[80px] text-right hidden lg:table-cell">Created</TableHead>
@@ -151,6 +152,16 @@ export default function OrganizationsManagement() {
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{org.contactPerson}</TableCell>
                     <TableCell className="hidden lg:table-cell">{org.email}</TableCell>
+                    <TableCell className="hidden xl:table-cell">
+                      {org.domain ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{org.domain}</span>
+                          <Badge variant="secondary" className="text-xs">Active</Badge>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">Not set</span>
+                      )}
+                    </TableCell>
                     <TableCell className="hidden xl:table-cell">{org.phone}</TableCell>
                     <TableCell className="text-right hidden sm:table-cell">{org.totalEventsHosted}</TableCell>
                     <TableCell className="text-right hidden lg:table-cell">{formatDateShort(org.createdAt)}</TableCell>

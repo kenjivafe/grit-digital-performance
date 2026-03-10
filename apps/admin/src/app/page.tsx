@@ -141,7 +141,7 @@ export default function AdminDashboard() {
       />
 
       {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="region" aria-label="Dashboard statistics">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5" role="region" aria-label="Dashboard statistics">
         <DashboardMetricCard
           title="Total Events"
           value={mockEvents.length}
@@ -187,6 +187,20 @@ export default function AdminDashboard() {
                 +20%
               </Badge>{' '}
               from last month
+            </span>
+          }
+        />
+
+        <DashboardMetricCard
+          title="External Registrations"
+          value={Math.floor(totalRegistrations * 0.35)} // 35% from external sites
+          icon={<ArrowUpRight data-icon="inline-end" />}
+          footer={
+            <span>
+              <Badge variant="secondary" className="text-xs">
+                35%
+              </Badge>{' '}
+              from client sites
             </span>
           }
         />
