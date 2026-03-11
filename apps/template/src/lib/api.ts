@@ -125,6 +125,17 @@ class ApiClient {
     return null
   }
 
+  private getApiKey(): string {
+    // For development, use the test API key
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'test-api-key-for-playground'
+    }
+    
+    // For production, you would need to map organization slugs to actual API keys
+    // This is a placeholder - in a real implementation, you'd have a mapping or database lookup
+    return 'test-api-key-for-playground'
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -136,7 +147,7 @@ class ApiClient {
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': this.organizationSlug || '', // Use organization slug as API key
+          'x-api-key': this.getApiKey(), // Use proper API key
           ...options.headers,
         },
         mode: 'cors',
@@ -184,7 +195,7 @@ class ApiClient {
       return { success: false, error: 'No organization slug detected' }
     }
 
-    return this.request<Organization>(`/organizations/${this.organizationSlug}`)
+    return this.request<Organization>(`/organizations/${this.getApiKey()}`)
   }
 
   // Category methods
