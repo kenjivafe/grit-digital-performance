@@ -1,11 +1,14 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
   BuildingOffice,
   Plus,
   MagnifyingGlass,
+  Copy,
+  Eye,
+  EyeOff,
 } from '@phosphor-icons/react'
 import { Button } from '@repo/ui'
 import { Input } from '@repo/ui'
@@ -27,41 +30,104 @@ import {
   TableRow,
 } from '@repo/ui'
 import AdminPageHeader from '@/components/admin/admin-page-header'
-import {
-  getAdminOrganizations,
-  deleteAdminOrganization,
-  type AdminOrganizationRecord,
-} from '@/lib/admin-organizations-store'
-import { formatDateShort } from '@/lib/admin-utils'
+import { eventsApiPrisma } from '@/lib/events-api'
 
-export default function OrganizationsManagement() {
-  const [organizations, setOrganizations] = useState<AdminOrganizationRecord[]>(() =>
-    getAdminOrganizations()
-  )
+interface ApiOrganization {
+  id: string
+  name: string
+  slug: string
+  email: string
+  phone?: string
+  website?: string
+  sportCategory: string
+  apiKey: string
+  active: boolean
+  verified: boolean
+  createdAt: string
+  _count: {
+    events: number
+    registrations: number
+  }
+}
+
+export default function OrganizationsPage() {
+  const [organizations, setOrganizations] = useState<ApiOrganization[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
+  const [visibleApiKeys, setVisibleApiKeys] = useState<Set<string>>(new Set())
 
-  const [filterType, setFilterType] = useState<'all' | AdminOrganizationRecord['type']>('all')
+  useEffect(() => {
+    fetchOrganizations()
+  }, [])
 
-  const types = useMemo(() => {
-    return Array.from(new Set(organizations.map((o) => o.type)))
-  }, [organizations])
+  const fetchOrganizations = async () => {
+    try {
+      setLoading(true)
+      const orgs = await eventsApiPrisma.organization.findMany({
+        include: {
+          _count: {
+            select: {
+              events: true,
+              registrations: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+      setOrganizations(orgs as ApiOrganization[])
+    } catch (error) {
+      console.error('Error fetching organizations:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  const filteredOrganizations = organizations.filter((org) => {
-    const matchesSearch =
-      org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      org.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      org.contactPerson.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOrganizations = useMemo(() => {
+    return organizations.filter((org) => {
+      const matchesSearch =
+        org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        org.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        org.sportCategory.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesType = filterType === 'all' || org.type === filterType
+      const matchesStatus = 
+        filterStatus === 'all' || 
+        (filterStatus === 'active' && org.active) ||
+        (filterStatus === 'inactive' && !org.active)
 
-    return matchesSearch && matchesType
-  })
+      return matchesSearch && matchesStatus
+    })
+  }, [organizations, searchTerm, filterStatus])
+
+  const copyApiKey = (apiKey: string) => {
+    navigator.clipboard.writeText(apiKey)
+  }
+
+  const toggleApiKeyVisibility = (orgId: string) => {
+    setVisibleApiKeys(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(orgId)) {
+        newSet.delete(orgId)
+      } else {
+        newSet.add(orgId)
+      }
+      return newSet
+    })
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-4">
       <AdminPageHeader
-        title="Organizations"
-        description="Manage sports organizations / clients"
+        title="API Organizations"
+        description="Manage organizations with API access for template websites"
         actions={
           <Button asChild size="sm">
             <Link href="/organizations/new">
@@ -87,29 +153,20 @@ export default function OrganizationsManagement() {
               />
             </div>
 
-            <Select value={filterType} onValueChange={(v) => setFilterType(v as typeof filterType)}>
+            <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
               <SelectTrigger>
-                <SelectValue placeholder="Type" />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {types.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
 
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchTerm('')
-                setFilterType('all')
-              }}
-            >
-              Clear
-            </Button>
+            <div className="text-sm text-muted-foreground flex items-center">
+              {filteredOrganizations.length} organization{filteredOrganizations.length !== 1 ? 's' : ''}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -117,110 +174,110 @@ export default function OrganizationsManagement() {
       {/* Organizations Table */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Organization</TableHead>
+                <TableHead className="hidden sm:table-cell">Sport</TableHead>
+                <TableHead className="hidden md:table-cell">API Key</TableHead>
+                <TableHead className="hidden lg:table-cell">Status</TableHead>
+                <TableHead className="hidden xl:table-cell">Events</TableHead>
+                <TableHead className="hidden xl:table-cell">Registrations</TableHead>
+                <TableHead className="hidden lg:table-cell">Created</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
                 <TableRow>
-                  <TableHead className="min-w-[150px]">Organization Name</TableHead>
-                  <TableHead className="min-w-[80px] hidden sm:table-cell">Type</TableHead>
-                  <TableHead className="min-w-[120px] hidden md:table-cell">Contact Person</TableHead>
-                  <TableHead className="min-w-[120px] hidden lg:table-cell">Email</TableHead>
-                  <TableHead className="min-w-[150px] hidden xl:table-cell">Domain</TableHead>
-                  <TableHead className="min-w-[100px] hidden xl:table-cell">Phone</TableHead>
-                  <TableHead className="min-w-[80px] text-right hidden sm:table-cell">Events</TableHead>
-                  <TableHead className="min-w-[80px] text-right hidden lg:table-cell">Created</TableHead>
-                  <TableHead className="min-w-[120px] text-right">Actions</TableHead>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    Loading organizations...
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOrganizations.map((org) => (
+              ) : filteredOrganizations.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <div className="text-muted-foreground">
+                      {searchTerm || filterStatus !== 'all' 
+                        ? 'No organizations match your filters' 
+                        : 'No organizations found. Create your first organization to get started.'}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredOrganizations.map((org) => (
                   <TableRow key={org.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex flex-col gap-1">
+                    <TableCell>
+                      <div>
                         <div className="font-medium">{org.name}</div>
-                        <div className="text-xs text-muted-foreground sm:hidden">
-                          <Badge variant="outline" className="text-xs mr-2">{org.type}</Badge>
-                          {org.contactPerson}
-                        </div>
-                        <div className="text-xs text-muted-foreground md:hidden lg:hidden">
-                          {org.email}
-                        </div>
+                        <div className="text-sm text-muted-foreground">{org.email}</div>
+                        {org.website && (
+                          <div className="text-sm text-blue-600">
+                            <a href={org.website} target="_blank" rel="noopener noreferrer">
+                              {org.website}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      <Badge variant="outline" className="text-xs">{org.type}</Badge>
+                      <Badge variant="secondary">{org.sportCategory}</Badge>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">{org.contactPerson}</TableCell>
-                    <TableCell className="hidden lg:table-cell">{org.email}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <div className="flex items-center gap-2">
+                        <code className="text-xs bg-muted px-2 py-1 rounded">
+                          {visibleApiKeys.has(org.id) ? org.apiKey : '•'.repeat(20)}
+                        </code>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleApiKeyVisibility(org.id)}
+                        >
+                          {visibleApiKeys.has(org.id) ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyApiKey(org.apiKey)}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      <div className="flex items-center gap-2">
+                        <Badge variant={org.active ? 'default' : 'secondary'}>
+                          {org.active ? 'Active' : 'Inactive'}
+                        </Badge>
+                        {org.verified && (
+                          <Badge variant="outline" className="text-xs">Verified</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="hidden xl:table-cell">
-                      {org.domain ? (
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">{org.domain}</span>
-                          <Badge variant="secondary" className="text-xs">Active</Badge>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">Not set</span>
-                      )}
+                      <div className="text-center">{org._count.events}</div>
                     </TableCell>
-                    <TableCell className="hidden xl:table-cell">{org.phone}</TableCell>
-                    <TableCell className="text-right hidden sm:table-cell">{org.totalEventsHosted}</TableCell>
-                    <TableCell className="text-right hidden lg:table-cell">{formatDateShort(org.createdAt)}</TableCell>
+                    <TableCell className="hidden xl:table-cell">
+                      <div className="text-center">{org._count.registrations}</div>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {formatDate(org.createdAt)}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex flex-col sm:flex-row sm:inline-flex items-center gap-1 sm:gap-2">
                         <Button asChild variant="outline" size="sm">
-                          <Link href={`/admin/organizations/${org.id}`}>
+                          <Link href={`/organizations/${org.id}`}>
                             <span className="hidden sm:inline">View</span>
                             <span className="sm:hidden">V</span>
                           </Link>
                         </Button>
-                        <Button asChild variant="outline" size="sm">
-                          <Link href={`/admin/organizations/${org.id}/edit`}>
-                            <span className="hidden sm:inline">Edit</span>
-                            <span className="sm:hidden">E</span>
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => {
-                            deleteAdminOrganization(org.id)
-                            setOrganizations(getAdminOrganizations())
-                          }}
-                        >
-                          <span className="hidden sm:inline">Delete</span>
-                          <span className="sm:hidden">D</span>
-                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                ))
+              )}
             </TableBody>
           </Table>
-          </div>
-
-          {filteredOrganizations.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-muted-foreground mb-4">
-                <BuildingOffice className="h-12 w-12 mx-auto" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">No organizations found</h3>
-              <p className="text-muted-foreground mb-4 text-sm">
-                {searchTerm 
-                  ? 'Try adjusting your search terms'
-                  : 'Get started by adding your first organization'
-                }
-              </p>
-              {!searchTerm && (
-                <Button asChild size="sm">
-                  <Link href="/organizations/new">
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Add Your First Organization</span>
-                    <span className="sm:hidden">Add Organization</span>
-                  </Link>
-                </Button>
-              )}
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
