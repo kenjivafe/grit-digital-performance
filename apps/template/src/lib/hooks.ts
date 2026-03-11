@@ -54,3 +54,7 @@ export function useCategories() {
 export function useEvents(category?: string) {
   return useApi(() => apiClient.getEvents(category))
 }
+
+export function useEventBySlug(slug: string) {
+  return useApi(() => apiClient.getEventBySlug(slug))
+}
