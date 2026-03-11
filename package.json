@@ -21,6 +21,8 @@
     "test:performance": "cd apps/admin && node tests/test-performance",
     "test:disaster-recovery": "cd apps/admin && node tests/test-disaster-recovery",
     "test:all": "npm run test:admin && npm run test:admin-functionality && npm run test:cors && npm run test:registration && npm run test:performance && npm run test:disaster-recovery",
+    "dev:template": "cd apps/template && npm run dev",
+    "build:template": "cd apps/template && npm run build",
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/simple-seed.ts",
     "db:studio": "prisma studio"
