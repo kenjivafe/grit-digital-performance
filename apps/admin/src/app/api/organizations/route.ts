@@ -5,9 +5,6 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Force the correct DATABASE_URL
-    process.env.DATABASE_URL = "postgres://71d12fdf9fd660836718242fde9035600092e02601a28e234967e4666d393233:sk_Ut9JqPKd30YWtMFM5b3PO@db.prisma.io:5432/postgres?sslmode=require"
-    
     console.log('GET /api/organizations - fetching organizations')
     console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
     console.log('DATABASE_URL length:', process.env.DATABASE_URL?.length)

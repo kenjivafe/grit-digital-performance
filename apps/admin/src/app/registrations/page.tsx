@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
-import { MagnifyingGlass, Users, CurrencyDollar, Calendar, TrendingUp } from '@phosphor-icons/react'
+import { MagnifyingGlass, Users, CurrencyDollar, Calendar, ChartLine } from '@phosphor-icons/react'
 import { Button } from '@repo/ui'
 import { Badge } from '@repo/ui'
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
@@ -200,7 +200,7 @@ export default function RegistrationsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <ChartLine className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

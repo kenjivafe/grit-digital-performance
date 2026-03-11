@@ -10,7 +10,7 @@ import {
   Eye,
   EyeClosed,
   Users,
-  TrendingUp,
+  ChartLine,
   Calendar
 } from '@phosphor-icons/react'
 import { Button } from '@repo/ui'
@@ -157,7 +157,7 @@ export default function OrganizationsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Active Organizations</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <ChartLine className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{organizations.filter(org => org.active).length}</div>

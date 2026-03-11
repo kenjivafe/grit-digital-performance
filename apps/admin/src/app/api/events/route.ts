@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getEventsApiPrisma } from '@/lib/events-api'
+import { getEventsApiPrisma, getOrganizationByApiKey, listEvents, createEvent } from '@/lib/events-api'
 
 export const dynamic = 'force-dynamic'
 

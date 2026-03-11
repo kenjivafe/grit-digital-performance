@@ -8,7 +8,7 @@ import {
   Users,
   MagnifyingGlass, 
   Plus,
-  TrendingUp
+  ChartLine
 } from '@phosphor-icons/react'
 import { useRequireAuth } from '@/lib/client-auth'
 import { Button } from '@repo/ui'
@@ -253,7 +253,7 @@ export default function EventsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Published Events</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <ChartLine className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{events.filter(event => event.status === 'published').length}</div>
