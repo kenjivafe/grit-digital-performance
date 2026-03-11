@@ -8,7 +8,7 @@ import {
   MagnifyingGlass,
   Copy,
   Eye,
-  EyeOff,
+  EyeClosed,
 } from '@phosphor-icons/react'
 import { Button } from '@repo/ui'
 import { Input } from '@repo/ui'
@@ -231,7 +231,7 @@ export default function OrganizationsPage() {
                           size="sm"
                           onClick={() => toggleApiKeyVisibility(org.id)}
                         >
-                          {visibleApiKeys.has(org.id) ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                          {visibleApiKeys.has(org.id) ? <EyeClosed className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                         </Button>
                         <Button
                           variant="ghost"
