@@ -9,10 +9,13 @@ import {
   Copy,
   Eye,
   EyeClosed,
+  Users,
+  TrendingUp,
+  Calendar
 } from '@phosphor-icons/react'
 import { Button } from '@repo/ui'
 import { Input } from '@repo/ui'
-import { Card, CardContent } from '@repo/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
 import { Badge } from '@repo/ui'
 import {
   Select,
@@ -124,8 +127,8 @@ export default function OrganizationsPage() {
   return (
     <div className="flex-1 space-y-4 p-4 pt-4">
       <AdminPageHeader
-        title="API Organizations"
-        description="Manage organizations with API access for template websites"
+        title="Organizations"
+        description="Manage organizations and their event registrations"
         actions={
           <Button asChild size="sm">
             <Link href="/organizations/new">
@@ -136,6 +139,58 @@ export default function OrganizationsPage() {
           </Button>
         }
       />
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+            <CardTitle className="text-sm font-medium">Total Organizations</CardTitle>
+            <BuildingOffice className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{organizations.length}</div>
+            <p className="text-xs text-muted-foreground">
+              <Badge variant="secondary" className="text-xs">+3</Badge> from last month
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+            <CardTitle className="text-sm font-medium">Active Organizations</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{organizations.filter(org => org.active).length}</div>
+            <p className="text-xs text-muted-foreground">
+              {Math.round((organizations.filter(org => org.active).length / organizations.length) * 100) || 0}% active
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{organizations.reduce((sum, org) => sum + org._count.events, 0)}</div>
+            <p className="text-xs text-muted-foreground">
+              <Badge variant="secondary" className="text-xs">+8</Badge> from last month
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+            <CardTitle className="text-sm font-medium">Total Registrations</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{organizations.reduce((sum, org) => sum + org._count.registrations, 0)}</div>
+            <p className="text-xs text-muted-foreground">
+              <Badge variant="secondary" className="text-xs">+25%</Badge> from last month
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Search + Filters */}
       <Card>

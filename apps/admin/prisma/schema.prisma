@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id              String         @id @default(cuid())
+  name            String
+  slug            String         @unique
+  email           String         @unique
+  phone           String?
+  website         String?
+  logo            String?
+  description     String?
+  domain          String?
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  country         String?
+  apiKey          String         @unique @default(cuid())
+  webhookUrl      String?
+  stripeAccountId String?
+  billingEmail    String?
+  active          Boolean        @default(true)
+  verified        Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  events          Event[]
+  registrations   Registration[]
+
+  @@map("organizations")
+}
+
+model Event {
+  id                String         @id @default(cuid())
+  organizationId    String
+  name              String
+  slug              String         @unique
+  description       String?
+  startDate         DateTime
+  endDate           DateTime
+  location          String?
+  address           String?
+  city              String?
+  state             String?
+  zipCode           String?
+  country           String?
+  virtual           Boolean        @default(false)
+  maxParticipants   Int?
+  price             Decimal        @default(0)
+  currency          String         @default("USD")
+  earlyBirdPrice    Decimal?
+  earlyBirdDeadline DateTime?
+  registrationStart DateTime
+  registrationEnd   DateTime
+  waitlistEnabled   Boolean        @default(false)
+  requiresApproval  Boolean        @default(false)
+  customFields      Json?
+  status            String         @default("draft")
+  publishedAt       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  organization      Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  registrations     Registration[]
+
+  @@map("events")
+}
+
+model Registration {
+  id                  String       @id @default(cuid())
+  eventId             String
+  organizationId      String
+  participantId       String       @unique
+  firstName           String
+  lastName            String
+  email               String
+  phone               String?
+  dateOfBirth         DateTime?
+  gender              String?
+  emergencyContact    Json?
+  medicalInfo         String?
+  dietaryRestrictions String?
+  customResponses     Json?
+  paymentIntentId     String?
+  amount              Decimal      @default(0)
+  currency            String       @default("USD")
+  paid                Boolean      @default(false)
+  paidAt              DateTime?
+  status              String       @default("pending")
+  source              String       @default("internal")
+  sourceDetails       Json?
+  approvedAt          DateTime?
+  cancelledAt         DateTime?
+  refundAmount        Decimal?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  event               Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("registrations")
+}
+
+model Transaction {
+  id                 String    @id @default(cuid())
+  registrationId     String    @unique
+  stripePaymentId    String    @unique
+  amount             Decimal
+  currency           String
+  fee                Decimal
+  netAmount          Decimal
+  organizationAmount Decimal
+  gritAmount         Decimal
+  royaltyRate        Decimal   @default(0.05)
+  status             String    @default("pending")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  completedAt        DateTime?
+  refundedAt         DateTime?
+
+  @@map("transactions")
+}

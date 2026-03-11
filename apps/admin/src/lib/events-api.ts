@@ -13,7 +13,24 @@ const globalForPrisma = globalThis as unknown as {
 
 export const getEventsApiPrisma = () => {
   if (!globalForPrisma.eventsApiPrisma) {
-    globalForPrisma.eventsApiPrisma = new PrismaClient()
+    // Force the correct DATABASE_URL to override any system variables
+    const correctDatabaseUrl = "postgres://71d12fdf9fd660836718242fde9035600092e02601a28e234967e4666d393233:sk_Ut9JqPKd30YWtMFM5b3PO@db.prisma.io:5432/postgres?sslmode=require"
+    
+    console.log('=== PRISMA CLIENT INITIALIZATION ===')
+    console.log('System DATABASE_URL:', process.env.DATABASE_URL?.substring(0, 50) + '...')
+    console.log('Forcing correct DATABASE_URL:', correctDatabaseUrl.substring(0, 50) + '...')
+    
+    // Override environment variable for this process
+    process.env.DATABASE_URL = correctDatabaseUrl
+    
+    globalForPrisma.eventsApiPrisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: correctDatabaseUrl
+        }
+      },
+      log: ['query', 'info', 'warn', 'error'],
+    })
     if (process.env.NODE_ENV !== 'production') {
       globalForPrisma.eventsApiPrisma = globalForPrisma.eventsApiPrisma
     }

@@ -71,8 +71,8 @@ const organizationItems = [
     icon: TestTube,
   },
   {
-    title: "Participants",
-    url: "/participants",
+    title: "Registrations",
+    url: "/registrations",
     icon: UserCircle,
   },
 ]

@@ -13,7 +13,10 @@
     "test:registration": "node tests/test-registration-flow",
     "test:performance": "node tests/test-performance",
     "test:disaster-recovery": "node tests/test-disaster-recovery",
-    "test:all": "npm run test && npm run test:functionality && npm run test:cors && npm run test:registration && npm run test:performance && npm run test:disaster-recovery"
+    "test:all": "npm run test && npm run test:functionality && npm run test:cors && npm run test:registration && npm run test:performance && npm run test:disaster-recovery",
+    "db:generate": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "next": "16.1.6",
@@ -27,7 +30,8 @@
     "recharts": "^2.15.4",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.5.0",
-    "@prisma/client": "^6.5.0"
+    "@prisma/client": "^6.5.0",
+    "@prisma/extension-accelerate": "^3.0.1"
   },
   "devDependencies": {
     "@repo/config-typescript": "*",
@@ -38,6 +42,7 @@
     "@types/react-dom": "^18.3.7",
     "typescript": "^5",
     "tailwindcss": "^4",
-    "prisma": "^6.5.0"
+    "prisma": "^6.5.0",
+    "tsx": "^4.21.0"
   }
 }

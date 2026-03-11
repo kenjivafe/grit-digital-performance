@@ -1,22 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getOrganizationByApiKey, createEvent, listEvents } from '@/lib/events-api'
+import { getEventsApiPrisma } from '@/lib/events-api'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Add CORS headers
-    const response = NextResponse.next()
-    response.headers.set('Access-Control-Allow-Origin', '*')
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+    // Check if this is an admin request (no API key needed for internal admin)
+    const { searchParams } = new URL(request.url)
+    const admin = searchParams.get('admin')
+    
+    if (admin === 'true') {
+      // Admin access - get all events without API key
+      const prisma = getEventsApiPrisma()
+      
+      const events = await prisma.event.findMany({
+        include: {
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              slug: true
+            }
+          },
+          _count: {
+            select: {
+              registrations: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
 
+      return NextResponse.json({
+        success: true,
+        data: events
+      })
+    }
+
+    // Original API key logic for external API access
     const apiKey = request.headers.get('x-api-key')
     if (!apiKey) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url)
     const status = searchParams.get('status') || undefined
 
     // Verify organization

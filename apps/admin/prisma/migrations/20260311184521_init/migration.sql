@@ -1,83 +1,4 @@
 -- CreateTable
-CREATE TABLE "portfolio_projects" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "clientName" TEXT NOT NULL,
-    "clientIndustry" TEXT NOT NULL,
-    "sportCategory" TEXT NOT NULL,
-    "projectType" TEXT NOT NULL,
-    "technologies" TEXT[],
-    "projectUrl" TEXT,
-    "thumbnailImage" TEXT NOT NULL,
-    "heroImage" TEXT NOT NULL,
-    "gallery" TEXT[],
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "completionDate" TIMESTAMP(3) NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'completed',
-    "featured" BOOLEAN NOT NULL DEFAULT false,
-    "sortOrder" INTEGER NOT NULL DEFAULT 0,
-    "metaTitle" TEXT,
-    "metaDescription" TEXT,
-    "metaKeywords" TEXT[],
-    "challenges" TEXT,
-    "solutions" TEXT,
-    "results" TEXT,
-    "testimonial" TEXT,
-    "testimonialAuthor" TEXT,
-    "testimonialRole" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "portfolio_projects_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "project_metrics" (
-    "id" TEXT NOT NULL,
-    "portfolioProjectId" TEXT NOT NULL,
-    "trafficIncrease" TEXT,
-    "conversionRate" TEXT,
-    "pageLoadSpeed" TEXT,
-    "mobileScore" TEXT,
-    "clientSatisfaction" TEXT,
-    "roi" TEXT,
-    "timelineMet" BOOLEAN NOT NULL DEFAULT true,
-    "pagesCreated" INTEGER,
-    "featuresImplemented" INTEGER,
-    "customIntegrations" INTEGER,
-
-    CONSTRAINT "project_metrics_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "sport_categories" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "displayName" TEXT NOT NULL,
-    "description" TEXT,
-    "icon" TEXT,
-    "sortOrder" INTEGER NOT NULL DEFAULT 0,
-    "active" BOOLEAN NOT NULL DEFAULT true,
-
-    CONSTRAINT "sport_categories_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "project_types" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "displayName" TEXT NOT NULL,
-    "description" TEXT,
-    "icon" TEXT,
-    "sortOrder" INTEGER NOT NULL DEFAULT 0,
-    "active" BOOLEAN NOT NULL DEFAULT true,
-
-    CONSTRAINT "project_types_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "organizations" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -195,18 +116,6 @@ CREATE TABLE "transactions" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "portfolio_projects_slug_key" ON "portfolio_projects"("slug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "project_metrics_portfolioProjectId_key" ON "project_metrics"("portfolioProjectId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "sport_categories_name_key" ON "sport_categories"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "project_types_name_key" ON "project_types"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "organizations_slug_key" ON "organizations"("slug");
 
 -- CreateIndex
@@ -226,9 +135,6 @@ CREATE UNIQUE INDEX "transactions_registrationId_key" ON "transactions"("registr
 
 -- CreateIndex
 CREATE UNIQUE INDEX "transactions_stripePaymentId_key" ON "transactions"("stripePaymentId");
-
--- AddForeignKey
-ALTER TABLE "project_metrics" ADD CONSTRAINT "project_metrics_portfolioProjectId_fkey" FOREIGN KEY ("portfolioProjectId") REFERENCES "portfolio_projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "events" ADD CONSTRAINT "events_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,15 +1,14 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
   Calendar, 
   CurrencyDollar,
   Users,
   MagnifyingGlass, 
-  Funnel, 
   Plus,
-  Download
+  TrendingUp
 } from '@phosphor-icons/react'
 import { useRequireAuth } from '@/lib/client-auth'
 import { Button } from '@repo/ui'
@@ -33,54 +32,177 @@ import {
 } from '@repo/ui'
 import { LoadingState } from '@/components/admin/loading-states'
 import AdminPageHeader from '@/components/admin/admin-page-header'
-import { exportEventsCsv, getAdminEvents } from '@/lib/admin-events-store'
 import { formatCurrency, formatDateShort } from '@/lib/admin-utils'
+
+interface Event {
+  id: string
+  organizationId: string
+  name: string
+  slug: string
+  description?: string
+  startDate: string
+  endDate: string
+  location?: string
+  virtual: boolean
+  maxParticipants?: number
+  price: number
+  currency: string
+  status: 'draft' | 'published' | 'cancelled' | 'completed'
+  createdAt: string
+  organization: {
+    id: string
+    name: string
+    slug: string
+  }
+  _count: {
+    registrations: number
+  }
+}
+
+interface Organization {
+  id: string
+  name: string
+  slug: string
+}
+
+const statusVariant = (status: string) => {
+  if (status === 'published') return 'default'
+  if (status === 'completed') return 'secondary'
+  if (status === 'cancelled') return 'destructive'
+  if (status === 'draft') return 'outline'
+  return 'outline'
+}
 
 export default function EventsPage() {
   const { loading, authenticated } = useRequireAuth()
-  const events = useMemo(() => getAdminEvents(), [])
+  const [events, setEvents] = useState<Event[]>([])
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterOrg, setFilterOrg] = useState('all')
+  const [dataLoading, setDataLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setDataLoading(true)
+        
+        const eventsResponse = await fetch('/api/events?admin=true')
+        if (!eventsResponse.ok) {
+          throw new Error('Failed to fetch events')
+        }
+        const eventsData = await eventsResponse.json()
+        
+        const orgsResponse = await fetch('/api/organizations')
+        if (!orgsResponse.ok) {
+          throw new Error('Failed to fetch organizations')
+        }
+        const orgsData = await orgsResponse.json()
+        
+        setEvents(eventsData.data || [])
+        setOrganizations(orgsData.data || [])
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setError(error instanceof Error ? error.message : 'Unknown error')
+      } finally {
+        setDataLoading(false)
+      }
+    }
+
+    if (authenticated) {
+      fetchData()
+    }
+  }, [authenticated])
+
+  const filteredEvents = useMemo(() => {
+    return events.filter((event) => {
+      const matchesSearch =
+        !searchTerm ||
+        event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.location?.toLowerCase().includes(searchTerm.toLowerCase())
+
+      const matchesStatus = filterStatus === 'all' || event.status === filterStatus
+      const matchesOrg = filterOrg === 'all' || event.organizationId === filterOrg
+
+      return matchesSearch && matchesStatus && matchesOrg
+    })
+  }, [events, searchTerm, filterStatus, filterOrg])
 
   if (loading) {
     return <LoadingState type="page" message="Loading events..." />
   }
 
   if (!authenticated) {
-    return null
+    return <LoadingState type="page" message="Authentication required" />
   }
 
-  const filteredEvents = events.filter((event) => {
-    const matchesSearch =
-      event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.organizationName.toLowerCase().includes(searchTerm.toLowerCase())
+  if (dataLoading) {
+    return (
+      <div className="flex-1 space-y-4 p-4 pt-4">
+        <AdminPageHeader
+          title="Events"
+          description="Manage sports events and tournaments"
+          actions={
+            <Button asChild size="sm">
+              <Link href="/events/new">
+                <Plus className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Add Event</span>
+                <span className="sm:hidden">New</span>
+              </Link>
+            </Button>
+          }
+        />
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">Loading events...</div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
-    const matchesStatus = filterStatus === 'all' || event.registrationStatus === filterStatus
-    const matchesOrg = filterOrg === 'all' || event.organizationName === filterOrg
-
-    return matchesSearch && matchesStatus && matchesOrg
-  })
-
-  const organizations = Array.from(new Set(events.map((e) => e.organizationName)))
-  const statuses = Array.from(new Set(events.map((e) => e.registrationStatus)))
+  if (error) {
+    return (
+      <div className="flex-1 space-y-4 p-4 pt-4">
+        <AdminPageHeader
+          title="Events"
+          description="Manage sports events and tournaments"
+          actions={
+            <Button asChild size="sm">
+              <Link href="/events/new">
+                <Plus className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Add Event</span>
+                <span className="sm:hidden">New</span>
+              </Link>
+            </Button>
+          }
+        />
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-red-500">Error: {error}</div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-4">
       <AdminPageHeader
         title="Events"
-        description="Manage tournaments and competitions"
+        description="Manage sports events and tournaments"
         actions={
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" onClick={() => exportEventsCsv(filteredEvents)} size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Export CSV</span>
-              <span className="sm:hidden">CSV</span>
-            </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              {filteredEvents.length} events
+            </div>
             <Button asChild size="sm">
               <Link href="/events/new">
                 <Plus className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Create Event</span>
+                <span className="hidden sm:inline">Add Event</span>
                 <span className="sm:hidden">New</span>
               </Link>
             </Button>
@@ -93,7 +215,7 @@ export default function EventsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-            <Calendar data-icon="inline-end" className="text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{events.length}</div>
@@ -105,10 +227,10 @@ export default function EventsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Total Registrations</CardTitle>
-            <Users data-icon="inline-end" className="text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{events.reduce((sum, e) => sum + e.registrationsCount, 0)}</div>
+            <div className="text-2xl font-bold">{events.reduce((sum, event) => sum + event._count.registrations, 0)}</div>
             <p className="text-xs text-muted-foreground">
               <Badge variant="secondary" className="text-xs">+12%</Badge> from last month
             </p>
@@ -117,13 +239,11 @@ export default function EventsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <CurrencyDollar data-icon="inline-end" className="text-muted-foreground" />
+            <CurrencyDollar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${events
-                .reduce((sum, e) => sum + e.price * e.registrationsCount, 0)
-                .toLocaleString()}
+              ${events.reduce((sum, event) => sum + (event.price * event._count.registrations), 0).toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
               <Badge variant="secondary" className="text-xs">+20%</Badge> from last month
@@ -132,155 +252,148 @@ export default function EventsPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
-            <Calendar data-icon="inline-end" className="text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Published Events</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{events.filter(e => e.registrationStatus === 'Open').length}</div>
+            <div className="text-2xl font-bold">{events.filter(event => event.status === 'published').length}</div>
             <p className="text-xs text-muted-foreground">
-              Next 30 days
+              {Math.round((events.filter(event => event.status === 'published').length / events.length) * 100) || 0}% published
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters and Search */}
       <Card>
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CardContent className="p-4">
+          <div className="grid gap-3 md:grid-cols-3">
             <div className="relative">
               <MagnifyingGlass className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search events..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search events..."
                 className="pl-10"
               />
             </div>
 
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Select value={filterOrg} onValueChange={setFilterOrg}>
               <SelectTrigger>
-                <SelectValue placeholder="All Organizations" />
+                <SelectValue placeholder="Organization" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Organizations</SelectItem>
                 {organizations.map((org) => (
-                  <SelectItem key={org} value={org}>
-                    {org}
+                  <SelectItem key={org.id} value={org.id}>
+                    {org.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                {statuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchTerm('')
-                setFilterOrg('all')
-                setFilterStatus('all')
-              }}
-            >
-              <Funnel className="h-4 w-4 mr-2" />
-              Clear Filters
-            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Events Table */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="min-w-[150px]">Event Name</TableHead>
-                  <TableHead className="min-w-[120px] hidden sm:table-cell">Organization</TableHead>
-                  <TableHead className="min-w-[100px]">Date</TableHead>
-                  <TableHead className="min-w-[100px] hidden md:table-cell">Location</TableHead>
-                  <TableHead className="min-w-[120px]">Status</TableHead>
-                  <TableHead className="min-w-[80px] text-right hidden sm:table-cell">Price</TableHead>
-                  <TableHead className="min-w-[80px] text-right hidden lg:table-cell">Regs</TableHead>
-                  <TableHead className="min-w-[80px] text-right">Actions</TableHead>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Event</TableHead>
+                <TableHead>Organization</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Registrations</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredEvents.map((event) => (
+                <TableRow key={event.id}>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{event.name}</div>
+                      {event.description && (
+                        <div className="text-sm text-muted-foreground line-clamp-1">
+                          {event.description}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>{event.organization.name}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div>{formatDateShort(event.startDate)}</div>
+                      {event.endDate !== event.startDate && (
+                        <div className="text-muted-foreground">
+                          to {formatDateShort(event.endDate)}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      {event.virtual ? (
+                        <Badge variant="outline">Virtual</Badge>
+                      ) : (
+                        event.location || 'TBD'
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={statusVariant(event.status)}>
+                      {event.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <CurrencyDollar className="h-3 w-3" />
+                      {formatCurrency(event.price, event.currency)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {event._count.registrations}
+                      {event.maxParticipants && (
+                        <span className="text-muted-foreground">
+                          /{event.maxParticipants}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/events/${event.id}`}>View</Link>
+                    </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEvents.map((event) => (
-                  <TableRow key={event.id}>
-                    <TableCell className="font-medium">
-                      <div>
-                        <div className="font-medium">{event.name}</div>
-                        <div className="text-xs text-muted-foreground sm:hidden">{event.organizationName}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">{event.organizationName}</TableCell>
-                    <TableCell>{formatDateShort(event.date)}</TableCell>
-                    <TableCell className="hidden md:table-cell">{event.location}</TableCell>
-                    <TableCell>
-                      <Badge variant={event.registrationStatus === 'Open' ? 'default' : 'secondary'} className="text-xs">
-                        {event.registrationStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right hidden sm:table-cell">{formatCurrency(event.price)}</TableCell>
-                    <TableCell className="text-right hidden lg:table-cell">{event.registrationsCount}</TableCell>
-                    <TableCell className="text-right">
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/admin/events/${event.id}`}>
-                          <span className="hidden sm:inline">View</span>
-                          <span className="sm:hidden">V</span>
-                        </Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+              ))}
             </TableBody>
           </Table>
-          </div>
 
-          {filteredEvents.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-muted-foreground mb-4">
-                <Calendar className="h-12 w-12 mx-auto" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">No events found</h3>
-              <p className="text-muted-foreground mb-4 text-sm">
-                {searchTerm || filterOrg !== 'all' || filterStatus !== 'all'
-                  ? 'Try adjusting your filters or search terms'
-                  : 'Get started by creating your first event'
-                }
-              </p>
-              {!searchTerm && filterOrg === 'all' && filterStatus === 'all' && (
-                <Button asChild size="sm">
-                  <Link href="/events/new">
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Create Your First Event</span>
-                    <span className="sm:hidden">Create Event</span>
-                  </Link>
-                </Button>
-              )}
+          {filteredEvents.length === 0 ? (
+            <div className="p-6 text-sm text-muted-foreground">
+              No events found.
             </div>
-          )}
+          ) : null}
         </CardContent>
       </Card>
     </div>
   )
 }
-
-

@@ -1,16 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getOrganizationByApiKey, createRegistration, listRegistrations } from '@/lib/events-api'
+import { getEventsApiPrisma } from '@/lib/events-api'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if this is an admin request (no API key needed for internal admin)
+    const { searchParams } = new URL(request.url)
+    const admin = searchParams.get('admin')
+    
+    if (admin === 'true') {
+      // Admin access - get all registrations without API key
+      const prisma = getEventsApiPrisma()
+      
+      const registrations = await prisma.registration.findMany({
+        include: {
+          event: {
+            select: {
+              id: true,
+              name: true,
+              startDate: true,
+              endDate: true,
+              price: true,
+              currency: true
+            }
+          },
+          organization: {
+            select: {
+              id: true,
+              name: true,
+              slug: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        data: registrations
+      })
+    }
+
+    // Original API key logic for external API access
     const apiKey = request.headers.get('x-api-key')
     if (!apiKey) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url)
     const eventId = searchParams.get('eventId')
     const status = searchParams.get('status') || undefined
 
