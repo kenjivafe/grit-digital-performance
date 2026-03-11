@@ -73,6 +73,17 @@ export interface RegistrationPayload {
   players?: string[]
 }
 
+export interface Registration {
+  id: string
+  eventId: string
+  name: string
+  email: string
+  phone?: string
+  teamName?: string
+  status: string
+  createdAt: string
+}
+
 export interface ApiResponse<T> {
   success: boolean
   data?: T
@@ -86,7 +97,7 @@ class ApiClient {
 
   constructor() {
     // Use the admin API as the base URL
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://admin-grit-digital-performance.vercel.app/api'
+    this.baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://admin-grit-digital-performance.vercel.app/api'
     this.organizationSlug = this.getOrganizationFromSubdomain()
   }
 
@@ -102,7 +113,16 @@ class ApiClient {
     }
     
     // Fallback to environment variable for development
-    return process.env.NEXT_PUBLIC_ORG_SLUG || null
+    if (process.env.NEXT_PUBLIC_ORG_SLUG) {
+      return process.env.NEXT_PUBLIC_ORG_SLUG
+    }
+    
+    // Default to test organization for development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'tuguegaraoleague'
+    }
+    
+    return null
   }
 
   private async request<T>(
@@ -111,25 +131,49 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     try {
       const url = `${this.baseUrl}${endpoint}`
+      console.log('API Request:', url) // Debug log
+      
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': this.organizationSlug || '', // Use organization slug as API key
           ...options.headers,
         },
+        mode: 'cors',
         ...options,
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorText = await response.text()
+        console.error('API Error Response:', errorText)
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
       }
 
       const data = await response.json()
+      console.log('API Response:', data) // Debug log
       return { success: true, data }
     } catch (error) {
       console.error('API request failed:', error)
+      
+      // Provide more specific error messages
+      let errorMessage = 'Unknown error occurred'
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = 'Network error - unable to connect to API. Please check your internet connection.'
+        } else if (error.message.includes('CORS')) {
+          errorMessage = 'CORS error - API access blocked by browser. Please contact support.'
+        } else if (error.message.includes('401')) {
+          errorMessage = 'Authentication failed - Invalid organization slug or API key.'
+        } else if (error.message.includes('404')) {
+          errorMessage = 'Resource not found - The requested data does not exist.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        error: errorMessage
       }
     }
   }
@@ -145,37 +189,37 @@ class ApiClient {
 
   // Category methods
   async getCategories(): Promise<ApiResponse<Category[]>> {
-    if (!this.organizationSlug) {
-      return { success: false, error: 'No organization slug detected' }
-    }
-
-    return this.request<Category[]>(`/orgs/${this.organizationSlug}/categories`)
+    return this.request<Category[]>('/categories')
   }
 
   // Event methods
   async getEvents(category?: string): Promise<ApiResponse<Event[]>> {
-    if (!this.organizationSlug) {
-      return { success: false, error: 'No organization slug detected' }
-    }
-
-    const params = new URLSearchParams()
-    if (category) params.append('category', category)
-    
-    const query = params.toString()
-    const endpoint = `/orgs/${this.organizationSlug}/events${query ? `?${query}` : ''}`
-    
-    return this.request<Event[]>(endpoint)
+    // Use the events endpoint with API key
+    const url = category ? `/events?category=${category}` : '/events'
+    return this.request<Event[]>(url)
   }
 
   async getEventBySlug(slug: string): Promise<ApiResponse<Event>> {
-    return this.request<Event>(`/events/public/${slug}`)
+    // For now, we'll need to find the event by filtering the events list
+    // This can be updated when a direct slug lookup endpoint is available
+    const eventsResponse = await this.getEvents()
+    if (!eventsResponse.success || !eventsResponse.data) {
+      return { success: false, error: 'Failed to fetch events' }
+    }
+
+    const event = eventsResponse.data.find(event => event.slug === slug)
+    if (!event) {
+      return { success: false, error: 'Event not found' }
+    }
+
+    return { success: true, data: event }
   }
 
   // Registration methods
-  async registerForEvent(payload: RegistrationPayload): Promise<ApiResponse<unknown>> {
-    return this.request<unknown>('/events/register', {
+  async createRegistration(data: RegistrationPayload): Promise<ApiResponse<Registration>> {
+    return this.request<Registration>('/registrations', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(data),
     })
   }
 

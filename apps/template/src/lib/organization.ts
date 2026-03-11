@@ -10,7 +10,16 @@ export function getOrganizationFromSubdomain(): string | null {
   }
   
   // Fallback to environment variable for development
-  return process.env.NEXT_PUBLIC_ORG_SLUG || null
+  if (process.env.NEXT_PUBLIC_ORG_SLUG) {
+    return process.env.NEXT_PUBLIC_ORG_SLUG
+  }
+  
+  // Default to test organization for development
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'tuguegaraoleague'
+  }
+  
+  return null
 }
 
 export function isValidOrganizationDomain(hostname: string): boolean {
@@ -32,9 +41,10 @@ export function getOrganizationContext(): {
   domain: string
 } {
   if (typeof window === 'undefined') {
+    const slug = process.env.NEXT_PUBLIC_ORG_SLUG || 'tuguegaraoleague'
     return {
-      slug: process.env.NEXT_PUBLIC_ORG_SLUG || null,
-      isValid: !!process.env.NEXT_PUBLIC_ORG_SLUG,
+      slug,
+      isValid: !!slug,
       domain: 'localhost'
     }
   }

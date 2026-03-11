@@ -5,6 +5,12 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
+    // Add CORS headers
+    const response = NextResponse.next()
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+
     const apiKey = request.headers.get('x-api-key')
     if (!apiKey) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
@@ -25,10 +31,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: eventsResponse.error }, { status: 500 })
     }
 
-    return NextResponse.json({
+    const result = NextResponse.json({
       success: true,
       data: eventsResponse.data
     })
+    
+    // Add CORS headers to the response
+    result.headers.set('Access-Control-Allow-Origin', '*')
+    result.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    result.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+    
+    return result
   } catch (error) {
     console.error('Events API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -39,13 +52,24 @@ export async function POST(request: NextRequest) {
   try {
     const apiKey = request.headers.get('x-api-key')
     if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
+      const response = NextResponse.json({ error: 'API key required' }, { status: 401 })
+      response.headers.set('Access-Control-Allow-Origin', '*')
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+      return response
     }
+
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status') || undefined
 
     // Verify organization
     const orgResponse = await getOrganizationByApiKey(apiKey)
     if (!orgResponse.success) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      const response = NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      response.headers.set('Access-Control-Allow-Origin', '*')
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+      return response
     }
 
     const body = await request.json()
@@ -57,17 +81,38 @@ export async function POST(request: NextRequest) {
     })
 
     if (!eventResponse.success) {
-      return NextResponse.json({ error: eventResponse.error }, { status: 400 })
+      const response = NextResponse.json({ error: eventResponse.error }, { status: 400 })
+      response.headers.set('Access-Control-Allow-Origin', '*')
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+      return response
     }
 
-    return NextResponse.json({
+    const result = NextResponse.json({
       success: true,
       data: eventResponse.data
     })
+    
+    // Add CORS headers to the response
+    result.headers.set('Access-Control-Allow-Origin', '*')
+    result.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    result.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+    
+    return result
   } catch (error) {
     console.error('Events API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const response = NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+    return response
   }
 }
 
-
+export async function OPTIONS(request: NextRequest) {
+  const response = new NextResponse(null, { status: 200 })
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+  return response
+}

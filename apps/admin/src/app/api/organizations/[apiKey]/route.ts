@@ -14,7 +14,11 @@ export async function GET(
     // Get organization details
     const orgResponse = await getOrganizationByApiKey(apiKey)
     if (!orgResponse.success) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      const response = NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      response.headers.set('Access-Control-Allow-Origin', '*')
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+      return response
     }
 
     const { searchParams } = new URL(request.url)
@@ -35,12 +39,31 @@ export async function GET(
       }
     }
 
-    return NextResponse.json({
+    const result = NextResponse.json({
       success: true,
       data
     })
+    
+    // Add CORS headers to the response
+    result.headers.set('Access-Control-Allow-Origin', '*')
+    result.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    result.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+    
+    return result
   } catch (error) {
     console.error('Organization API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const response = NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+    return response
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  const response = new NextResponse(null, { status: 200 })
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+  return response
 }
