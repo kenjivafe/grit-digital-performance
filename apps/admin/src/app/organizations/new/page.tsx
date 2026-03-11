@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from '@phosphor-icons/react'
 import { Button } from '@repo/ui'
@@ -30,6 +30,12 @@ export default function NewOrganizationPage() {
   const [sportCategory, setSportCategory] = useState('')
   const [billingEmail, setBillingEmail] = useState('')
   const [description, setDescription] = useState('')
+  const [address, setAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [state, setState] = useState('')
+  const [zipCode, setZipCode] = useState('')
+  const [country, setCountry] = useState('')
+  const [domain, setDomain] = useState('')
 
   const canSave = name.trim().length > 0 && 
                  email.trim().length > 0 && 
@@ -50,6 +56,13 @@ export default function NewOrganizationPage() {
         website: website.trim() || undefined,
         sportCategory: sportCategory.trim(),
         billingEmail: billingEmail.trim(),
+        description: description.trim() || undefined,
+        address: address.trim() || undefined,
+        city: city.trim() || undefined,
+        state: state.trim() || undefined,
+        zipCode: zipCode.trim() || undefined,
+        country: country.trim() || undefined,
+        domain: domain.trim() || undefined,
       })
 
       if (result.success && result.data) {
@@ -89,8 +102,8 @@ export default function NewOrganizationPage() {
         <CardHeader>
           <CardTitle>Organization Details</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2 md:col-span-2">
+        <CardContent className="grid gap-4">
+          <div className="space-y-2">
             <Label htmlFor="name">Organization Name *</Label>
             <Input
               id="name"
@@ -132,6 +145,16 @@ export default function NewOrganizationPage() {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="domain">Domain</Label>
+            <Input
+              id="domain"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              placeholder="organization.gritdp.com"
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="sportCategory">Sport Category *</Label>
             <Select value={sportCategory} onValueChange={setSportCategory}>
               <SelectTrigger>
@@ -162,7 +185,59 @@ export default function NewOrganizationPage() {
             />
           </div>
 
-          <div className="space-y-2 md:col-span-2">
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Input
+              id="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="123 Main Street"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="City"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="state">State</Label>
+              <Input
+                id="state"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                placeholder="State"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="zipCode">Zip Code</Label>
+              <Input
+                id="zipCode"
+                value={zipCode}
+                onChange={(e) => setZipCode(e.target.value)}
+                placeholder="12345"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Input
+                id="country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                placeholder="Country"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"

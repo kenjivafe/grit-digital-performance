@@ -81,6 +81,13 @@ export async function createOrganization(data: {
   website?: string
   sportCategory: string
   billingEmail: string
+  description?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  domain?: string
 }): Promise<ApiResponse<Organization>> {
   try {
     const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
