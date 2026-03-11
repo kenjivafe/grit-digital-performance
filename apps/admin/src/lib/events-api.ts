@@ -13,7 +13,13 @@ const globalForPrisma = globalThis as unknown as {
 
 export const getEventsApiPrisma = () => {
   if (!globalForPrisma.eventsApiPrisma) {
-    globalForPrisma.eventsApiPrisma = new PrismaClient()
+    globalForPrisma.eventsApiPrisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL
+        }
+      }
+    })
     if (process.env.NODE_ENV !== 'production') {
       globalForPrisma.eventsApiPrisma = globalForPrisma.eventsApiPrisma
     }

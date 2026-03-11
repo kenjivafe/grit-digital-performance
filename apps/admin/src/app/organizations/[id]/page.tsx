@@ -20,6 +20,7 @@ interface Organization {
   website?: string
   logo?: string
   description?: string
+  sportCategory?: string
   domain?: string
   address?: string
   city?: string
