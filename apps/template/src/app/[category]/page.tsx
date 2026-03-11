@@ -47,7 +47,7 @@ export default function CategoryPage() {
   }
 
   // Sort events based on selected criteria
-  const sortedEvents = events ? [...events].sort((a, b) => {
+  const sortedEvents = events?.data ? [...events.data].sort((a, b) => {
     switch (sortBy) {
       case 'date':
         return new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -141,13 +141,13 @@ export default function CategoryPage() {
       {/* Category Hero */}
       <CategoryHero 
         category={currentCategory}
-        eventCount={events?.length || 0}
+        eventCount={events?.data?.length || 0}
       />
 
       {/* Events Section */}
       <Container>
         <div id="events" className="py-16">
-          {events && events.length > 0 ? (
+          {events?.data && events.data.length > 0 ? (
             <>
               {/* Section Header with Sorting */}
               <div className="flex flex-col sm:flex-row justify-between items-center mb-8">

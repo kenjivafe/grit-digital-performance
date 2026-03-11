@@ -27,7 +27,7 @@ export default function HomePage() {
     setIsModalOpen(false)
   }
 
-  const featuredEvents = events?.slice(0, 6) || []
+  const featuredEvents = events?.data?.slice(0, 6) || []
 
   if (orgLoading || eventsLoading) {
     return (
@@ -140,18 +140,18 @@ export default function HomePage() {
               {/* Stats */}
               <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">{events?.length || 0}</div>
+                  <div className="text-3xl font-bold">{events?.data?.length || 0}</div>
                   <div className="text-blue-200">Active Events</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold">
-                    {events?.filter(e => e.registrationType === 'team').length || 0}
+                    {events?.data?.filter(e => e.registrationType === 'team').length || 0}
                   </div>
                   <div className="text-blue-200">Team Events</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold">
-                    {events?.filter(e => e.registrationType === 'individual').length || 0}
+                    {events?.data?.filter(e => e.registrationType === 'individual').length || 0}
                   </div>
                   <div className="text-blue-200">Individual Events</div>
                 </div>

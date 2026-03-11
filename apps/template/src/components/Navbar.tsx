@@ -14,9 +14,9 @@ export function Navbar() {
 
   const navigationItems = [
     { name: 'Home', href: '/' },
-    ...(categories?.filter(cat => cat.showInNavigation)
-      .sort((a, b) => a.navigationOrder - b.navigationOrder)
-      .map(cat => ({ name: cat.name, href: `/${cat.slug}` })) || []),
+    ...(categories?.data?.filter((cat: any) => cat.showInNavigation)
+      .sort((a: any, b: any) => a.navigationOrder - b.navigationOrder)
+      .map((cat: any) => ({ name: cat.name, href: `/${cat.slug}` })) || []),
     { name: 'Contact', href: '/contact' }
   ]
 
