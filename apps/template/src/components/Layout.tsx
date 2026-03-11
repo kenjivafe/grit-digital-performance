@@ -113,7 +113,7 @@ export function Container({ children, className = '' }: ContainerProps) {
 // Page header component
 interface PageHeaderProps {
   title: string
-  description?: string
+  description?: ReactNode
   children?: ReactNode
 }
 

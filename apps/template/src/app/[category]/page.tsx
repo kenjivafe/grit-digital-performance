@@ -7,7 +7,7 @@ import { CategoryHero } from '@/components/CategoryHero'
 import { EventCard } from '@/components/EventCard'
 import { RegistrationModal } from '@/components/RegistrationModal'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { ErrorMessage } from '@/components/ui/ErrorMessage'
+import { ErrorMessage } from '@/components/ui/error-message'
 import { useCategories, useEvents } from '@/lib/hooks'
 import { Event, Category } from '@/lib/api'
 

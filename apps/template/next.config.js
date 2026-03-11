@@ -2,7 +2,20 @@
 const nextConfig = {
   transpilePackages: ["@repo/ui", "@repo/utils"],
   images: {
-    domains: ['localhost', 'admin-grit-digital-performance.vercel.app'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'admin-grit-digital-performance.vercel.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 }
 

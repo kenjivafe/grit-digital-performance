@@ -4,7 +4,7 @@ import { Event } from '@/lib/api'
 
 interface EventCardProps {
   event: Event
-  onRegister?: (eventId: string) => void
+  onRegister?: (event: Event) => void
 }
 
 export function EventCard({ event, onRegister }: EventCardProps) {
@@ -127,7 +127,7 @@ export function EventCard({ event, onRegister }: EventCardProps) {
 
         {/* Registration Button */}
         <button
-          onClick={() => onRegister?.(event.id)}
+          onClick={() => onRegister?.(event)}
           disabled={!isRegistrationOpen()}
           className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
             isRegistrationOpen()

@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { Layout, Container, PageHeader } from '@/components/Layout'
 import { EventCard } from '@/components/EventCard'
 import { RegistrationModal } from '@/components/RegistrationModal'
-import { ErrorMessage } from '@/components/ui/ErrorMessage'
+import { ErrorMessage } from '@/components/ui/error-message'
 import { useEventBySlug, useEvents } from '@/lib/hooks'
 import { Event } from '@/lib/api'
 
