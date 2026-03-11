@@ -30,7 +30,6 @@ import {
   TableRow,
 } from '@repo/ui'
 import AdminPageHeader from '@/components/admin/admin-page-header'
-import { eventsApiPrisma } from '@/lib/events-api'
 
 interface ApiOrganization {
   id: string
@@ -64,18 +63,17 @@ export default function OrganizationsPage() {
   const fetchOrganizations = async () => {
     try {
       setLoading(true)
-      const orgs = await eventsApiPrisma.organization.findMany({
-        include: {
-          _count: {
-            select: {
-              events: true,
-              registrations: true
-            }
-          }
-        },
-        orderBy: { createdAt: 'desc' }
-      })
-      setOrganizations(orgs as ApiOrganization[])
+      const response = await fetch('/api/organizations')
+      const result = await response.json()
+      
+      console.log('API Response:', result)
+      
+      if (result.success) {
+        setOrganizations(result.data)
+      } else {
+        console.error('Failed to fetch organizations:', result.error)
+        console.error('Error details:', result.details)
+      }
     } catch (error) {
       console.error('Error fetching organizations:', error)
     } finally {
