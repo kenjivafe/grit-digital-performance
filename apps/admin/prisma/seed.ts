@@ -15,6 +15,7 @@ async function main() {
       phone: '+1234567890',
       website: 'https://tuguegaraoleague.com',
       description: 'A sports league organization in Tuguegarao City',
+      domain: 'tuguegaraoleague.gritdp.com',
       address: '123 Main Street',
       city: 'Tuguegarao City',
       state: 'Cagayan',
