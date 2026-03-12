@@ -319,7 +319,7 @@ export default function OrganizationsPage() {
                     <TableCell className="text-right">
                       <div className="flex flex-col sm:flex-row sm:inline-flex items-center gap-1 sm:gap-2">
                         <Button asChild variant="outline" size="sm">
-                          <Link href={`/organizations/${org.id}`}>
+                          <Link href={`/organizations/${org.slug}`}>
                             <span className="hidden sm:inline">View</span>
                             <span className="sm:hidden">V</span>
                           </Link>

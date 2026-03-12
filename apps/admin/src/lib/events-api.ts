@@ -13,10 +13,13 @@ const globalForPrisma = globalThis as unknown as {
 
 export const getEventsApiPrisma = () => {
   if (!globalForPrisma.eventsApiPrisma) {
+    // Use Prisma Cloud database - ensure correct connection
+    const databaseUrl = "postgres://71d12fdf9fd660836718242fde9035600092e02601a28e234967e4666d393233:sk_Ut9JqPKd30YWtMFM5b3PO@db.prisma.io:5432/postgres?sslmode=require"
+    
     globalForPrisma.eventsApiPrisma = new PrismaClient({
       datasources: {
         db: {
-          url: process.env.DATABASE_URL
+          url: databaseUrl
         }
       }
     })
