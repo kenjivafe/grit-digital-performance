@@ -16,7 +16,6 @@ async function testNewFields() {
         name: 'Test Organization',
         slug: 'test-org',
         email: 'test@testorg.com',
-        sportCategory: 'basketball',
         domain: 'testorg.gritdp.com',
         phone: '+1234567890',
         description: 'Test organization for field validation'

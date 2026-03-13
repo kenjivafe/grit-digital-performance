@@ -13,16 +13,8 @@ const globalForPrisma = globalThis as unknown as {
 
 export const getEventsApiPrisma = () => {
   if (!globalForPrisma.eventsApiPrisma) {
-    // Use Prisma Cloud database - ensure correct connection
-    const databaseUrl = "postgres://71d12fdf9fd660836718242fde9035600092e02601a28e234967e4666d393233:sk_Ut9JqPKd30YWtMFM5b3PO@db.prisma.io:5432/postgres?sslmode=require"
-    
-    globalForPrisma.eventsApiPrisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: databaseUrl
-        }
-      }
-    })
+    // Use local database connection
+    globalForPrisma.eventsApiPrisma = new PrismaClient()
     if (process.env.NODE_ENV !== 'production') {
       globalForPrisma.eventsApiPrisma = globalForPrisma.eventsApiPrisma
     }
@@ -88,7 +80,6 @@ export async function createOrganization(data: {
   email: string
   phone?: string
   website?: string
-  sportCategory: string
   billingEmail: string
   description?: string
   address?: string
@@ -130,7 +121,6 @@ export async function getOrganizationByApiKey(apiKey: string): Promise<ApiRespon
         website: 'https://test.example.com',
         logo: null,
         description: 'Test organization for API playground',
-        sportCategory: 'Basketball',
         domain: 'test.example.com',
         address: '123 Test St',
         city: 'Test City',

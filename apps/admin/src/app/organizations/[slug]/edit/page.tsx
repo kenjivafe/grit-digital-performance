@@ -17,6 +17,7 @@ import {
 } from '@repo/ui'
 import { Textarea } from '@repo/ui'
 import AdminPageHeader from '@/components/admin/admin-page-header'
+import { useToast } from '@/hooks/use-toast'
 
 interface Organization {
   id: string
@@ -57,6 +58,7 @@ export default function EditOrganizationPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const { toast } = useToast()
 
   // Generate slug from name
   const generateSlug = (name: string) => {
@@ -138,8 +140,17 @@ export default function EditOrganizationPage() {
 
       const result = await response.json()
       if (result.success) {
+        toast({
+          title: "Organization updated successfully",
+          description: `${organization.name} has been updated.`,
+        })
         router.push(`/organizations/${newSlug}`)
       } else {
+        toast({
+          title: "Failed to update organization",
+          description: result.error || 'Unknown error occurred',
+          variant: "destructive",
+        })
         setSaveError(result.error || 'Failed to update organization')
       }
     } catch (error) {
@@ -209,64 +220,66 @@ export default function EditOrganizationPage() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Organization Name</Label>
-            <Input
-              id="name"
-              value={organization.name}
-              onChange={(e) => setOrganization({ ...organization, name: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>URL Slug</Label>
-            <div className="flex items-center gap-2">
+            <div className="space-y-2">
+              <Label htmlFor="name">Organization Name</Label>
               <Input
-                value={currentSlug}
-                disabled
-                className="font-mono text-sm bg-muted"
+                id="name"
+                value={organization.name}
+                onChange={(e) => setOrganization({ ...organization, name: e.target.value })}
               />
-              <div className="text-xs text-muted-foreground">
-                Auto-generated from name
+            </div>
+            <div className="space-y-2">
+              <Label>URL Slug</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={currentSlug}
+                  disabled
+                  className="font-mono text-sm bg-muted"
+                />
+                <div className="text-xs text-muted-foreground">
+                  Auto-generated from name
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={organization.email}
-              onChange={(e) => setOrganization({ ...organization, email: e.target.value })}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={organization.email}
+                onChange={(e) => setOrganization({ ...organization, email: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={organization.phone || ''}
+                onChange={(e) => setOrganization({ ...organization, phone: e.target.value || undefined })}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              value={organization.phone || ''}
-              onChange={(e) => setOrganization({ ...organization, phone: e.target.value || undefined })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
-            <Input
-              id="website"
-              value={organization.website || ''}
-              onChange={(e) => setOrganization({ ...organization, website: e.target.value || undefined })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="domain">Domain</Label>
-            <Input
-              id="domain"
-              value={organization.domain || ''}
-              onChange={(e) => setOrganization({ ...organization, domain: e.target.value || undefined })}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="website">Website</Label>
+              <Input
+                id="website"
+                value={organization.website || ''}
+                onChange={(e) => setOrganization({ ...organization, website: e.target.value || undefined })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="domain">Domain</Label>
+              <Input
+                id="domain"
+                value={organization.domain || ''}
+                onChange={(e) => setOrganization({ ...organization, domain: e.target.value || undefined })}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

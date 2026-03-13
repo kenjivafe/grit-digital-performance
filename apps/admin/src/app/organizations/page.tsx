@@ -41,7 +41,6 @@ interface ApiOrganization {
   email: string
   phone?: string
   website?: string
-  sportCategory: string
   apiKey: string
   active: boolean
   verified: boolean
@@ -88,8 +87,7 @@ export default function OrganizationsPage() {
     return organizations.filter((org) => {
       const matchesSearch =
         org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        org.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        org.sportCategory.toLowerCase().includes(searchTerm.toLowerCase())
+        org.email.toLowerCase().includes(searchTerm.toLowerCase())
 
       const matchesStatus = 
         filterStatus === 'all' || 
@@ -231,7 +229,6 @@ export default function OrganizationsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Organization</TableHead>
-                <TableHead className="hidden sm:table-cell">Sport</TableHead>
                 <TableHead className="hidden md:table-cell">API Key</TableHead>
                 <TableHead className="hidden lg:table-cell">Status</TableHead>
                 <TableHead className="hidden xl:table-cell">Events</TableHead>
@@ -272,9 +269,6 @@ export default function OrganizationsPage() {
                           </div>
                         )}
                       </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      <Badge variant="secondary">{org.sportCategory}</Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       <div className="flex items-center gap-2">

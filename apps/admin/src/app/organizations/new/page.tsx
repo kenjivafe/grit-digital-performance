@@ -7,21 +7,16 @@ import { Button } from '@repo/ui'
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
 import { Input } from '@repo/ui'
 import { Label } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
 import { Textarea } from '@repo/ui'
 import AdminPageHeader from '@/components/admin/admin-page-header'
 import { createOrganization } from '@/lib/events-api'
+import { useToast } from '@/hooks/use-toast'
 
 export default function NewOrganizationPage() {
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState('')
+  const { toast } = useToast()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -63,9 +58,18 @@ export default function NewOrganizationPage() {
       })
 
       if (result.success && result.data) {
+        toast({
+          title: "Organization created successfully",
+          description: `${name} has been added to your organizations.`,
+        })
         // Redirect to organizations page (not admin/organizations)
         router.push('/organizations')
       } else {
+        toast({
+          title: "Failed to create organization",
+          description: result.error || 'Unknown error occurred',
+          variant: "destructive",
+        })
         setError(result.error || 'Failed to create organization')
       }
     } catch (err) {
@@ -100,67 +104,70 @@ export default function NewOrganizationPage() {
           <CardTitle>Organization Details</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Organization Name *</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter organization name"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Organization Name *</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter organization name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="contact@organization.com"
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="contact@organization.com"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="(555) 123-4567"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="website">Website URL</Label>
+              <Input
+                id="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://organization.com"
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="(555) 123-4567"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="website">Website URL</Label>
-            <Input
-              id="website"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder="https://organization.com"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="domain">Domain</Label>
-            <Input
-              id="domain"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              placeholder="organization.gritdp.com"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="billingEmail">Billing Email *</Label>
-            <Input
-              id="billingEmail"
-              type="email"
-              value={billingEmail}
-              onChange={(e) => setBillingEmail(e.target.value)}
-              placeholder="billing@organization.com"
-              required
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="domain">Domain</Label>
+              <Input
+                id="domain"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                placeholder="organization.gritdp.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="billingEmail">Billing Email *</Label>
+              <Input
+                id="billingEmail"
+                type="email"
+                value={billingEmail}
+                onChange={(e) => setBillingEmail(e.target.value)}
+                placeholder="billing@organization.com"
+                required
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
