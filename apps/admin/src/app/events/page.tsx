@@ -379,7 +379,7 @@ export default function EventsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/events/${event.id}`}>View</Link>
+                      <Link href={`/events/${event.slug}`}>View</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
