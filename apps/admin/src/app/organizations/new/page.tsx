@@ -27,7 +27,6 @@ export default function NewOrganizationPage() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [website, setWebsite] = useState('')
-  const [sportCategory, setSportCategory] = useState('')
   const [billingEmail, setBillingEmail] = useState('')
   const [description, setDescription] = useState('')
   const [address, setAddress] = useState('')
@@ -39,7 +38,6 @@ export default function NewOrganizationPage() {
 
   const canSave = name.trim().length > 0 && 
                  email.trim().length > 0 && 
-                 sportCategory.trim().length > 0 &&
                  billingEmail.trim().length > 0
 
   const handleCreate = async () => {
@@ -54,7 +52,6 @@ export default function NewOrganizationPage() {
         email: email.trim(),
         phone: phone.trim() || undefined,
         website: website.trim() || undefined,
-        sportCategory: sportCategory.trim(),
         billingEmail: billingEmail.trim(),
         description: description.trim() || undefined,
         address: address.trim() || undefined,
@@ -155,26 +152,6 @@ export default function NewOrganizationPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sportCategory">Sport Category *</Label>
-            <Select value={sportCategory} onValueChange={setSportCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select sport category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Basketball">Basketball</SelectItem>
-                <SelectItem value="Soccer">Soccer</SelectItem>
-                <SelectItem value="Baseball">Baseball</SelectItem>
-                <SelectItem value="Football">Football</SelectItem>
-                <SelectItem value="Volleyball">Volleyball</SelectItem>
-                <SelectItem value="Tennis">Tennis</SelectItem>
-                <SelectItem value="Swimming">Swimming</SelectItem>
-                <SelectItem value="Track">Track & Field</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="billingEmail">Billing Email *</Label>
             <Input
               id="billingEmail"
@@ -182,6 +159,7 @@ export default function NewOrganizationPage() {
               value={billingEmail}
               onChange={(e) => setBillingEmail(e.target.value)}
               placeholder="billing@organization.com"
+              required
             />
           </div>
 
