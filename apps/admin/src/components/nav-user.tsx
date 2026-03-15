@@ -1,25 +1,8 @@
 "use client"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@repo/ui"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@repo/ui"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@repo/ui"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { DotsThreeVerticalIcon, UserCircleIcon, CreditCardIcon, BellIcon, SignOutIcon } from "@phosphor-icons/react"
 
 export function NavUser({

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { 
   ArrowUpRight,
   Images, 
-  Calendar, 
+  Calendar as PhCalendar, 
   Users, 
   CreditCard,
   CurrencyDollar
@@ -132,7 +132,7 @@ export default function AdminDashboard() {
               </SelectContent>
             </Select>
             <Button variant="outline" size="sm" aria-label="Export dashboard data">
-              <Calendar className="mr-2 h-4 w-4" aria-hidden="true" />
+              <PhCalendar className="mr-2 h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">Export</span>
               <span className="sm:hidden">Exp</span>
             </Button>
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         <DashboardMetricCard
           title="Total Events"
           value={mockEvents.length}
-          icon={<Calendar data-icon="inline-end" aria-hidden="true" />}
+          icon={<PhCalendar data-icon="inline-end" aria-hidden="true" />}
           footer={
             <span>
               <Badge variant="secondary" className="text-xs" aria-label="2 more events than last month">
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
             </Button>
             <Button asChild className="w-full sm:w-auto" aria-label="Create new event">
               <Link href="/events/new">
-                <Calendar className="h-4 w-4 mr-2" aria-hidden="true" />
+                <PhCalendar className="h-4 w-4 mr-2" aria-hidden="true" />
                 <span className="truncate">Create Event</span>
               </Link>
             </Button>

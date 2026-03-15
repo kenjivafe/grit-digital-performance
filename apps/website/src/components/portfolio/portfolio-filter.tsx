@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from '@repo/ui'
-import { Badge } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Search, Filter } from 'lucide-react'
 import type { PortfolioFilter } from '@/lib/portfolio'
+import { Toggle } from "@/components/ui/toggle"
 
 interface PortfolioFilterProps {
   onFilterChange: (filter: PortfolioFilter) => void

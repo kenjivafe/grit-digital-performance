@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Layout from "@/components/layout/layout";
-import { SportsCard } from "@repo/ui";
-import { Button } from "@repo/ui";
-import { Badge } from "@repo/ui";
-import { Input } from "@repo/ui";
-import { Textarea } from "@repo/ui";
-import { Label } from "@repo/ui";
+import { SportsCard } from "@/components/ui/sports-card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { ArrowRight, Trophy, Mail, Phone, MapPin, Send } from "lucide-react";
 
 export default function ContactPage() {

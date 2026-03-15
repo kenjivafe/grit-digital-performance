@@ -1,14 +1,7 @@
 "use client"
 
-import { Badge } from "@repo/ui"
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@repo/ui"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendUpIcon, TrendDownIcon } from "@phosphor-icons/react"
 
 export function SectionCards() {

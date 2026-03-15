@@ -1,13 +1,7 @@
 "use client"
 
-import { Button } from "@repo/ui"
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@repo/ui"
+import { Button } from "@/components/ui/button"
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { PlusCircleIcon, EnvelopeIcon } from "@phosphor-icons/react"
 
 export function NavMain({

@@ -3,6 +3,7 @@
 import { ArrowRight, Globe, ClipboardList } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { Sidebar } from "@/components/ui/sidebar"
 
 const services = [
   {

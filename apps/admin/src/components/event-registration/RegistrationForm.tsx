@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
+import { Card } from "@/components/ui/card"
+import { Select } from "@/components/ui/select"
 import {
   CardElement,
   Elements,

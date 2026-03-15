@@ -3,25 +3,12 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { MagnifyingGlass } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Badge } from '@repo/ui'
-import { Card, CardContent } from '@repo/ui'
-import { Input } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import AdminPageHeader from '@/components/admin/admin-page-header'
 import { mockEvents } from '@/lib/admin-mock-data'
 import { formatCurrency } from '@/lib/admin-utils'

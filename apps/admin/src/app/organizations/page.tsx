@@ -11,28 +11,16 @@ import {
   EyeClosed,
   Users,
   ChartLine,
-  Calendar
+  Calendar as PhCalendar
 } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Input } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
-import { Badge } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import AdminPageHeader from '@/components/admin/admin-page-header'
+import { Calendar } from "@/components/ui/calendar"
 
 interface ApiOrganization {
   id: string
@@ -167,7 +155,7 @@ export default function OrganizationsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
             <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <PhCalendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{organizations.reduce((sum, org) => sum + org._count.events, 0)}</div>
@@ -330,5 +318,3 @@ export default function OrganizationsPage() {
     </div>
   )
 }
-
-

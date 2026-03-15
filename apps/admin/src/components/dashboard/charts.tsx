@@ -1,13 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui"
-import { 
-  ChartContainer, 
-  ChartTooltip,
-  ChartLegend,
-  ChartLegendContent
-} from "@repo/ui"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from "@/components/ui/chart"
 import {
   Bar,
   BarChart,

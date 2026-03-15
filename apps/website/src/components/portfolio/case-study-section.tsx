@@ -1,5 +1,5 @@
 import { PortfolioProject } from '@/lib/portfolio'
-import { Badge } from '@repo/ui'
+import { Badge } from "@/components/ui/badge"
 import { Target, Zap, Trophy, TrendingUp, Users, Clock, CheckCircle } from 'lucide-react'
 
 interface CaseStudySectionProps {

@@ -50,16 +50,15 @@ model Event {
   state             String?
   zipCode           String?
   country           String?
-  virtual           Boolean        @default(false)
   maxParticipants   Int?
   price             Decimal        @default(0)
   currency          String         @default("USD")
-  earlyBirdPrice    Decimal?
-  earlyBirdDeadline DateTime?
   registrationStart DateTime
   registrationEnd   DateTime
   waitlistEnabled   Boolean        @default(false)
   requiresApproval  Boolean        @default(false)
+  registrationType  String         @default("per_head")
+  priceType         String         @default("per_head")
   customFields      Json?
   status            String         @default("draft")
   publishedAt       DateTime?

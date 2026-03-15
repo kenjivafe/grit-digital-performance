@@ -1,23 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { FloppyDisk, ArrowLeft } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
-import { Input } from '@repo/ui'
-import { Label } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import { Textarea } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import AdminPageHeader from '@/components/admin/admin-page-header'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 interface Organization {
   id: string
@@ -48,17 +42,16 @@ interface Organization {
   }
 }
 
-export default function EditOrganizationPage() {
+export default function EditOrganizationPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter()
-  const params = useParams<{ slug: string }>()
-  const slug = params?.slug
+  const unwrappedParams = use(params)
+  const slug = unwrappedParams?.slug
 
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
-  const { toast } = useToast()
 
   // Generate slug from name
   const generateSlug = (name: string) => {
@@ -78,7 +71,7 @@ export default function EditOrganizationPage() {
           throw new Error('Failed to fetch organizations')
         }
         const result = await response.json()
-        
+
         if (result.success && result.data) {
           const org = result.data.find((o: Organization) => o.slug === slug)
           if (org) {
@@ -140,21 +133,25 @@ export default function EditOrganizationPage() {
 
       const result = await response.json()
       if (result.success) {
-        toast({
-          title: "Organization updated successfully",
+        toast.success("Organization updated successfully", {
           description: `${organization.name} has been updated.`,
         })
         router.push(`/organizations/${newSlug}`)
       } else {
-        toast({
-          title: "Failed to update organization",
-          description: result.error || 'Unknown error occurred',
-          variant: "destructive",
+        const errorMessage = result.error || 'Unknown error occurred';
+        const finalDescription = (errorMessage === 'Failed to update organization' || errorMessage === 'Unknown error occurred') 
+          ? "We couldn't save your changes. Please try again."
+          : errorMessage;
+
+        toast.error("Update Failed", {
+          description: finalDescription,
         })
-        setSaveError(result.error || 'Failed to update organization')
+        setSaveError(errorMessage)
       }
     } catch (error) {
-      console.error('Error updating organization:', error)
+      toast.error("Update Error", {
+        description: "A technical problem prevented saving your changes. Please try again.",
+      })
       setSaveError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setIsSaving(false)

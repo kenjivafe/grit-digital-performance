@@ -3,20 +3,16 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, ArrowLeft } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
-import { Input } from '@repo/ui'
-import { Label } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import { Textarea } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import AdminPageHeader from '@/components/admin/admin-page-header'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { DatePicker } from "@/components/ui/date-picker"
 
 interface Organization {
   id: string
@@ -45,6 +41,8 @@ export default function NewEventPage() {
   const [priceType, setPriceType] = useState<'per_head' | 'per_team'>('per_head')
   const [status, setStatus] = useState<'draft' | 'published' | 'cancelled' | 'completed'>('draft')
   const [registrationType, setRegistrationType] = useState<'individual' | 'team'>('individual')
+  const [registrationStart, setRegistrationStart] = useState<string>('')
+  const [registrationEnd, setRegistrationEnd] = useState<string>('')
 
   // Generate slug from name
   const generateSlug = (name: string) => {
@@ -62,7 +60,7 @@ export default function NewEventPage() {
           throw new Error('Failed to fetch organizations')
         }
         const result = await response.json()
-        
+
         if (result.success && result.data) {
           setOrganizations(result.data)
           if (result.data.length > 0) {
@@ -96,22 +94,24 @@ export default function NewEventPage() {
 
     try {
       const eventData = {
-          name: name.trim(),
-          slug: currentSlug,
-          description: description.trim() || undefined,
-          organizationId,
-          startDate,
-          endDate,
-          location: location.trim() || undefined,
-          maxParticipantsPerTeam: registrationType === 'team' ? (maxParticipantsPerTeam && maxParticipantsPerTeam > 0 ? maxParticipantsPerTeam : undefined) : undefined,
-          price: price === '' ? 0 : Number.isFinite(price) ? price : 0,
-          currency,
-          priceType: registrationType === 'team' ? priceType : 'per_head',
-          status,
-          registrationType,
-        }
-        
-        console.log('Sending event data:', eventData)
+        name: name.trim(),
+        slug: currentSlug,
+        description: description.trim() || undefined,
+        organizationId,
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        location: location.trim() || undefined,
+        maxParticipants: registrationType === 'team' ? (maxParticipantsPerTeam && maxParticipantsPerTeam > 0 ? maxParticipantsPerTeam : undefined) : undefined,
+        price: price === '' ? 0 : Number.isFinite(price) ? price : 0,
+        currency,
+        priceType: registrationType === 'team' ? priceType : 'per_head',
+        status,
+        registrationType,
+        registrationStart: registrationStart ? new Date(registrationStart).toISOString() : new Date().toISOString(),
+        registrationEnd: registrationEnd ? new Date(registrationEnd).toISOString() : new Date(endDate).toISOString(),
+      }
+
+      console.log('Sending event data:', eventData)
 
       const response = await fetch('/api/events?admin=true', {
         method: 'POST',
@@ -123,24 +123,59 @@ export default function NewEventPage() {
 
       console.log('API Response status:', response.status)
       console.log('API Response ok:', response.ok)
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API Error Response:', errorText)
-        throw new Error(`Failed to create event: ${response.status} ${errorText}`)
-      }
 
-      const result = await response.json()
+      let result;
+      try {
+        result = await response.json();
+        console.log('Parsed JSON result:', result);
+      } catch (jsonError) {
+        console.error('JSON parse error:', jsonError);
+        throw new Error(`Failed to parse response: ${response.status} ${response.statusText}`)
+      }
       console.log('API Success Response:', result)
-      
+
       if (result.success) {
+        console.log('Event successfully created:', result.data || result);
+        toast.success("Event created successfully", {
+          description: `${name} has been created.`,
+        })
         router.push(`/events/${currentSlug}`)
       } else {
-        setError(result.error || 'Failed to create event')
+        console.log('Full API result:', result);
+
+        // Try different ways to get the error message
+        let errorMessage = result.error || result.message || 'Unknown error occurred';
+
+        // If it's an object, try to extract the message
+        if (typeof errorMessage === 'object' && errorMessage !== null) {
+          errorMessage = (errorMessage as any).message || (errorMessage as any).error || JSON.stringify(errorMessage);
+        }
+
+        // If still not a string, convert to string
+        if (typeof errorMessage !== 'string') {
+          errorMessage = String(errorMessage);
+        }
+
+        // Create a more helpful description if the error is generic or redundant
+        const finalDescription = (errorMessage === 'Failed to create event' || errorMessage === 'Unknown error occurred') 
+          ? "Please check your information and try again."
+          : errorMessage;
+
+        toast.error("Create Event Failed", {
+          description: finalDescription,
+        })
+        setError(errorMessage)
       }
     } catch (error) {
       console.error('Error creating event:', error)
-      setError(error instanceof Error ? error.message : 'Unknown error')
+      console.error('Error type:', typeof error)
+      console.error('Error message:', error instanceof Error ? error.message : 'Not an Error object')
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error("An unexpected error occurred", {
+        description: "We encountered a problem while creating the event. Please try again.",
+      })
+      setError(errorMessage)
     } finally {
       setIsCreating(false)
     }
@@ -179,12 +214,6 @@ export default function NewEventPage() {
           </div>
         }
       />
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
 
       <Card>
         <CardHeader>
@@ -274,20 +303,18 @@ export default function NewEventPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="startDate">Start Date & Time</Label>
-              <Input
-                id="startDate"
-                type="datetime-local"
+              <DatePicker
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={setStartDate}
+                placeholder="Select start date and time"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="endDate">End Date & Time</Label>
-              <Input
-                id="endDate"
-                type="datetime-local"
+              <DatePicker
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={setEndDate}
+                placeholder="Select end date and time"
               />
             </div>
           </div>
@@ -351,6 +378,28 @@ export default function NewEventPage() {
               </div>
             </div>
           )}
+
+          <div className="border-t pt-4">
+            <Label className="text-base font-semibold">Registration Dates</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="registrationStart">Registration Start</Label>
+                <DatePicker
+                  value={registrationStart}
+                  onChange={setRegistrationStart}
+                  placeholder="Select registration start"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="registrationEnd">Registration End</Label>
+                <DatePicker
+                  value={registrationEnd}
+                  onChange={setRegistrationEnd}
+                  placeholder="Select registration end"
+                />
+              </div>
+            </div>
+          </div>
 
           {registrationType === 'team' && (
             <>

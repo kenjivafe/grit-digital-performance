@@ -103,6 +103,8 @@ GET /events?status=published
       "location": "Denver Sports Complex",
       "price": 250.00,
       "currency": "USD",
+      "priceType": "per_head",
+      "registrationType": "individual",
       "status": "published",
       "maxParticipants": 50,
       "_count": {
@@ -132,8 +134,8 @@ POST /events
   "zipCode": "80202",
   "price": 250.00,
   "currency": "USD",
-  "earlyBirdPrice": 200.00,
-  "earlyBirdDeadline": "2024-05-01T23:59:59Z",
+  "priceType": "per_head",
+  "registrationType": "individual",
   "registrationStart": "2024-03-01T00:00:00Z",
   "registrationEnd": "2024-06-10T23:59:59Z",
   "maxParticipants": 50,
@@ -335,6 +337,8 @@ const eventResponse = await fetch('/api/events', {
     startDate: '2024-06-15T09:00:00Z',
     endDate: '2024-06-19T17:00:00Z',
     price: 250.00,
+    priceType: 'per_head',
+    registrationType: 'individual',
     // ... other fields
   })
 });
@@ -388,7 +392,9 @@ event_response = requests.post('https://api.yourdomain.com/events',
         'name': 'Summer Camp',
         'startDate': '2024-06-15T09:00:00Z',
         'endDate': '2024-06-19T17:00:00Z',
-        'price': 250.00
+        'price': 250.00,
+        'priceType': 'per_head',
+        'registrationType': 'individual'
     }
 )
 ```

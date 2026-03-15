@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui";
-import { Badge } from "@repo/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@repo/utils";
 
 interface SportsCardProps {
@@ -69,6 +69,6 @@ const SportsCard = ({
   );
 };
 
-export default SportsCard;
+export { SportsCard };
 
 

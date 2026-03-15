@@ -78,35 +78,48 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = request.headers.get('x-api-key')
-    if (!apiKey) {
-      const response = NextResponse.json({ error: 'API key required' }, { status: 401 })
-      response.headers.set('Access-Control-Allow-Origin', '*')
-      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
-      return response
-    }
-
     const { searchParams } = new URL(request.url)
+    const admin = searchParams.get('admin')
     const status = searchParams.get('status') || undefined
+    
+    let apiKey = null
+    let orgResponse = null
+    
+    if (admin !== 'true') {
+      apiKey = request.headers.get('x-api-key')
+      if (!apiKey) {
+        const response = NextResponse.json({ error: 'API key required' }, { status: 401 })
+        response.headers.set('Access-Control-Allow-Origin', '*')
+        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
+        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+        return response
+      }
 
-    // Verify organization
-    const orgResponse = await getOrganizationByApiKey(apiKey)
-    if (!orgResponse.success) {
-      const response = NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
-      response.headers.set('Access-Control-Allow-Origin', '*')
-      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
-      return response
+      // Verify organization
+      orgResponse = await getOrganizationByApiKey(apiKey)
+      if (!orgResponse.success) {
+        const response = NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+        response.headers.set('Access-Control-Allow-Origin', '*')
+        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
+        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key')
+        return response
+      }
     }
 
     const body = await request.json()
     
     // Create event
-    const eventResponse = await createEvent({
-      ...body,
-      organizationId: orgResponse.data!.id
-    })
+    let eventResponse
+    if (admin === 'true') {
+      // Admin access - create event directly
+      eventResponse = await createEvent(body)
+    } else {
+      // API key access - create event with organization validation
+      eventResponse = await createEvent({
+        ...body,
+        organizationId: orgResponse?.data!.id
+      })
+    }
 
     if (!eventResponse.success) {
       const response = NextResponse.json({ error: eventResponse.error }, { status: 400 })

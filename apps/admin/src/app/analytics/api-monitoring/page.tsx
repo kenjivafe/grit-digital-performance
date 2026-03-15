@@ -7,7 +7,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   LineChart,
   Line,
@@ -25,17 +25,12 @@ import {
   Globe,
   Cpu,
 } from '@phosphor-icons/react'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
-import { Badge } from '@repo/ui'
-import { Button } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AdminPageHeader from '@/components/admin/admin-page-header'
+import { Tooltip } from "@/components/ui/tooltip"
 
 // Mock API monitoring data
 const mockApiMetrics = [
@@ -194,7 +189,7 @@ export default function ApiMonitoringDashboard() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" />
                 <YAxis />
-                <Tooltip />
+                <RechartsTooltip />
                 <Area 
                   type="monotone" 
                   dataKey="requests" 
@@ -218,7 +213,7 @@ export default function ApiMonitoringDashboard() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" />
                 <YAxis />
-                <Tooltip />
+                <RechartsTooltip />
                 <Line type="monotone" dataKey="errors" stroke="#ff7300" strokeWidth={2} />
                 <Line type="monotone" dataKey="latency" stroke="#387908" strokeWidth={2} />
               </LineChart>

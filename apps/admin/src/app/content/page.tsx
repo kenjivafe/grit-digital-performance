@@ -11,9 +11,9 @@ import {
   BuildingOffice,
   Phone
 } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui'
-import { Badge } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 interface PageContent {
   id: string

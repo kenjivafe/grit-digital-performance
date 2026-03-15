@@ -351,6 +351,7 @@ npm run start
 
 ### Component Development
 
+- **Direct Imports**: We favor direct imports from the component file (e.g., `@/components/ui/button`) instead of barrel files. This reduces bundle size and improves development build performance.
 - Create reusable components in `packages/ui/src/ui/`
 - Use sports-themed design tokens
 - Implement proper error boundaries

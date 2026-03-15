@@ -1,12 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Input } from "@repo/ui"
-import { Button } from "@repo/ui"
-import { Badge } from "@repo/ui"
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui"
-import { Checkbox } from "@repo/ui"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Search, Filter, X } from "lucide-react"
 
 interface FilterOption {

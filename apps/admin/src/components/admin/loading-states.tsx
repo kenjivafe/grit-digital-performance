@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { Card, CardContent, CardHeader } from '@repo/ui'
-import { Skeleton } from '@repo/ui'
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type LoadingStateProps = {
   type?: 'page' | 'card' | 'table' | 'chart' | 'form'

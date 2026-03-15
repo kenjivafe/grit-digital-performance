@@ -40,58 +40,18 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Badge } from "@repo/ui"
-import { Button } from "@repo/ui"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@repo/ui"
-import { Checkbox } from "@repo/ui"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@repo/ui"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@repo/ui"
-import { Input } from "@repo/ui"
-import { Label } from "@repo/ui"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui"
-import { Separator } from "@repo/ui"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@repo/ui"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@repo/ui"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DotsSixVerticalIcon, CheckCircleIcon, SpinnerIcon, DotsThreeVerticalIcon, ColumnsIcon, CaretDownIcon, PlusIcon, CaretDoubleLeftIcon, CaretLeftIcon, CaretRightIcon, CaretDoubleRightIcon, TrendUpIcon } from "@phosphor-icons/react"
 
 export const schema = z.object({

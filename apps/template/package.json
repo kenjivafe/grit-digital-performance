@@ -12,7 +12,6 @@
     "next": "16.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@repo/ui": "*",
     "@repo/utils": "*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

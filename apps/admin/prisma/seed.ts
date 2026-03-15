@@ -45,12 +45,9 @@ async function main() {
       state: 'Cagayan',
       zipCode: '3500',
       country: 'Philippines',
-      virtual: false,
       maxParticipants: 100,
       price: 250.00,
       currency: 'PHP',
-      earlyBirdPrice: 200.00,
-      earlyBirdDeadline: new Date('2024-05-15T23:59:59Z'),
       registrationStart: new Date('2024-04-01T00:00:00Z'),
       registrationEnd: new Date('2024-05-31T23:59:59Z'),
       waitlistEnabled: true,
@@ -88,6 +85,29 @@ async function main() {
   })
 
   console.log('Created registration for:', registration.firstName, registration.lastName)
+
+  // Create Tabuk MMA Club
+  console.log('Creating Tabuk MMA Club organization...')
+  const tabukMMA = await prisma.organization.create({
+    data: {
+      name: 'Tabuk MMA Club',
+      slug: 'tabuk-mma-club',
+      email: 'info@tabukmma.com',
+      phone: '+639123456780',
+      website: 'https://tabukmma.com',
+      description: 'The premier Mixed Martial Arts club in Tabuk City',
+      domain: 'tabukmma.gritdp.com',
+      city: 'Tabuk City',
+      state: 'Kalinga',
+      zipCode: '3800',
+      country: 'Philippines',
+      billingEmail: 'billing@tabukmma.com',
+      active: true,
+      verified: true,
+    }
+  })
+
+  console.log('Created organization:', tabukMMA.name)
 
   console.log('Database seeding completed!')
 }

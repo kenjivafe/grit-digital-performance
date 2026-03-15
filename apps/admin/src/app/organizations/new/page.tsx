@@ -3,20 +3,19 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
-import { Input } from '@repo/ui'
-import { Label } from '@repo/ui'
-import { Textarea } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import AdminPageHeader from '@/components/admin/admin-page-header'
-import { createOrganization } from '@/lib/events-api'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
+import { DatePicker } from "@/components/ui/date-picker"
 
 export default function NewOrganizationPage() {
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState('')
-  const { toast } = useToast()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -31,9 +30,9 @@ export default function NewOrganizationPage() {
   const [country, setCountry] = useState('')
   const [domain, setDomain] = useState('')
 
-  const canSave = name.trim().length > 0 && 
-                 email.trim().length > 0 && 
-                 billingEmail.trim().length > 0
+  const canSave = name.trim().length > 0 &&
+    email.trim().length > 0 &&
+    billingEmail.trim().length > 0
 
   const handleCreate = async () => {
     if (!canSave) return
@@ -42,33 +41,38 @@ export default function NewOrganizationPage() {
     setError('')
 
     try {
-      const result = await createOrganization({
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim() || undefined,
-        website: website.trim() || undefined,
-        billingEmail: billingEmail.trim(),
-        description: description.trim() || undefined,
-        address: address.trim() || undefined,
-        city: city.trim() || undefined,
-        state: state.trim() || undefined,
-        zipCode: zipCode.trim() || undefined,
-        country: country.trim() || undefined,
-        domain: domain.trim() || undefined,
+      const response = await fetch('/api/organizations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim() || undefined,
+          website: website.trim() || undefined,
+          billingEmail: billingEmail.trim(),
+          description: description.trim() || undefined,
+          address: address.trim() || undefined,
+          city: city.trim() || undefined,
+          state: state.trim() || undefined,
+          zipCode: zipCode.trim() || undefined,
+          country: country.trim() || undefined,
+          domain: domain.trim() || undefined,
+        }),
       })
 
+      const result = await response.json()
+
       if (result.success && result.data) {
-        toast({
-          title: "Organization created successfully",
+        toast.success("Organization created successfully", {
           description: `${name} has been added to your organizations.`,
         })
         // Redirect to organizations page (not admin/organizations)
         router.push('/organizations')
       } else {
-        toast({
-          title: "Failed to create organization",
+        toast.error("Failed to create organization", {
           description: result.error || 'Unknown error occurred',
-          variant: "destructive",
         })
         setError(result.error || 'Failed to create organization')
       }

@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui"
-import { Badge } from "@repo/ui"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown } from "lucide-react"
 
 interface MetricCardProps {

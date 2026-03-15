@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@repo/ui";
-import { Badge } from "@repo/ui";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Play, Trophy } from "lucide-react";
 import { cn } from "@repo/utils";
 
@@ -142,6 +142,6 @@ const SportsHero = ({
   );
 };
 
-export default SportsHero;
+export { SportsHero };
 
 

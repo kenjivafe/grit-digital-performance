@@ -1,7 +1,7 @@
 import { PortfolioProject } from '@/lib/portfolio'
-import { SportsCard } from '@repo/ui'
-import { Button } from '@repo/ui'
-import { Badge } from '@repo/ui'
+import { SportsCard } from "@/components/ui/sports-card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, ExternalLink, Trophy } from 'lucide-react'
 
 interface PortfolioProjectCardProps {

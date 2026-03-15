@@ -4,6 +4,7 @@ import {
   type AdminParticipant,
   type AdminPayment,
 } from '@/lib/admin-mock-data'
+import { Field } from "@/components/ui/field"
 
 const orgNames = [
   'Denver Soccer Academy', 'Colorado Sports League', 'Boulder High Athletics',

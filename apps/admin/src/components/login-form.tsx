@@ -2,14 +2,10 @@
 
 import Image from "next/image"
 import { cn } from "@repo/utils"
-import { Button } from "@repo/ui"
-import { Card, CardContent } from "@repo/ui"
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@repo/ui"
-import { Input } from "@repo/ui"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
   email?: string

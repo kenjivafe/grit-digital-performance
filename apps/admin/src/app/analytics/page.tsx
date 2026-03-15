@@ -4,25 +4,22 @@ import { useState, useEffect } from 'react'
 import { 
   ChartBar,
   Users,
-  Calendar,
+  Calendar as PhCalendar,
   CurrencyDollar,
   ArrowUpRight,
   ArrowDownRight,
   Globe,
   Link,
 } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui'
-import { Badge } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import { LoadingSpinner } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Calendar } from "@/components/ui/calendar"
+import { Tooltip as UITooltip } from "@/components/ui/tooltip"
+
 import AdminPageHeader from '@/components/admin/admin-page-header'
+import { LoadingSpinner } from '@/components/admin/loading-states'
 import {
   Bar,
   BarChart,
@@ -291,7 +288,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-                <Calendar data-icon="inline-end" className="text-muted-foreground" />
+                <PhCalendar data-icon="inline-end" className="text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{data.totalEvents}</div>
@@ -677,5 +674,3 @@ export default function AnalyticsPage() {
     </div>
   )
 }
-
-

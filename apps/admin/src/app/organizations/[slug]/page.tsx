@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { Pencil, Users, Calendar } from '@phosphor-icons/react'
-import { Badge } from '@repo/ui'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
+import { Pencil, Users, Calendar as PhCalendar } from '@phosphor-icons/react'
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AdminPageHeader from '@/components/admin/admin-page-header'
+import { Calendar } from "@/components/ui/calendar"
 
 interface Organization {
   id: string
@@ -39,9 +40,9 @@ interface Organization {
   }
 }
 
-export default function OrganizationDetailPage() {
-  const params = useParams<{ slug: string }>()
-  const slug = params?.slug
+export default function OrganizationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const unwrappedParams = use(params)
+  const slug = unwrappedParams?.slug
 
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [loading, setLoading] = useState(true)
@@ -285,7 +286,7 @@ export default function OrganizationDetailPage() {
               </Button>
               <Button asChild variant="outline" className="w-full justify-start">
                 <Link href={`/events?organization=${organization.id}`}>
-                  <Calendar className="h-4 w-4 mr-2" />
+                <PhCalendar className="h-4 w-4 mr-2" />
                   View Events
                 </Link>
               </Button>

@@ -1,22 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { FloppyDisk, ArrowLeft, Calendar, MapPin, CurrencyDollar, Users } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
-import { Input } from '@repo/ui'
-import { Label } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import { Textarea } from '@repo/ui'
+import { FloppyDisk, ArrowLeft, Calendar as PhCalendar, MapPin, CurrencyDollar, Users } from '@phosphor-icons/react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import AdminPageHeader from '@/components/admin/admin-page-header'
+import { toast } from 'sonner'
+import { DatePicker } from "@/components/ui/date-picker"
+import { Calendar } from "@/components/ui/calendar"
 
 interface Event {
   id: string
@@ -31,6 +28,10 @@ interface Event {
   maxParticipants?: number
   price: number
   currency: string
+  registrationType: 'individual' | 'team'
+  priceType: 'per_head' | 'per_team'
+  registrationStart: string
+  registrationEnd: string
   status: 'draft' | 'published' | 'cancelled' | 'completed'
   createdAt: string
   updatedAt: string
@@ -47,10 +48,10 @@ interface Organization {
   slug: string
 }
 
-export default function EditEventPage() {
+export default function EditEventPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter()
-  const params = useParams<{ slug: string }>()
-  const slug = params?.slug
+  const unwrappedParams = use(params)
+  const slug = unwrappedParams?.slug
 
   const [event, setEvent] = useState<Event | null>(null)
   const [organizations, setOrganizations] = useState<Organization[]>([])
@@ -72,7 +73,7 @@ export default function EditEventPage() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        
+
         // Fetch all events and organizations
         const [eventsResponse, orgsResponse] = await Promise.all([
           fetch('/api/events?admin=true'),
@@ -85,7 +86,7 @@ export default function EditEventPage() {
 
         const eventsData = await eventsResponse.json()
         const orgsData = await orgsResponse.json()
-        
+
         if (eventsData.success && eventsData.data) {
           const foundEvent = eventsData.data.find((e: Event) => e.slug === slug)
           if (foundEvent) {
@@ -119,7 +120,7 @@ export default function EditEventPage() {
     const newSlug = generateSlug(event.name)
 
     try {
-      const response = await fetch(`/api/events/${event.id}`, {
+      const response = await fetch(`/api/events/${event.id}?admin=true`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -132,26 +133,56 @@ export default function EditEventPage() {
           startDate: event.startDate,
           endDate: event.endDate,
           location: event.location,
-          virtual: event.virtual,
           maxParticipants: event.maxParticipants,
           price: event.price,
           currency: event.currency,
+          registrationType: event.registrationType,
+          priceType: event.priceType,
+          registrationStart: event.registrationStart,
+          registrationEnd: event.registrationEnd,
           status: event.status,
         }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to update event')
+      let result;
+      try {
+        result = await response.json()
+      } catch (jsonError) {
+        throw new Error(`Failed to parse response: ${response.status} ${response.statusText}`)
       }
 
-      const result = await response.json()
       if (result.success) {
+        console.log('Event successfully updated:', result.data || result);
+        toast.success("Event updated successfully", {
+          description: `${event.name} has been updated.`,
+        })
         router.push(`/events/${newSlug}`)
       } else {
-        setSaveError(result.error || 'Failed to update event')
+        const errorPayload = result.error || result.message || result;
+        let errorMessage = 'Unknown error occurred';
+
+        if (typeof errorPayload === 'string') {
+          errorMessage = errorPayload;
+        } else if (errorPayload && typeof errorPayload === 'object') {
+          errorMessage = (errorPayload as any).message || (errorPayload as any).error || JSON.stringify(errorPayload);
+        } else if (errorPayload) {
+          errorMessage = String(errorPayload);
+        }
+
+        // Create a more helpful description if the error is generic or redundant
+        const finalDescription = (errorMessage === 'Failed to update event' || errorMessage === 'Unknown error occurred') 
+          ? "We couldn't save your changes. Please try again."
+          : errorMessage;
+
+        toast.error("Update Failed", {
+          description: finalDescription,
+        })
+        setSaveError(errorMessage !== '"{}"' ? errorMessage : 'Failed to update event')
       }
     } catch (error) {
-      console.error('Error updating event:', error)
+      toast.error("Update Error", {
+        description: "A technical problem prevented saving your changes. Please try again.",
+      })
       setSaveError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setIsSaving(false)
@@ -272,27 +303,60 @@ export default function EditEventPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="startDate">Start Date & Time</Label>
-              <Input
-                id="startDate"
-                type="datetime-local"
-                value={event.startDate ? new Date(event.startDate).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setEvent({ ...event, startDate: e.target.value })}
+              <DatePicker
+                value={event.startDate}
+                onChange={(value) => setEvent({ ...event, startDate: value })}
+                placeholder="Select start date and time"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="endDate">End Date & Time</Label>
-              <Input
-                id="endDate"
-                type="datetime-local"
-                value={event.endDate ? new Date(event.endDate).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setEvent({ ...event, endDate: e.target.value })}
+              <DatePicker
+                value={event.endDate}
+                onChange={(value) => setEvent({ ...event, endDate: value })}
+                placeholder="Select end date and time"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="registrationType">Registration Type</Label>
+              <Select
+                value={event.registrationType}
+                onValueChange={(value) => setEvent({ ...event, registrationType: value as any })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="team">Team</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {event.registrationType === 'team' && (
+              <div className="space-y-2">
+                <Label htmlFor="priceType">Price Type</Label>
+                <Select
+                  value={event.priceType}
+                  onValueChange={(value) => setEvent({ ...event, priceType: value as any })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="per_head">Per Head</SelectItem>
+                    <SelectItem value="per_team">Per Team</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">Price {event.priceType === 'per_head' ? '(per head)' : '(per team)'}</Label>
               <Input
                 id="price"
                 type="number"
@@ -321,29 +385,29 @@ export default function EditEventPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="maxParticipants">Max Participants</Label>
-              <Input
-                id="maxParticipants"
-                type="number"
-                min="1"
-                value={event.maxParticipants || ''}
-                onChange={(e) => setEvent({ ...event, maxParticipants: parseInt(e.target.value) || undefined })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={event.location || ''}
-                onChange={(e) => setEvent({ ...event, location: e.target.value || undefined })}
-                placeholder="Event location (leave blank for virtual)"
-              />
+          <div className="border-t pt-4">
+            <Label className="text-base font-semibold">Registration Dates</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="registrationStart">Registration Start</Label>
+                <DatePicker
+                  value={event.registrationStart}
+                  onChange={(value) => setEvent({ ...event, registrationStart: value })}
+                  placeholder="Select registration start"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="registrationEnd">Registration End</Label>
+                <DatePicker
+                  value={event.registrationEnd}
+                  onChange={(value) => setEvent({ ...event, registrationEnd: value })}
+                  placeholder="Select registration end"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 border-t pt-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
@@ -358,21 +422,6 @@ export default function EditEventPage() {
                   <SelectItem value="published">Published</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="virtual">Event Type</Label>
-              <Select
-                value={event.virtual.toString()}
-                onValueChange={(value) => setEvent({ ...event, virtual: value === 'true' })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="false">In-Person</SelectItem>
-                  <SelectItem value="true">Virtual</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle"
 
 const navigation = [
   { name: "Home", href: "/" },

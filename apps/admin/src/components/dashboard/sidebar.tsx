@@ -1,17 +1,6 @@
 "use client"
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarProvider,
-} from "@repo/ui"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarProvider } from "@/components/ui/sidebar"
 import { NavMain } from "@/components/nav-main"
 import { NavDocuments } from "@/components/nav-documents"
 import { NavSecondary } from "@/components/nav-secondary"

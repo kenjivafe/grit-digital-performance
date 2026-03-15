@@ -1,22 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Download, Pencil, Users, Calendar, MapPin, CurrencyDollar } from '@phosphor-icons/react'
-import { Badge } from '@repo/ui'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui'
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AdminPageHeader from '@/components/admin/admin-page-header'
 import { formatCurrency, formatDateShort } from '@/lib/admin-utils'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@repo/ui'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface Event {
   id: string
@@ -78,9 +71,9 @@ function exportParticipantsCsv(eventName: string, rows: Registration[]) {
   URL.revokeObjectURL(url)
 }
 
-export default function EventDetailPage() {
-  const params = useParams<{ slug: string }>()
-  const slug = params?.slug
+export default function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const unwrappedParams = use(params)
+  const slug = unwrappedParams?.slug
 
   const [event, setEvent] = useState<Event | null>(null)
   const [registrations, setRegistrations] = useState<Registration[]>([])
@@ -345,7 +338,10 @@ export default function EventDetailPage() {
                         registration.paymentStatus === 'paid' ? 'default' :
                         registration.paymentStatus === 'refunded' ? 'destructive' : 'outline'
                       }>
-                        {registration.paymentStatus.charAt(0).toUpperCase() + registration.paymentStatus.slice(1)}
+                        {registration.paymentStatus ? 
+                          registration.paymentStatus.charAt(0).toUpperCase() + registration.paymentStatus.slice(1) : 
+                          'Unknown'
+                        }
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDateShort(registration.createdAt)}</TableCell>

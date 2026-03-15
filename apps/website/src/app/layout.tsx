@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Chakra_Petch, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { TooltipProvider } from "@repo/ui";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const fontSans = Chakra_Petch({
   subsets: ["latin"],

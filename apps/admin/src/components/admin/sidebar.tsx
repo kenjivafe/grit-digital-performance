@@ -18,25 +18,9 @@ import {
   Gear,
   TestTube,
 } from '@phosphor-icons/react'
-import { Avatar, AvatarFallback } from '@repo/ui'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-} from '@repo/ui'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@repo/ui'
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from "@/components/ui/sidebar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from '@/components/dashboard/theme-toggle'
 
 // Navigation items

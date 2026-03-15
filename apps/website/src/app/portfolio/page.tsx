@@ -1,6 +1,6 @@
 import Layout from "@/components/layout/layout";
-import { Button } from "@repo/ui";
-import { Badge } from "@repo/ui";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Trophy, Search } from "lucide-react";
 import { getPortfolioProjects, getSportCategories, getProjectTypes, type PortfolioFilter } from "@/lib/portfolio";
 import PortfolioFilterComponent from "@/components/portfolio/portfolio-filter";

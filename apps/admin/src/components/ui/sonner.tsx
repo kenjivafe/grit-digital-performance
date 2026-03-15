@@ -39,6 +39,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: "cn-toast",
+          title: "group-[.cn-toast]:!text-white group-[.cn-toast]:!font-semibold",
+          description: "group-[.cn-toast]:!text-white/90 group-[.cn-toast]:!text-[0.8rem]",
+          success: "group-[.toaster]:!bg-[oklch(25.8%_0.042_265.755)] group-[.toaster]:!text-white group-[.toaster]:!border-[oklch(25.8%_0.042_265.755)]",
+          error: "group-[.toaster]:!bg-[oklch(0.6152_0.1657_26.98)] group-[.toaster]:!text-white group-[.toaster]:!border-[oklch(0.6152_0.1657_26.98)]",
         },
       }}
       {...props}

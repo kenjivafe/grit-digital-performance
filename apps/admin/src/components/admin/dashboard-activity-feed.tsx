@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Badge } from '@repo/ui'
+import { Badge } from "@/components/ui/badge"
 
 export type DashboardActivity = {
   id: string

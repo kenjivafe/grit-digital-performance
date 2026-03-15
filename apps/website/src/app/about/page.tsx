@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/layout";
-import { SportsCard } from "@repo/ui";
-import { Button } from "@repo/ui";
-import { Badge } from "@repo/ui";
+import { SportsCard } from "@/components/ui/sports-card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Trophy, Users, Target, Zap, Mail } from "lucide-react";
 
 export default function AboutPage() {

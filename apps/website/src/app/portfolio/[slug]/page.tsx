@@ -1,11 +1,12 @@
 import Layout from "@/components/layout/layout";
-import { Button } from "@repo/ui";
-import { Badge } from "@repo/ui";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ArrowRight, Calendar, ExternalLink, Trophy, Users, Target, Zap } from "lucide-react";
 import { getPortfolioProjectBySlug, getPortfolioProjects } from "@/lib/portfolio";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import CaseStudySection from "@/components/portfolio/case-study-section";
+import { Sidebar } from "@/components/ui/sidebar"
 
 interface ProjectDetailPageProps {
   params: Promise<{

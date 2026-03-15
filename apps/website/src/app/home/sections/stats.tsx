@@ -1,5 +1,6 @@
 import { cn } from "@repo/utils";
 import { Trophy, Users, Target, TrendingUp } from "lucide-react";
+import { Label } from "@/components/ui/label"
 
 interface StatItem {
   icon: React.ReactNode;

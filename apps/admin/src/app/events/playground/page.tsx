@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { 
-  Calendar,
+  Calendar as CalendarIcon,
   MapPin,
   Users,
   User,
@@ -15,21 +15,16 @@ import {
   Copy,
   Check,
 } from '@phosphor-icons/react'
-import { Button } from '@repo/ui'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui'
-import { Badge } from '@repo/ui'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@repo/ui'
-import { Input } from '@repo/ui'
-import { Label } from '@repo/ui'
-import { Textarea } from '@repo/ui'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import AdminPageHeader from '@/components/admin/admin-page-header'
 import { getAdminOrganizations } from '@/lib/admin-organizations-store'
+import { Calendar } from "@/components/ui/calendar"
 
 interface EventFormData {
   name: string
@@ -210,7 +205,7 @@ export default function EventPlaygroundPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+              <CalendarIcon className="h-5 w-5" />
               Event Creation
             </CardTitle>
             <CardDescription>
@@ -422,7 +417,7 @@ export default function EventPlaygroundPage() {
                     )}
                     <div className="mt-3 space-y-1 text-sm">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
+                        <CalendarIcon className="h-4 w-4" />
                         {new Date(eventData.date).toLocaleDateString('en-US', {
                           weekday: 'long',
                           year: 'numeric',
@@ -626,7 +621,7 @@ export default function EventPlaygroundPage() {
                 </div>
               ) : (
                 <div className="text-center py-12 text-muted-foreground">
-                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Fill in the event details to see the registration form preview</p>
                 </div>
               )}

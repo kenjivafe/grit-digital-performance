@@ -38,14 +38,13 @@ export interface CreateEventParams {
   state?: string
   zipCode?: string
   country?: string
-  virtual?: boolean
   maxParticipants?: number
   price: number
   currency?: string
-  earlyBirdPrice?: number
-  earlyBirdDeadline?: Date
   registrationStart: Date
   registrationEnd: Date
+  registrationType?: string
+  priceType?: string
   waitlistEnabled?: boolean
   requiresApproval?: boolean
   customFields?: any[]
@@ -181,12 +180,9 @@ export async function createEvent(params: CreateEventParams): Promise<ApiRespons
         state: params.state || null,
         zipCode: params.zipCode || null,
         country: params.country || null,
-        virtual: params.virtual || false,
         maxParticipants: params.maxParticipants || null,
-        price: params.price as unknown as any, // Convert to unknown then any to handle Decimal type mismatch
+        price: params.price as any,
         currency: params.currency || 'USD',
-        earlyBirdPrice: params.earlyBirdPrice as unknown as any || null,
-        earlyBirdDeadline: params.earlyBirdDeadline || null,
         registrationStart: params.registrationStart,
         registrationEnd: params.registrationEnd || null,
         waitlistEnabled: params.waitlistEnabled || false,
@@ -207,6 +203,7 @@ export async function createEvent(params: CreateEventParams): Promise<ApiRespons
       data: {
         ...params,
         slug,
+        price: params.price as any,
         customFields: params.customFields || []
       }
     })
@@ -260,7 +257,10 @@ export async function updateEvent(eventId: string, organizationId: string, data:
         id: eventId,
         organizationId 
       },
-      data: finalUpdateData
+      data: {
+        ...finalUpdateData,
+        price: updateData.price !== undefined ? (updateData.price as any) : undefined,
+      }
     })
 
     return { success: true, data: event }
@@ -331,11 +331,8 @@ export async function createRegistration(params: CreateRegistrationParams): Prom
       return { success: false, error: 'Participant already registered' }
     }
 
-    // Determine price (early bird vs regular)
-    let price = event.data.price
-    if (event.data.earlyBirdPrice && event.data.earlyBirdDeadline && new Date() < event.data.earlyBirdDeadline) {
-      price = event.data.earlyBirdPrice
-    }
+    // Determine price
+    const price = event.data.price
 
     // Create registration
     const registration = await eventsApiPrisma.registration.create({

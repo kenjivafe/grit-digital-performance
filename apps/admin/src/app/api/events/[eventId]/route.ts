@@ -43,24 +43,48 @@ export async function PUT(
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
-    const apiKey = request.headers.get('x-api-key')
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key required' }, { status: 401 })
-    }
+    const { searchParams } = new URL(request.url)
+    const admin = searchParams.get('admin')
 
     // Await params to get the eventId
     const { eventId } = await params
+    
+    let orgResponse = null
 
-    // Verify organization
-    const orgResponse = await getOrganizationByApiKey(apiKey)
-    if (!orgResponse.success) {
-      return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+    if (admin !== 'true') {
+      const apiKey = request.headers.get('x-api-key')
+      if (!apiKey) {
+        return NextResponse.json({ error: 'API key required' }, { status: 401 })
+      }
+
+      // Verify organization
+      orgResponse = await getOrganizationByApiKey(apiKey)
+      if (!orgResponse.success) {
+        return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
+      }
     }
 
     const body = await request.json()
     
-    // Update event
-    const eventResponse = await updateEvent(eventId, orgResponse.data!.id, body)
+    let eventResponse
+    if (admin === 'true') {
+      // Admin access - get existing event to find its organization
+      const prisma = (await import('@/lib/events-api')).getEventsApiPrisma()
+      const existingEvent = await prisma.event.findUnique({
+        where: { id: eventId }
+      })
+
+      if (!existingEvent) {
+        return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+      }
+
+      // Update event directly
+      eventResponse = await updateEvent(eventId, existingEvent.organizationId, body)
+    } else {
+      // Update event with organization validation
+      eventResponse = await updateEvent(eventId, orgResponse!.data!.id, body)
+    }
+    
     if (!eventResponse.success) {
       return NextResponse.json({ error: eventResponse.error }, { status: 400 })
     }

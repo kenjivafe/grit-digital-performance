@@ -3,10 +3,10 @@
 import { usePathname } from "next/navigation"
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from '@/components/dashboard/theme-provider'
-import { SidebarProvider, SidebarInset } from '@repo/ui'
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import AdminSidebar from '@/components/admin/sidebar'
 import { NotificationProvider } from '@/components/admin/notifications'
-import { ToastProvider } from '@/hooks/use-toast'
+import { Toaster } from '@/components/ui/sonner'
 import './admin.css'
 
 export default function ClientLayout({
@@ -15,34 +15,33 @@ export default function ClientLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  
+
   // Don't render sidebar on auth pages
   const isAuthPage = pathname?.includes('/auth')
-  
+
   return (
     <SessionProvider>
       <ThemeProvider>
-        <ToastProvider>
-          {isAuthPage ? (
-            children
-          ) : (
-            <NotificationProvider>
-              <SidebarProvider
-                style={{
-                  "--sidebar-width": "calc(var(--spacing) * 72)",
-                  "--header-height": "calc(var(--spacing) * 12)",
-                } as React.CSSProperties}
-              >
-                <AdminSidebar />
-                <SidebarInset>
-                  <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 pt-3 sm:pt-4 min-h-0 admin-layout">
-                    {children}
-                  </div>
-                </SidebarInset>
-              </SidebarProvider>
-            </NotificationProvider>
-          )}
-        </ToastProvider>
+        <Toaster />
+        {isAuthPage ? (
+          children
+        ) : (
+          <NotificationProvider>
+            <SidebarProvider
+              style={{
+                "--sidebar-width": "calc(var(--spacing) * 72)",
+                "--header-height": "calc(var(--spacing) * 12)",
+              } as React.CSSProperties}
+            >
+              <AdminSidebar />
+              <SidebarInset>
+                <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 pt-3 sm:pt-4 min-h-0 admin-layout">
+                  {children}
+                </div>
+              </SidebarInset>
+            </SidebarProvider>
+          </NotificationProvider>
+        )}
       </ThemeProvider>
     </SessionProvider>
   )
