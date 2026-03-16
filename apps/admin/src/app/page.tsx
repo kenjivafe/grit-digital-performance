@@ -4,7 +4,6 @@ import { useRequireAuth } from '@/lib/client-auth'
 import Link from 'next/link'
 import { 
   ArrowUpRight,
-  Images, 
   Calendar as PhCalendar, 
   Users, 
   CreditCard,
@@ -40,13 +39,6 @@ export default function AdminDashboard() {
       metaKey: true,
       action: () => window.location.href = '/events/new',
       description: 'Create new event'
-    },
-    {
-      key: 'p',
-      ctrlKey: true,
-      metaKey: true,
-      action: () => window.location.href = '/portfolio/new',
-      description: 'Add portfolio project'
     },
     {
       key: 'o',
@@ -238,12 +230,6 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" role="toolbar" aria-label="Quick actions">
-            <Button asChild className="w-full sm:w-auto" aria-label="Add new portfolio project">
-              <Link href="/portfolio/new">
-                <Images className="h-4 w-4 mr-2" aria-hidden="true" />
-                <span className="truncate">Add Portfolio</span>
-              </Link>
-            </Button>
             <Button asChild className="w-full sm:w-auto" aria-label="Create new event">
               <Link href="/events/new">
                 <PhCalendar className="h-4 w-4 mr-2" aria-hidden="true" />

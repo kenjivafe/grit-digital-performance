@@ -20,6 +20,11 @@ interface Organization {
   slug: string
 }
 
+interface Category {
+  id: string
+  name: string
+}
+
 export default function NewEventPage() {
   const router = useRouter()
 
@@ -43,6 +48,9 @@ export default function NewEventPage() {
   const [registrationType, setRegistrationType] = useState<'individual' | 'team'>('individual')
   const [registrationStart, setRegistrationStart] = useState<string>('')
   const [registrationEnd, setRegistrationEnd] = useState<string>('')
+  const [categories, setCategories] = useState<Category[]>([])
+  const [categoryId, setCategoryId] = useState<string>('')
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false)
 
   // Generate slug from name
   const generateSlug = (name: string) => {
@@ -80,6 +88,32 @@ export default function NewEventPage() {
     fetchOrganizations()
   }, [])
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!organizationId) {
+        setCategories([])
+        setCategoryId('')
+        return
+      }
+
+      try {
+        setIsCategoriesLoading(true)
+        const response = await fetch(`/api/organizations/${organizationId}/categories`)
+        const result = await response.json()
+        if (result.success) {
+          setCategories(result.data)
+          setCategoryId('') // Reset category when organization changes
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+      } finally {
+        setIsCategoriesLoading(false)
+      }
+    }
+
+    fetchCategories()
+  }, [organizationId])
+
   const canSave =
     name.trim().length > 0 &&
     organizationId &&
@@ -109,6 +143,7 @@ export default function NewEventPage() {
         registrationType,
         registrationStart: registrationStart ? new Date(registrationStart).toISOString() : new Date().toISOString(),
         registrationEnd: registrationEnd ? new Date(registrationEnd).toISOString() : new Date(endDate).toISOString(),
+        categoryId: categoryId || undefined,
       }
 
       console.log('Sending event data:', eventData)
@@ -262,6 +297,32 @@ export default function NewEventPage() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select
+              value={categoryId}
+              onValueChange={setCategoryId}
+              disabled={isCategoriesLoading || (organizationId && categories.length === 0)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={isCategoriesLoading ? "Loading categories..." : (organizationId && categories.length === 0) ? "No categories available" : "Select category"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Category</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {organizationId && categories.length === 0 && !isCategoriesLoading && (
+              <p className="text-xs text-muted-foreground">
+                No categories defined for this organization. You can add them in <Link href={`/organizations/${organizations.find(o => o.id === organizationId)?.slug}/edit`} className="text-blue-600 hover:underline">Organization Settings</Link>.
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

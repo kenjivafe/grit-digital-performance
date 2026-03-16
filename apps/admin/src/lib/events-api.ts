@@ -4,7 +4,8 @@ import type {
   Organization, 
   Event, 
   Registration, 
-  Transaction 
+  Transaction,
+  Category
 } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as {
@@ -48,6 +49,7 @@ export interface CreateEventParams {
   waitlistEnabled?: boolean
   requiresApproval?: boolean
   customFields?: any[]
+  categoryId?: string
 }
 
 export interface CreateRegistrationParams {
@@ -160,6 +162,59 @@ export async function getOrganizationByApiKey(apiKey: string): Promise<ApiRespon
   }
 }
 
+export async function listCategories(organizationId: string): Promise<ApiResponse<Category[]>> {
+  try {
+    const categories = await eventsApiPrisma.category.findMany({
+      where: { organizationId },
+      orderBy: { name: 'asc' }
+    })
+    return { success: true, data: categories }
+  } catch (error) {
+    console.error('Error listing categories:', error)
+    return { success: false, error: 'Failed to list categories' }
+  }
+}
+
+export async function createCategory(organizationId: string, data: { name: string, description?: string }): Promise<ApiResponse<Category>> {
+  try {
+    const category = await eventsApiPrisma.category.create({
+      data: {
+        ...data,
+        organizationId
+      }
+    })
+    return { success: true, data: category }
+  } catch (error) {
+    console.error('Error creating category:', error)
+    return { success: false, error: 'Failed to create category' }
+  }
+}
+
+export async function updateCategory(categoryId: string, data: { name?: string, description?: string }): Promise<ApiResponse<Category>> {
+  try {
+    const category = await eventsApiPrisma.category.update({
+      where: { id: categoryId },
+      data
+    })
+    return { success: true, data: category }
+  } catch (error) {
+    console.error('Error updating category:', error)
+    return { success: false, error: 'Failed to update category' }
+  }
+}
+
+export async function deleteCategory(categoryId: string): Promise<ApiResponse<void>> {
+  try {
+    await eventsApiPrisma.category.delete({
+      where: { id: categoryId }
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting category:', error)
+    return { success: false, error: 'Failed to delete category' }
+  }
+}
+
 // Event Management
 export async function createEvent(params: CreateEventParams): Promise<ApiResponse<Event>> {
   try {
@@ -188,6 +243,7 @@ export async function createEvent(params: CreateEventParams): Promise<ApiRespons
         waitlistEnabled: params.waitlistEnabled || false,
         requiresApproval: params.requiresApproval || false,
         customFields: params.customFields || null,
+        categoryId: params.categoryId || null,
         status: 'published',
         publishedAt: new Date(),
         createdAt: new Date(),
@@ -203,6 +259,7 @@ export async function createEvent(params: CreateEventParams): Promise<ApiRespons
       data: {
         ...params,
         slug,
+        categoryId: params.categoryId || null,
         price: params.price as any,
         customFields: params.customFields || []
       }
@@ -259,6 +316,7 @@ export async function updateEvent(eventId: string, organizationId: string, data:
       },
       data: {
         ...finalUpdateData,
+        categoryId: finalUpdateData.categoryId || undefined,
         price: updateData.price !== undefined ? (updateData.price as any) : undefined,
       }
     })

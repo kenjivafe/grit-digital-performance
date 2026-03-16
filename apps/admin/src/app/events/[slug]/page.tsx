@@ -32,6 +32,11 @@ interface Event {
     name: string
     slug: string
   }
+  category?: {
+    id: string
+    name: string
+  } | null
+  categoryId?: string | null
   _count: {
     registrations: number
   }
@@ -224,6 +229,15 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Category:</span>
+              {event.category ? (
+                <Badge variant="outline">{event.category.name}</Badge>
+              ) : (
+                <span className="text-sm text-muted-foreground italic">None</span>
+              )}
             </div>
 
             <div className="flex items-center gap-2">

@@ -42,6 +42,11 @@ interface Event {
     name: string
     slug: string
   }
+  category?: {
+    id: string
+    name: string
+  } | null
+  categoryId?: string | null
   _count: {
     registrations: number
   }
@@ -68,6 +73,7 @@ export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterOrg, setFilterOrg] = useState('all')
+  const [filterCategory, setFilterCategory] = useState('all')
   const [dataLoading, setDataLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -113,10 +119,11 @@ export default function EventsPage() {
 
       const matchesStatus = filterStatus === 'all' || event.status === filterStatus
       const matchesOrg = filterOrg === 'all' || event.organizationId === filterOrg
+      const matchesCategory = filterCategory === 'all' || event.categoryId === filterCategory
 
-      return matchesSearch && matchesStatus && matchesOrg
+      return matchesSearch && matchesStatus && matchesOrg && matchesCategory
     })
-  }, [events, searchTerm, filterStatus, filterOrg])
+  }, [events, searchTerm, filterStatus, filterOrg, filterCategory])
 
   if (loading) {
     return <LoadingState type="page" message="Loading events..." />
@@ -265,6 +272,8 @@ export default function EventsPage() {
               />
             </div>
 
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:col-span-2">
+
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger>
                 <SelectValue placeholder="Status" />
@@ -291,9 +300,27 @@ export default function EventsPage() {
                 ))}
               </SelectContent>
             </Select>
+
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {Array.from(new Set(events.filter(e => e.category).map(e => JSON.stringify(e.category)))).map((catStr) => {
+                  const cat = JSON.parse(catStr)
+                  return (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
 
       <Card>
         <CardContent className="p-0">
@@ -302,6 +329,7 @@ export default function EventsPage() {
               <TableRow>
                 <TableHead>Event</TableHead>
                 <TableHead>Organization</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Status</TableHead>
@@ -324,6 +352,13 @@ export default function EventsPage() {
                     </div>
                   </TableCell>
                   <TableCell>{event.organization.name}</TableCell>
+                  <TableCell>
+                    {event.category ? (
+                      <Badge variant="outline">{event.category.name}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground text-xs italic">Uncategorized</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div className="text-sm">
                       <div>{formatDateShort(event.startDate)}</div>

@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { 
   House, 
-  Images, 
   Calendar, 
   Users, 
   ChartBar, 
@@ -29,11 +28,6 @@ const homeItems = [
     title: "Dashboard",
     url: "/",
     icon: House,
-  },
-  {
-    title: "Portfolio",
-    url: "/portfolio",
-    icon: Images,
   },
 ]
 

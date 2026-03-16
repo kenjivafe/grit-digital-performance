@@ -22,6 +22,12 @@ export async function GET(request: NextRequest) {
               slug: true
             }
           },
+          category: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
           _count: {
             select: {
               registrations: true

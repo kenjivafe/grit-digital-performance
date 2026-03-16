@@ -148,7 +148,7 @@ class FinalIntegrationTester {
     const websitePages = fs.existsSync(websiteAppDir) ? fs.readdirSync(websiteAppDir) : [];
     const websiteComponents = fs.existsSync(websiteComponentsDir) ? fs.readdirSync(websiteComponentsDir) : [];
     
-    const hasMarketingPages = ['home', 'about', 'services', 'portfolio', 'contact'].every(page => 
+    const hasMarketingPages = ['home', 'about', 'services', 'contact'].every(page => 
       websitePages.includes(page)
     );
     

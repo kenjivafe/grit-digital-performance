@@ -16,7 +16,6 @@ const navigation = [
       { name: "Sports Consulting", href: "/services/consulting" },
     ],
   },
-  { name: "Portfolio", href: "/portfolio" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -369,5 +368,3 @@ export default function Header() {
     </>
   );
 }
-
-
