@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
+import { getEventsApiPrisma } from '@/lib/events-api'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,8 +19,7 @@ export async function GET(request: NextRequest) {
   try {
     const headersList = await headers()
     const origin = headersList.get('origin')
-    
-    // Update CORS headers to allow specific origin
+
     const responseHeaders = {
       ...corsHeaders,
       'Access-Control-Allow-Origin': origin || '*',
@@ -45,68 +45,86 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // TODO: Implement actual event retrieval logic
-    // 1. Find organization by slug
-    // 2. Get events for that organization
-    // 3. Filter by status if provided
-    // 4. Return public event information only
-    
-    // Mock response for now
-    const mockEvents = [
-      {
-        id: 'evt_123',
-        name: 'Basketball Tournament',
-        description: 'Annual basketball tournament for high school teams',
-        date: '2026-04-15T09:00:00.000Z',
-        location: 'Tuguegarao Sports Complex',
-        max_participants: 100,
-        current_participants: 45,
-        registration_status: 'open',
-        registration_deadline: '2026-04-10T23:59:59.000Z',
-        entry_fee: 500,
-        organization: {
-          id: 'org_123',
-          name: 'Tuguegarao League',
-          slug: organization_slug
-        }
-      },
-      {
-        id: 'evt_124',
-        name: 'Volleyball Championship',
-        description: 'Inter-school volleyball championship',
-        date: '2026-05-20T08:00:00.000Z',
-        location: 'Cagayan Sports Center',
-        max_participants: 80,
-        current_participants: 62,
-        registration_status: 'open',
-        registration_deadline: '2026-05-15T23:59:59.000Z',
-        entry_fee: 300,
-        organization: {
-          id: 'org_123',
-          name: 'Tuguegarao League',
-          slug: organization_slug
-        }
-      }
-    ]
+    const prisma = getEventsApiPrisma()
 
-    // Filter by status if provided
-    let filteredEvents = mockEvents
-    if (status) {
-      filteredEvents = mockEvents.filter(event => event.registration_status === status)
+    // Find organization by slug
+    const organization = await prisma.organization.findUnique({
+      where: { slug: organization_slug },
+    })
+
+    if (!organization) {
+      return NextResponse.json(
+        { error: `Organization not found: ${organization_slug}` },
+        { status: 404, headers: responseHeaders }
+      )
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        events: filteredEvents,
-        total: filteredEvents.length,
-        organization: {
-          slug: organization_slug,
-          name: 'Tuguegarao League'
+    // Query events for this organization
+    const events = await prisma.event.findMany({
+      where: {
+        organizationId: organization.id,
+        ...(status && { status }),
+      },
+      include: {
+        _count: {
+          select: {
+            registrations: {
+              where: { status: 'confirmed' },
+            },
+          },
+        },
+        organization: true,
+      },
+      orderBy: { startDate: 'asc' },
+    })
+
+    const now = new Date()
+
+    const publicEvents = events.map((event) => {
+      // Derive registration_status
+      let registration_status = 'closed'
+      if (event.status === 'published') {
+        if (event.registrationStart <= now && event.registrationEnd >= now) {
+          registration_status = 'open'
+        } else if (event.registrationStart > now) {
+          registration_status = 'upcoming'
         }
       }
-    }, { headers: responseHeaders })
 
+      return {
+        id: event.id,
+        name: event.name,
+        description: event.description,
+        date: event.startDate.toISOString(),
+        end_date: event.endDate.toISOString(),
+        location: event.location,
+        max_participants: event.maxParticipants,
+        current_participants: event._count.registrations,
+        registration_status,
+        registration_deadline: event.registrationEnd.toISOString(),
+        entry_fee: Number(event.price),
+        organization: {
+          id: organization.id,
+          name: organization.name,
+          slug: organization.slug,
+        },
+      }
+    })
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          events: publicEvents,
+          total: publicEvents.length,
+          organization: {
+            slug: organization.slug,
+            name: organization.name,
+          },
+        },
+      },
+      { headers: responseHeaders }
+    )
   } catch (error) {
     console.error('Public Events API error:', error)
     return NextResponse.json(

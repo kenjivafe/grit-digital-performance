@@ -1,12 +1,72 @@
 // Event Registration Flow Test Script
 // Run with: node test-registration-flow.js
 
+const fs = require('fs');
+const path = require('path');
+try {
+  // Try .env.local first (Next.js default), then fall back to .env
+  const envFiles = ['.env.local', '.env'];
+  for (const envFile of envFiles) {
+    const envPath = path.resolve(process.cwd(), envFile);
+    if (fs.existsSync(envPath)) {
+      const content = fs.readFileSync(envPath, 'utf8');
+      content.split('\n').forEach(line => {
+        line = line.trim();
+        if (!line || line.startsWith('#')) return;
+        const eqIdx = line.indexOf('=');
+        if (eqIdx === -1) return;
+        const key = line.substring(0, eqIdx).trim();
+        let val = line.substring(eqIdx + 1).trim();
+        // Strip inline comments and surrounding quotes
+        val = val.replace(/\s+#.*$/, '').replace(/^["']|["']$/g, '');
+        if (key && !process.env[key]) process.env[key] = val;
+      });
+      break;
+    }
+  }
+} catch (e) {}
+
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 class RegistrationFlowTester {
   constructor() {
     this.baseURL = 'http://localhost:3000';
     this.testResults = [];
     this.mockEventId = 'evt_test_registration_flow';
     this.mockOrgSlug = 'test-registration-org';
+  }
+
+  async setupDatabase() {
+    console.log('📦 Setting up test database records...');
+    try {
+      const res = await fetch(`${this.baseURL}/api/test-seed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'seed', orgSlug: this.mockOrgSlug, eventId: this.mockEventId })
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to setup test database: ${res.status} ${await res.text()}`);
+      }
+    } catch (e) {
+      console.error('Failed to setup test database:', e);
+    }
+  }
+
+  async teardownDatabase() {
+    console.log('\n🧹 Cleaning up test database records...');
+    try {
+      const res = await fetch(`${this.baseURL}/api/test-seed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'teardown', orgSlug: this.mockOrgSlug, eventId: this.mockEventId })
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to clean up test database: ${res.status} ${await res.text()}`);
+      }
+    } catch (e) {
+      console.error('Failed to clean up test database:', e);
+    }
   }
 
   async runTest(testName, testFunction) {
@@ -416,6 +476,9 @@ class RegistrationFlowTester {
   async runAllTests() {
     console.log('🚀 Starting Event Registration Flow Test Suite...\n');
 
+    // Setup mock data
+    await this.setupDatabase();
+
     // Discovery and details tests
     await this.runTest('Event Discovery', () => this.testEventDiscovery());
     await this.runTest('Event Details Retrieval', () => this.testEventDetails());
@@ -438,7 +501,12 @@ class RegistrationFlowTester {
     await this.runTest('Error Handling', () => this.testErrorHandling());
 
     // Generate final report
-    return this.generateReport();
+    const report = await this.generateReport();
+    
+    // Cleanup database
+    await this.teardownDatabase();
+    
+    return report;
   }
 }
 

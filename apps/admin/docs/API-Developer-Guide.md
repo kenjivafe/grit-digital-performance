@@ -451,74 +451,240 @@ app.post("/api/register", async (req, res) => {
 
 ## Examples
 
-### React Component Example
+### End-to-End React Implementation: Categories, Events, and Registration Flow
+
+This example demonstrates a complete frontend integration using React (e.g., Next.js). It includes:
+1. Fetching categories and displaying them in a navigation bar.
+2. Fetching events and displaying them as cards based on the selected category.
+3. Clicking a "Register" button on an event card to open a registration modal.
+
+#### Setting Up Environment Variables
+Before running the code, create a `.env.local` file at the root of your frontend project to securely store your API key. If you are using React/Create React App, use the `REACT_APP_` prefix. If you are using Next.js, use the `NEXT_PUBLIC_` prefix (only if the key is safe to be exposed to the client) or keep it secure on the server side:
+
+```env
+# For Create React App:
+REACT_APP_GRIT_API_KEY="your-api-key-here"
+
+# For Next.js:
+NEXT_PUBLIC_GRIT_API_KEY="your-api-key-here"
+```
+
+> **Security Note:** While public endpoints might not strictly require hidden keys, if your key gives administrative write access to your organization, you should **never** prefix it with `NEXT_PUBLIC_` or `REACT_APP_`. Instead, you should proxy requests through your own backend API routes.
 
 ```jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function EventRegistration({ eventId, organizationSlug }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    // ... other fields
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+// Read the API Key securely from your environment variables
+// Adjust according to your framework (e.g., process.env.REACT_APP_...)
+const API_KEY = process.env.NEXT_PUBLIC_GRIT_API_KEY || "your-api-key-here"; 
+const ORG_SLUG = "your-org-slug";
+const API_BASE_URL = "https://admin-grit-digital-performance.vercel.app/api";
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+export default function EventPortal() {
+  const [categories, setCategories] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 1. Fetch Categories for Navbar
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/categories/public?organization_slug=${ORG_SLUG}`, {
+          headers: { "x-api-key": API_KEY }
+        });
+        const data = await res.json();
+        if (data.success && data.data?.categories) {
+          setCategories(data.data.categories);
+          // Set first category as active by default
+          if (data.data.categories.length > 0) {
+            setActiveCategory(data.data.categories[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    }
+    fetchCategories();
+  }, []);
+
+  // 2. Fetch Events when active category changes
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        let url = `${API_BASE_URL}/events/public?organization_slug=${ORG_SLUG}`;
+        if (activeCategory) {
+          url += `&category_id=${activeCategory}`;
+        }
+        
+        const res = await fetch(url, {
+          headers: { "x-api-key": API_KEY }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setEvents(data.data.events || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch events", err);
+      }
+    }
+    
+    fetchEvents();
+  }, [activeCategory]);
+
+  const openRegistrationForm = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
   };
+
+  return (
+    <div className="portal-container">
+      {/* Navbar with Categories */}
+      <nav className="navbar">
+        <h2>Sports Events</h2>
+        <ul className="category-links">
+          <li 
+            className={activeCategory === null ? 'active' : ''} 
+            onClick={() => setActiveCategory(null)}
+          >
+            All Events
+          </li>
+          {categories.map((cat) => (
+            <li 
+              key={cat.id} 
+              className={activeCategory === cat.id ? 'active' : ''}
+              onClick={() => setActiveCategory(cat.id)}
+            >
+              {cat.name}
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Events Displayed as Cards */}
+      <main className="events-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', padding: '20px' }}>
+        {events.length === 0 ? (
+          <p>No events found for this category.</p>
+        ) : (
+          events.map((event) => (
+            <div key={event.id} className="event-card" style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+              <h3>{event.name}</h3>
+              <p>{new Date(event.date).toLocaleDateString()}</p>
+              <p>📍 {event.location}</p>
+              <p>Fee: {event.entry_fee === 0 ? 'Free' : `$${event.entry_fee}`}</p>
+              
+              <button 
+                onClick={() => openRegistrationForm(event)}
+                disabled={event.registration_status !== 'open'}
+                style={{ marginTop: '15px', padding: '10px 15px', backgroundColor: '#0070f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                {event.registration_status === 'open' ? 'Register Now' : 'Registration Closed'}
+              </button>
+            </div>
+          ))
+        )}
+      </main>
+
+      {/* Registration Modal */}
+      {isModalOpen && selectedEvent && (
+        <RegistrationModal 
+          event={selectedEvent} 
+          onClose={() => setIsModalOpen(false)} 
+        />
+      )}
+    </div>
+  );
+}
+
+// 3. Registration Modal Component
+function RegistrationModal({ event, onClose }) {
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", team: "" });
+  const [status, setStatus] = useState("idle"); // idle, submitting, success, error
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setStatus("submitting");
 
     try {
-      const response = await fetch("/api/events/register", {
+      const response = await fetch(`${API_BASE_URL}/events/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": process.env.REACT_APP_API_KEY,
+          "x-api-key": API_KEY, // Note: For public registration, API key might not be required depending on your exact setup
         },
         body: JSON.stringify({
-          organization_slug: organizationSlug,
-          event_id: eventId,
+          organization_slug: ORG_SLUG,
+          event_id: event.id,
           ...formData,
         }),
       });
 
       const result = await response.json();
 
-      if (result.success) {
-        setSuccess(true);
+      if (result.status === 'success' || result.success) {
+        setStatus("success");
       } else {
-        setError(result.error);
+        setStatus("error");
+        setErrorMessage(result.error || "Registration failed.");
       }
     } catch (err) {
-      setError("Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
+      setStatus("error");
+      setErrorMessage("Network error. Please try again.");
     }
   };
 
-  if (success) {
-    return <div>Registration successful!</div>;
-  }
-
   return (
-    <form onSubmit={handleSubmit}>
-      {/* Form fields */}
-      {error && <div className="error">{error}</div>}
-      <button type="submit" disabled={loading}>
-        {loading ? "Registering..." : "Register"}
-      </button>
-    </form>
+    <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="modal-content" style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '500px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2>Register for {event.name}</h2>
+          <button onClick={onClose} style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '20px' }}>✖</button>
+        </div>
+
+        {status === "success" ? (
+          <div className="success-message">
+            <h3 style={{ color: 'green' }}>Registration Successful!</h3>
+            <p>You have been registered for {event.name}. Check your email for confirmation.</p>
+            <button onClick={onClose} style={{ marginTop: '15px' }}>Close</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {status === "error" && <div style={{ color: 'red', padding: '10px', backgroundColor: '#fee' }}>{errorMessage}</div>}
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Full Name *</label>
+              <input type="text" name="name" required value={formData.name} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+            </div>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Email Address *</label>
+              <input type="email" name="email" required value={formData.email} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+            </div>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Phone Number *</label>
+              <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Team Name (Optional)</label>
+              <input type="text" name="team" value={formData.team} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+              <button type="button" onClick={onClose} style={{ padding: '10px 15px' }}>Cancel</button>
+              <button type="submit" disabled={status === "submitting"} style={{ padding: '10px 15px', backgroundColor: '#0070f3', color: 'white', border: 'none' }}>
+                {status === "submitting" ? "Processing..." : "Complete Registration"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
   );
 }
 ```

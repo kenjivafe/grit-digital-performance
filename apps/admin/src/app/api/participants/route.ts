@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
+import { getEventsApiPrisma } from '@/lib/events-api'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,8 +19,7 @@ export async function GET(request: NextRequest) {
   try {
     const headersList = await headers()
     const origin = headersList.get('origin')
-    
-    // Update CORS headers to allow specific origin
+
     const responseHeaders = {
       ...corsHeaders,
       'Access-Control-Allow-Origin': origin || '*',
@@ -46,117 +46,87 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // TODO: Implement actual participant retrieval logic
-    // 1. Find organization by slug
-    // 2. Get participants for that organization
-    // 3. Filter by event_id if provided
-    // 4. Filter by source if provided
-    // 5. Return participant information with source tracking
-    
-    // Mock response for now
-    const mockParticipants = [
-      {
-        id: 'par_123',
-        event_id: event_id || 'evt_123',
-        name: 'Juan Dela Cruz',
-        email: 'juan@email.com',
-        phone: '09123456789',
-        team: 'Tuguegarao Warriors',
-        status: 'confirmed',
-        registration_date: '2026-03-10T14:30:00.000Z',
-        source: 'external',
-        source_details: {
-          domain: 'tuguegaraoleague.gritdp.com',
-          user_agent: 'Mozilla/5.0...',
-          ip_address: '192.168.1.100'
-        },
-        organization: {
-          id: 'org_123',
-          name: 'Tuguegarao League',
-          slug: organization_slug
-        }
-      },
-      {
-        id: 'par_124',
-        event_id: event_id || 'evt_123',
-        name: 'Maria Santos',
-        email: 'maria@email.com',
-        phone: '09123456788',
-        team: 'Cagayan Eagles',
-        status: 'confirmed',
-        registration_date: '2026-03-11T09:15:00.000Z',
-        source: 'internal',
-        source_details: {
-          registered_by: 'admin@gritdp.com',
-          registration_method: 'admin_dashboard'
-        },
-        organization: {
-          id: 'org_123',
-          name: 'Tuguegarao League',
-          slug: organization_slug
-        }
-      },
-      {
-        id: 'par_125',
-        event_id: event_id || 'evt_124',
-        name: 'Jose Reyes',
-        email: 'jose@email.com',
-        phone: '09123456787',
-        team: 'Tuguegarao Knights',
-        status: 'waitlisted',
-        registration_date: '2026-03-12T16:45:00.000Z',
-        source: 'external',
-        source_details: {
-          domain: 'tuguegaraoleague.gritdp.com',
-          user_agent: 'Mozilla/5.0...',
-          ip_address: '192.168.1.101'
-        },
-        organization: {
-          id: 'org_123',
-          name: 'Tuguegarao League',
-          slug: organization_slug
-        }
-      }
-    ]
+    const prisma = getEventsApiPrisma()
 
-    // Filter participants
-    let filteredParticipants = mockParticipants
-    
-    if (event_id) {
-      filteredParticipants = filteredParticipants.filter(p => p.event_id === event_id)
-    }
-    
-    if (source && source !== 'all') {
-      filteredParticipants = filteredParticipants.filter(p => p.source === source)
+    // Find organization by slug
+    const organization = await prisma.organization.findUnique({
+      where: { slug: organization_slug },
+    })
+
+    if (!organization) {
+      return NextResponse.json(
+        { error: `Organization not found: ${organization_slug}` },
+        { status: 404, headers: responseHeaders }
+      )
     }
 
-    // Calculate statistics
+    // Build query filters
+    const where: Record<string, unknown> = {
+      organizationId: organization.id,
+      ...(event_id && { eventId: event_id }),
+      ...(source && source !== 'all' && { source }),
+    }
+
+    const registrations = await prisma.registration.findMany({
+      where,
+      include: {
+        event: {
+          select: { id: true, name: true, slug: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    // Map to public participant shape
+    const participants = registrations.map((reg) => ({
+      id: reg.id,
+      event_id: reg.eventId,
+      event: reg.event,
+      name: `${reg.firstName} ${reg.lastName}`.trim(),
+      email: reg.email,
+      phone: reg.phone,
+      status: reg.status,
+      registration_date: reg.createdAt.toISOString(),
+      source: reg.source,
+      sourceDetails: reg.sourceDetails,
+      source_details: reg.sourceDetails, // alias for compatibility
+      organization: {
+        id: organization.id,
+        name: organization.name,
+        slug: organization.slug,
+      },
+    }))
+
+    // Compute statistics
     const stats = {
-      total: filteredParticipants.length,
+      total: participants.length,
       by_status: {
-        confirmed: filteredParticipants.filter(p => p.status === 'confirmed').length,
-        waitlisted: filteredParticipants.filter(p => p.status === 'waitlisted').length,
-        cancelled: filteredParticipants.filter(p => p.status === 'cancelled').length
+        confirmed: participants.filter((p) => p.status === 'confirmed').length,
+        waitlisted: participants.filter((p) => p.status === 'waitlisted').length,
+        cancelled: participants.filter((p) => p.status === 'cancelled').length,
+        pending: participants.filter((p) => p.status === 'pending').length,
       },
       by_source: {
-        external: filteredParticipants.filter(p => p.source === 'external').length,
-        internal: filteredParticipants.filter(p => p.source === 'internal').length
-      }
+        external: participants.filter((p) => p.source === 'external').length,
+        internal: participants.filter((p) => p.source === 'internal').length,
+      },
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        participants: filteredParticipants,
-        stats,
-        filters: {
-          organization_slug,
-          event_id,
-          source
-        }
-      }
-    }, { headers: responseHeaders })
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          participants,
+          stats,
+          filters: {
+            organization_slug,
+            event_id,
+            source,
+          },
+        },
+      },
+      { headers: responseHeaders }
+    )
   } catch (error) {
     console.error('Participants API error:', error)
     return NextResponse.json(
