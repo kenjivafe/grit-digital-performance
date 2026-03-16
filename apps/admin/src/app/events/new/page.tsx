@@ -304,7 +304,7 @@ export default function NewEventPage() {
             <Select
               value={categoryId}
               onValueChange={setCategoryId}
-              disabled={isCategoriesLoading || (organizationId && categories.length === 0)}
+              disabled={isCategoriesLoading || !!(organizationId && categories.length === 0)}
             >
               <SelectTrigger>
                 <SelectValue placeholder={isCategoriesLoading ? "Loading categories..." : (organizationId && categories.length === 0) ? "No categories available" : "Select category"} />
