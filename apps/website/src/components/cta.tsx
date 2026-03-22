@@ -1,5 +1,4 @@
 import { ArrowRight, Phone } from "lucide-react";
-import { Label } from "@/components/ui/label"
 
 export default function CTASection() {
   return (
@@ -90,53 +89,48 @@ export default function CTASection() {
       />
 
       {/* Top + bottom bars */}
-      <div
-        className="absolute top-0 left-0 right-0 h-0.75 z-10"
-        style={{ background: "#e8192c" }}
-      />
-      <div
-        className="absolute bottom-0 left-0 right-0 h-0.75 z-10"
-        style={{ background: "#e8192c" }}
-      />
+      <div className="absolute top-0 left-0 right-0 h-0.75 z-10" style={{ background: "#e8192c" }} />
+      <div className="absolute bottom-0 left-0 right-0 h-0.75 z-10" style={{ background: "#e8192c" }} />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-20 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* LEFT — clipped so headline never bleeds into right column */}
+
+          {/* LEFT */}
           <div className="cta-al cta-d1 space-y-6 overflow-hidden lg:pr-8">
             {/* Tag */}
             <div className="flex items-center gap-3">
               <div className="w-8 h-0.5 bg-white shrink-0" />
               <span className="cta-tag text-white/70">
-                Ready to compete online?
+                Let's build something great
               </span>
             </div>
 
-            {/* Headline — aggressive clamp so it stays in its lane */}
+            {/* ── UPDATED HEADLINE ── */}
             <h2
               className="cta-display font-black italic uppercase text-white leading-[.9]"
               style={{ fontSize: "clamp(2rem,3.2vw,3.8rem)" }}
             >
-              <span className="block">Champion</span>
-              <span className="block">Your Digital</span>
+              <span className="block">Your Brand.</span>
+              <span className="block">Your Events.</span>
               <span
                 className="block"
                 style={{ WebkitTextStroke: "2px white", color: "transparent" }}
               >
-                Presence.
+                Fully Digital.
               </span>
             </h2>
 
-            {/* Body */}
+            {/* ── UPDATED BODY ── */}
             <p
               className="cta-body text-white/70 leading-relaxed max-w-xs"
               style={{ fontSize: "clamp(.88rem,1.2vw,.98rem)" }}
             >
-              Join{" "}
+              From your first website to your thousandth registration —{" "}
               <span className="text-white font-semibold">
-                50+ sports organizations
+                GRIT Digital Performance
               </span>{" "}
-              that trust Grit Digital Performance to deliver results.
+              handles the digital side so you can focus on what you do best.
             </p>
 
             {/* Buttons */}
@@ -150,14 +144,11 @@ export default function CTASection() {
             </div>
           </div>
 
-          {/* RIGHT — self-center keeps stats away from headline level */}
+          {/* RIGHT */}
           <div className="cta-ar cta-d3 flex flex-col gap-8 self-center">
             {/* Label */}
             <div className="flex items-center gap-3">
-              <div
-                className="w-8 h-0.5 shrink-0"
-                style={{ background: "#e8192c" }}
-              />
+              <div className="w-8 h-0.5 shrink-0" style={{ background: "#e8192c" }} />
               <span className="cta-tag" style={{ color: "#e8192c" }}>
                 Our track record
               </span>
@@ -166,7 +157,7 @@ export default function CTASection() {
             {/* 2x2 stat grid */}
             <div className="grid grid-cols-2 gap-x-8 gap-y-6">
               {[
-                { value: "50+", label: "Sports Organizations" },
+                { value: "50+", label: "Organizations Served" },
                 { value: "100K+", label: "Registrations Processed" },
                 { value: "98%", label: "Client Satisfaction" },
                 { value: "$2M+", label: "Revenue Generated" },
@@ -174,10 +165,7 @@ export default function CTASection() {
                 <div key={i} className="cta-stat-item">
                   <div
                     className="cta-display font-black text-white"
-                    style={{
-                      fontSize: "clamp(1.8rem,3vw,2.6rem)",
-                      lineHeight: 1,
-                    }}
+                    style={{ fontSize: "clamp(1.8rem,3vw,2.6rem)", lineHeight: 1 }}
                   >
                     {value}
                   </div>
@@ -192,10 +180,7 @@ export default function CTASection() {
             </div>
 
             {/* Divider */}
-            <div
-              className="h-px"
-              style={{ background: "rgba(255,255,255,.08)" }}
-            />
+            <div className="h-px" style={{ background: "rgba(255,255,255,.08)" }} />
 
             {/* Trust row */}
             <div className="flex items-center gap-3 flex-wrap">
@@ -216,10 +201,9 @@ export default function CTASection() {
               </p>
             </div>
           </div>
+
         </div>
       </div>
     </section>
   );
 }
-
-
