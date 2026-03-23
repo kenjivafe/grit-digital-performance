@@ -155,7 +155,7 @@ export default function Hero() {
           font-family:'Barlow Condensed',sans-serif;
           font-weight:900; font-style:italic; text-transform:uppercase;
           line-height:.88; letter-spacing:-.01em;
-          font-size: clamp(4.5rem, 9vw, 10rem);
+          font-size: clamp(4rem, 9vw, 10rem);
         }
 
         .h-outline {
