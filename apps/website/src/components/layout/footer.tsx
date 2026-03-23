@@ -189,19 +189,19 @@ const Footer = () => {
       `}</style>
 
       {/* Texture stack */}
-      <div className="ft-halftone absolute inset-0 z-0" />
+      {/* <div className="ft-halftone absolute inset-0 z-0" />
       <div className="ft-jersey  absolute inset-0 z-0" />
-      <div className="ft-grain   absolute inset-0 z-0" />
+      <div className="ft-grain   absolute inset-0 z-0" /> */}
 
       {/* Red bloom top-left */}
-      <div
+      {/* <div
         className="absolute z-0 pointer-events-none"
         style={{
           top: "-15%", left: "-8%",
           width: "45vw", height: "45vw", borderRadius: "50%",
           background: "radial-gradient(circle,rgba(232,25,44,.07) 0%,transparent 65%)",
         }}
-      />
+      /> */}
 
       {/* Top red bar */}
       <div className="absolute top-0 left-0 right-0 h-0.75 z-10" style={{ background: "#e8192c" }} />
