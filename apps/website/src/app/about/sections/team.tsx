@@ -66,16 +66,16 @@ export default function Team() {
         /* Team card */
         .at-card {
           position:relative; overflow:hidden;
-          background:rgba(255,255,255,.03);
-          border:1px solid rgba(255,255,255,.08);
+          background:#fff;
+          border:1.5px solid #e2e8f0;
           clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
-          transition:transform .25s ease, border-color .25s ease, background .25s ease;
+          transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
           display:flex; flex-direction:column;
         }
         .at-card:hover {
           transform:translateY(-6px);
-          border-color:rgba(232,25,44,.35);
-          background:rgba(255,255,255,.055);
+          border-color:rgba(232,25,44,.3);
+          box-shadow:0 24px 56px rgba(0,0,0,.12);
         }
         .at-card::after {
           content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
@@ -126,7 +126,7 @@ export default function Team() {
           width:30px; height:30px;
           clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
           display:flex; align-items:center; justify-content:center;
-          background:rgba(255,255,255,.06); color:rgba(255,255,255,.35);
+          background:rgba(15,22,35,.07); color:#94a3b8;
           transition:background .18s,color .18s,transform .18s;
         }
         .at-social:hover { background:#e8192c; color:#fff; transform:translateY(-2px); }
@@ -134,7 +134,7 @@ export default function Team() {
         /* Ghost initials */
         .at-ghost {
           font-family:'Barlow Condensed',sans-serif; font-weight:900; font-style:italic;
-          color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.04);
+          color:transparent; -webkit-text-stroke:1.5px rgba(232,25,44,.06);
           position:absolute; bottom:-10px; right:-6px;
           font-size:7rem; line-height:1;
           user-select:none; pointer-events:none; white-space:nowrap;
@@ -145,7 +145,7 @@ export default function Team() {
           font-family:'Barlow Condensed',sans-serif; font-weight:700;
           text-transform:uppercase; font-size:.62rem; letter-spacing:.12em;
           color:#e8192c; display:inline-block;
-          background:rgba(232,25,44,.1);
+          background:rgba(232,25,44,.07);
           clip-path:polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,5px 100%,0 calc(100% - 5px));
           padding:3px 10px;
         }
@@ -218,7 +218,7 @@ export default function Team() {
 
                 {/* Name */}
                 <h3
-                  className="at-display font-black uppercase text-white leading-none mb-3"
+                  className="at-display font-black uppercase text-[#0f1623] leading-none mb-3"
                   style={{ fontSize: "clamp(1.5rem,2.2vw,1.9rem)", letterSpacing: ".03em" }}
                 >
                   {member.name}
@@ -228,7 +228,7 @@ export default function Team() {
 
                 {/* Bio */}
                 <p className="at-body text-sm leading-relaxed flex-1 mb-5"
-                  style={{ color: "rgba(255,255,255,.4)" }}>
+                  style={{ color: "#64748b" }}>
                   {member.bio}
                 </p>
 
