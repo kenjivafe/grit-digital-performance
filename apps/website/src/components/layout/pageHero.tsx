@@ -11,7 +11,7 @@ interface PageHeroProps {
   accentWord?: string; // optional word to highlight in red
 }
 
-export default function Hero({
+export default function PageHero({
   breadcrumb,
   titleLine1,
   titleLine2,

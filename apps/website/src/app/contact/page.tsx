@@ -1,4 +1,4 @@
-import Hero from "./sections/hero";
+import PageHero from "@/components/layout/pageHero";
 import ContactForm from "./sections/contactForm";
 import FAQ from "./sections/faq";
 import Layout from "@/components/layout/layout";
@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <>
       <Layout>
-        <Hero
+        <PageHero
           breadcrumb="Contact"
           titleLine1="Let's"
           titleLine2="Talk."
