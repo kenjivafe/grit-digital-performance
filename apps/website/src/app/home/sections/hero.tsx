@@ -248,7 +248,10 @@ export default function Hero() {
         }
       `}</style>
 
-      <section className="h-root relative overflow-hidden min-h-screen flex flex-col">
+      <section
+        className="h-root relative overflow-hidden flex flex-col"
+        style={{ height: "70vh" }}
+      >
         {/* ── BG TEXTURE STACK ── */}
         <div className="h-halftone absolute inset-0 z-0" />
         <div className="h-jersey  absolute inset-0 z-0" />
@@ -306,23 +309,12 @@ export default function Hero() {
         </svg>
 
         {/* ── MAIN CONTENT ── */}
-        <div className="relative z-20 flex-1 flex items-center">
-          <div className="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-16 xl:py-0">
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-10 xl:gap-0 items-stretch min-h-[calc(100vh-56px)]">
+        <div className="relative z-20 flex items-center">
+          <div className="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-12 xl:py-0">
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-10 xl:gap-0 items-stretch min-h-[calc(80vh-56px)]">
               {/* ════ LEFT ════ */}
-              <div className="flex flex-col justify-center gap-7 xl:pr-16 py-16">
+              <div className="flex flex-col justify-center gap-7 xl:pr-16 py-8">
                 {/* Tag */}
-                <div
-                  className={`flex items-center gap-3 ${mounted ? "h-au h-d0" : "opacity-0"}`}
-                >
-                  <div
-                    className="w-8 h-0.5 shrink-0"
-                    style={{ background: "#e8192c" }}
-                  />
-                  <span className="h-tag" style={{ color: "#e8192c" }}>
-                    Digital Performance Agency
-                  </span>
-                </div>
 
                 {/* Headline — 3 word stagger */}
                 <div>
@@ -333,18 +325,11 @@ export default function Hero() {
                         className="h-word-inner text-white"
                         style={{ animationDelay: ".1s" }}
                       >
-                        GRIT.
+                        GRIT DIGITAL
                       </span>
                     </span>
                     {/* DIGITAL */}
-                    <span className="h-word">
-                      <span
-                        className="h-word-inner text-white"
-                        style={{ animationDelay: ".24s" }}
-                      >
-                        DIGITAL.
-                      </span>
-                    </span>
+
                     {/* PERFORMANCE — outline */}
                     <span className="h-word">
                       <span
@@ -410,40 +395,18 @@ export default function Hero() {
               </div>
 
               {/* ════ RIGHT — Scoreboard panel ════ */}
-              <div
+              {/*   <div
                 className={`hidden xl:flex flex-col justify-center py-16 xl:pl-14 ${mounted ? "h-ar h-d3" : "opacity-0"}`}
               >
                 <div className="h-board p-0 relative">
                   <div className="h-panel-glow" />
 
-                  {/* Panel header */}
-                  <div
-                    className="flex items-center justify-between px-6 py-4 border-b"
-                    style={{ borderColor: "rgba(255,255,255,.07)" }}
-                  >
-                    <span
-                      className="h-tag text-white"
-                      style={{ opacity: 0.5, fontSize: ".62rem" }}
-                    >
-                      What We Build
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <div className="h-live-dot" />
-                      <span
-                        className="h-tag"
-                        style={{ color: "#e8192c", fontSize: ".58rem" }}
-                      >
-                        LIVE
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Service rows */}
+            
                   {services.map((s, i) => (
                     <div key={i}>
                       <div className="h-board-row px-6 py-6">
                         <div className="flex items-start gap-4">
-                          {/* Icon */}
+                       
                           <div
                             className="shrink-0 mt-0.5"
                             style={{
@@ -479,7 +442,6 @@ export default function Hero() {
                             </p>
                           </div>
 
-                          {/* Stat */}
                           <div className="text-right shrink-0 ml-3">
                             <div className="h-score-val">
                               {mounted ? (
@@ -509,7 +471,7 @@ export default function Hero() {
                     </div>
                   ))}
 
-                  {/* Panel footer */}
+             
                   <div
                     className="px-6 py-4 border-t flex items-center justify-between"
                     style={{
@@ -532,7 +494,7 @@ export default function Hero() {
                   </div>
                 </div>
 
-                {/* Stats row below panel */}
+         
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   {[
                     { value: "300%", label: "Avg. Growth" },
@@ -566,30 +528,8 @@ export default function Hero() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
-          </div>
-        </div>
-
-        {/* ── TICKER ── */}
-        <div
-          className="relative z-30 py-3 overflow-hidden border-t shrink-0"
-          style={{ background: "#e8192c", borderColor: "rgba(255,255,255,.1)" }}
-        >
-          <div className="h-ticker inline-flex gap-12">
-            {[...Array(2)].map((_, i) => (
-              <span key={i} className="inline-flex gap-12">
-                {ticker.map((item, j) => (
-                  <span
-                    key={j}
-                    className="h-display inline-flex items-center gap-3 text-white font-bold uppercase text-sm tracking-widest"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/50 inline-block shrink-0" />
-                    {item}
-                  </span>
-                ))}
-              </span>
-            ))}
           </div>
         </div>
       </section>
