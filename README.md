@@ -1,4 +1,4 @@
-# Grit Digital Performance
+# Grit Digital Performance 
 
 A modern, high-performance monorepo for sports organizations with Next.js 16, Turborepo, TailwindCSS, and sports-themed branding.
 
