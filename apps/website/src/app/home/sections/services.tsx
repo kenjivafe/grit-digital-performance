@@ -160,6 +160,7 @@ export default function Services() {
           flex-shrink:0;
           transition:background .2s;
         }
+          /* Icon hover effect */
 .sv-icon { transition: background .22s ease, color .22s ease; }
 .sv-card:hover .sv-icon {
   background: #e8192c !important;
