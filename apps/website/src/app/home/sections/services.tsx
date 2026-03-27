@@ -25,16 +25,17 @@ const services = [
   {
     number: "02",
     icon: ClipboardList,
-    title: "Event Registration",
+    title: "Sports Operations Platform",
     tagline: "From sign-up to showtime — fully handled.",
     description:
-      "Our registration platform is purpose-built for sports organizations, schools, and camps. Handle payments, waivers, check-ins, and real-time reporting — all in one system that scales from 50 to 50,000 participants.",
+      "A centralized sports operations platform to manage registrations, events, payments, and communications — all in one place. Built for organizations of any size, it simplifies operations while giving you full visibility from sign-up to execution.",
     features: [
-      "Online registration & payment processing",
-      "Digital waiver & consent management",
-      "Automated confirmations & reminders",
-      "Real-time check-in and reporting",
-      "Stripe & PayPal integrations built-in",
+      "Seamless online sign-up for athletes, teams, and participants",
+      "Organize games, sessions, and events with flexible scheduling tools",
+      "Send automated confirmations, reminders, and updates",
+      "Access real-time data on registrations, attendance, and revenue",
+      "Secure payment processing with built-in integrations",
+      "Digital forms and consent management for every participant",
     ],
     href: "/services/event-registration",
     dark: true,
@@ -171,8 +172,7 @@ export default function Services() {
           font-family:'Barlow Condensed',sans-serif;
           font-weight:700;font-style:italic;text-transform:uppercase;
           font-size:1rem;letter-spacing:.04em;color:#e8192c;
-          border-left:3px solid #e8192c;
-          padding-left:12px;
+  
         }
 
         /* Section number badge */
@@ -277,6 +277,7 @@ export default function Services() {
                       <s.icon className="w-5 h-5" />
                     </div>
                     <div>
+                      <div className="sv-tagline">{s.tagline}</div>
                       <div
                         className="sv-tag mb-0.5"
                         style={{
@@ -286,7 +287,7 @@ export default function Services() {
                       <h3
                         className="sv-display font-black uppercase leading-none"
                         style={{
-                          fontSize: "clamp(1.6rem,2.8vw,2.2rem)",
+                          fontSize: "clamp(1.2rem,2vw,1.7rem)",
                           letterSpacing: ".02em",
                           color: isDark ? "#fff" : "#0f1623",
                         }}
@@ -297,7 +298,6 @@ export default function Services() {
                   </div>
 
                   {/* Tagline */}
-                  <div className="sv-tagline">{s.tagline}</div>
 
                   {/* Description */}
                   <p
