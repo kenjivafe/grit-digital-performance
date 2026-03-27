@@ -39,7 +39,10 @@ function useCountUp(target: string, duration = 1400, delay = 800) {
   useEffect(() => {
     const numeric = parseInt(target.replace(/[^0-9]/g, ""), 10);
     const suffix = target.replace(/[0-9]/g, "");
-    if (!numeric) { setDisplay(target); return; }
+    if (!numeric) {
+      setDisplay(target);
+      return;
+    }
     const start = performance.now() + delay;
     let raf: number;
     const tick = (now: number) => {
@@ -245,8 +248,10 @@ export default function Hero() {
         }
       `}</style>
 
-      <section className="h-root relative overflow-hidden min-h-screen flex flex-col">
-
+      <section
+        className="h-root relative overflow-hidden flex flex-col"
+        style={{ height: "70vh" }}
+      >
         {/* ── BG TEXTURE STACK ── */}
         <div className="h-halftone absolute inset-0 z-0" />
         <div className="h-jersey  absolute inset-0 z-0" />
@@ -257,15 +262,21 @@ export default function Hero() {
         <div
           className="absolute z-0 pointer-events-none"
           style={{
-            top: "-10%", left: "-8%",
-            width: "55vw", height: "55vw",
+            top: "-10%",
+            left: "-8%",
+            width: "55vw",
+            height: "55vw",
             borderRadius: "50%",
-            background: "radial-gradient(circle,rgba(232,25,44,.07) 0%,transparent 65%)",
+            background:
+              "radial-gradient(circle,rgba(232,25,44,.07) 0%,transparent 65%)",
           }}
         />
 
         {/* Top red bar */}
-        <div className="absolute top-0 left-0 right-0 h-0.75 z-30" style={{ background: "#e8192c" }} />
+        <div
+          className="absolute top-0 left-0 right-0 h-0.75 z-30"
+          style={{ background: "#e8192c" }}
+        />
 
         {/* ── SVG Diagonal slash — full height, sits between left & right ── */}
         <svg
@@ -277,16 +288,20 @@ export default function Hero() {
           <line
             ref={slashRef}
             className="h-slash-line"
-            x1="62" y1="-2"
-            x2="52" y2="102"
+            x1="62"
+            y1="-2"
+            x2="52"
+            y2="102"
             stroke="#e8192c"
             strokeWidth=".35"
             vectorEffect="non-scaling-stroke"
           />
           {/* Faint shadow echo */}
           <line
-            x1="63.4" y1="-2"
-            x2="53.4" y2="102"
+            x1="63.4"
+            y1="-2"
+            x2="53.4"
+            y2="102"
             stroke="rgba(232,25,44,.15)"
             strokeWidth=".8"
             vectorEffect="non-scaling-stroke"
@@ -294,21 +309,12 @@ export default function Hero() {
         </svg>
 
         {/* ── MAIN CONTENT ── */}
-        <div className="relative z-20 flex-1 flex items-center">
-          <div className="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-16 xl:py-0">
-
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-10 xl:gap-0 items-stretch min-h-[calc(100vh-56px)]">
-
+        <div className="relative z-20 flex items-center">
+          <div className="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-12 xl:py-0">
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-10 xl:gap-0 items-stretch min-h-[calc(80vh-56px)]">
               {/* ════ LEFT ════ */}
-              <div className="flex flex-col justify-center gap-7 xl:pr-16 py-16">
-
+              <div className="flex flex-col justify-center gap-7 xl:pr-16 py-8">
                 {/* Tag */}
-                <div className={`flex items-center gap-3 ${mounted ? "h-au h-d0" : "opacity-0"}`}>
-                  <div className="w-8 h-0.5 shrink-0" style={{ background: "#e8192c" }} />
-                  <span className="h-tag" style={{ color: "#e8192c" }}>
-                    Digital Performance Agency
-                  </span>
-                </div>
 
                 {/* Headline — 3 word stagger */}
                 <div>
@@ -319,18 +325,11 @@ export default function Hero() {
                         className="h-word-inner text-white"
                         style={{ animationDelay: ".1s" }}
                       >
-                        GRIT.
+                        GRIT DIGITAL
                       </span>
                     </span>
                     {/* DIGITAL */}
-                    <span className="h-word">
-                      <span
-                        className="h-word-inner text-white"
-                        style={{ animationDelay: ".24s" }}
-                      >
-                        DIGITAL.
-                      </span>
-                    </span>
+
                     {/* PERFORMANCE — outline */}
                     <span className="h-word">
                       <span
@@ -344,81 +343,81 @@ export default function Hero() {
                 </div>
 
                 {/* Rule */}
-                <div className={`h-rule ${mounted ? "h-af h-d3" : "opacity-0"}`} />
+                <div
+                  className={`h-rule ${mounted ? "h-af h-d3" : "opacity-0"}`}
+                />
 
                 {/* Body copy */}
                 <p
                   className={`text-slate-400 leading-relaxed max-w-md ${mounted ? "h-au h-d4" : "opacity-0"}`}
                   style={{ fontSize: "clamp(.9rem,1.15vw,1.02rem)" }}
                 >
-                  We engineer{" "}
-                  <span className="text-white font-semibold">marketing websites</span>{" "}
-                  that grow your brand and{" "}
-                  <span className="text-white font-semibold">registration systems</span>{" "}
-                  that run your events — so your organization can focus on what it does best.
+                  Strategy, systems, and execution designed to drive measurable
+                  growth across every digital channel.
                 </p>
 
                 {/* CTAs */}
-                <div className={`flex flex-col sm:flex-row gap-3 ${mounted ? "h-au h-d5" : "opacity-0"}`}>
+                <div
+                  className={`flex flex-col sm:flex-row gap-3 ${mounted ? "h-au h-d5" : "opacity-0"}`}
+                >
                   <button className="h-btn-red">
-                    Start Your Project <ArrowRight className="w-4 h-4 shrink-0" />
+                    Get a Performance Audit{" "}
+                    <ArrowRight className="w-4 h-4 shrink-0" />
                   </button>
                   <button className="h-btn-ghost">View Our Work</button>
                 </div>
 
                 {/* Social proof */}
-                <div className={`flex items-center gap-3 flex-wrap ${mounted ? "h-au h-d6" : "opacity-0"}`}>
+                {/*<div
+                  className={`flex items-center gap-3 flex-wrap ${mounted ? "h-au h-d6" : "opacity-0"}`}
+                >
                   <div className="flex -space-x-2 shrink-0">
-                    {["#e8192c", "#1c2638", "#b91220", "#243044"].map((bg, i) => (
-                      <div
-                        key={i}
-                        className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-white text-xs font-bold"
-                        style={{ background: bg, borderColor: "#0f1623" }}
-                      >
-                        {String.fromCharCode(65 + i)}
-                      </div>
-                    ))}
+                    {["#e8192c", "#1c2638", "#b91220", "#243044"].map(
+                      (bg, i) => (
+                        <div
+                          key={i}
+                          className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-white text-xs font-bold"
+                          style={{ background: bg, borderColor: "#0f1623" }}
+                        >
+                          {String.fromCharCode(65 + i)}
+                        </div>
+                      ),
+                    )}
                   </div>
                   <p className="text-slate-400 text-sm">
                     Trusted by{" "}
-                    <span className="text-white font-semibold">50+ organizations</span>{" "}
+                    <span className="text-white font-semibold">
+                      50+ organizations
+                    </span>{" "}
                     nationwide
                   </p>
-                </div>
-
+                </div> */}
               </div>
 
               {/* ════ RIGHT — Scoreboard panel ════ */}
-              <div className={`hidden xl:flex flex-col justify-center py-16 xl:pl-14 ${mounted ? "h-ar h-d3" : "opacity-0"}`}>
-
+              {/*   <div
+                className={`hidden xl:flex flex-col justify-center py-16 xl:pl-14 ${mounted ? "h-ar h-d3" : "opacity-0"}`}
+              >
                 <div className="h-board p-0 relative">
                   <div className="h-panel-glow" />
 
-                  {/* Panel header */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,.07)" }}>
-                    <span className="h-tag text-white" style={{ opacity: .5, fontSize: ".62rem" }}>
-                      What We Build
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <div className="h-live-dot" />
-                      <span className="h-tag" style={{ color: "#e8192c", fontSize: ".58rem" }}>LIVE</span>
-                    </div>
-                  </div>
-
-                  {/* Service rows */}
+            
                   {services.map((s, i) => (
                     <div key={i}>
                       <div className="h-board-row px-6 py-6">
                         <div className="flex items-start gap-4">
-
-                          {/* Icon */}
+                       
                           <div
                             className="shrink-0 mt-0.5"
                             style={{
-                              width: 38, height: 38,
+                              width: 38,
+                              height: 38,
                               background: "rgba(232,25,44,.12)",
-                              clipPath: "polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))",
-                              display: "flex", alignItems: "center", justifyContent: "center",
+                              clipPath:
+                                "polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
                               color: "#e8192c",
                             }}
                           >
@@ -428,39 +427,62 @@ export default function Hero() {
                           <div className="flex-1 min-w-0">
                             <div
                               className="h-display font-bold uppercase text-white mb-1"
-                              style={{ fontSize: ".95rem", letterSpacing: ".05em" }}
+                              style={{
+                                fontSize: ".95rem",
+                                letterSpacing: ".05em",
+                              }}
                             >
                               {s.label}
                             </div>
-                            <p className="text-slate-500 leading-snug" style={{ fontSize: ".78rem" }}>
+                            <p
+                              className="text-slate-500 leading-snug"
+                              style={{ fontSize: ".78rem" }}
+                            >
                               {s.desc}
                             </p>
                           </div>
 
-                          {/* Stat */}
                           <div className="text-right shrink-0 ml-3">
                             <div className="h-score-val">
-                              {mounted
-                                ? <StatCount value={s.stat} delay={900 + i * 300} />
-                                : "0"}
+                              {mounted ? (
+                                <StatCount
+                                  value={s.stat}
+                                  delay={900 + i * 300}
+                                />
+                              ) : (
+                                "0"
+                              )}
                             </div>
-                            <div className="h-tag" style={{ color: "rgba(255,255,255,.3)", fontSize: ".55rem" }}>
+                            <div
+                              className="h-tag"
+                              style={{
+                                color: "rgba(255,255,255,.3)",
+                                fontSize: ".55rem",
+                              }}
+                            >
                               {s.statLabel}
                             </div>
                           </div>
-
                         </div>
                       </div>
-                      {i < services.length - 1 && <div className="h-divider mx-6" />}
+                      {i < services.length - 1 && (
+                        <div className="h-divider mx-6" />
+                      )}
                     </div>
                   ))}
 
-                  {/* Panel footer */}
+             
                   <div
                     className="px-6 py-4 border-t flex items-center justify-between"
-                    style={{ borderColor: "rgba(255,255,255,.07)", background: "rgba(232,25,44,.06)" }}
+                    style={{
+                      borderColor: "rgba(255,255,255,.07)",
+                      background: "rgba(232,25,44,.06)",
+                    }}
                   >
-                    <span className="h-tag text-white" style={{ opacity: .35, fontSize: ".58rem" }}>
+                    <span
+                      className="h-tag text-white"
+                      style={{ opacity: 0.35, fontSize: ".58rem" }}
+                    >
                       Est. USA · Grit Digital Performance
                     </span>
                     <div
@@ -470,10 +492,9 @@ export default function Hero() {
                       98% Satisfaction
                     </div>
                   </div>
-
                 </div>
 
-                {/* Stats row below panel */}
+         
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   {[
                     { value: "300%", label: "Avg. Growth" },
@@ -484,45 +505,33 @@ export default function Hero() {
                       style={{
                         background: "rgba(255,255,255,.03)",
                         border: "1px solid rgba(255,255,255,.07)",
-                        clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))",
+                        clipPath:
+                          "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))",
                         padding: ".9rem 1.1rem",
                       }}
                     >
-                      <div className="h-display font-black italic text-white" style={{ fontSize: "1.8rem", lineHeight: 1 }}>
+                      <div
+                        className="h-display font-black italic text-white"
+                        style={{ fontSize: "1.8rem", lineHeight: 1 }}
+                      >
                         {value}
                       </div>
-                      <div className="h-tag mt-1" style={{ color: "rgba(255,255,255,.3)", fontSize: ".58rem" }}>
+                      <div
+                        className="h-tag mt-1"
+                        style={{
+                          color: "rgba(255,255,255,.3)",
+                          fontSize: ".58rem",
+                        }}
+                      >
                         {label}
                       </div>
                     </div>
                   ))}
                 </div>
-
-              </div>
-
+              </div> */}
             </div>
           </div>
         </div>
-
-        {/* ── TICKER ── */}
-        <div
-          className="relative z-30 py-3 overflow-hidden border-t shrink-0"
-          style={{ background: "#e8192c", borderColor: "rgba(255,255,255,.1)" }}
-        >
-          <div className="h-ticker inline-flex gap-12">
-            {[...Array(2)].map((_, i) => (
-              <span key={i} className="inline-flex gap-12">
-                {ticker.map((item, j) => (
-                  <span key={j} className="h-display inline-flex items-center gap-3 text-white font-bold uppercase text-sm tracking-widest">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/50 inline-block shrink-0" />
-                    {item}
-                  </span>
-                ))}
-              </span>
-            ))}
-          </div>
-        </div>
-
       </section>
     </>
   );

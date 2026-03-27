@@ -7,43 +7,35 @@ const services = [
   {
     number: "01",
     icon: Globe,
-    category: "Web Services",
     title: "Marketing Websites",
-    tagline: "Your digital storefront, built to convert.",
+    tagline: "Turn Visitors Into Registered Athletes.",
     description:
-      "We design and develop custom, high-performance websites that position your organization for growth — fast, mobile-first, and built to rank. From landing pages to full multi-page experiences, every pixel earns its place.",
+      "Your website isn’t just a homepage — it’s your #1 recruitment tool. We build high-performance sites designed to attract, convince, and convert athletes and parents into registrations.",
     features: [
-      "Custom Next.js or WordPress builds",
-      "SEO-optimized from the ground up",
+      "Custom Next.js or WordPress builds tailored for youth sports organizations",
+      "Clear pathways from visit → interest → registration",
       "Mobile-first, blazing fast performance",
       "CMS so your team can self-manage",
-      "Ongoing support & maintenance plans",
-    ],
-    stats: [
-      { label: "Projects Delivered", value: "50+" },
-      { label: "Client Satisfaction", value: "98%" },
+      "SEO to help local athletes find your programs",
+      "Ongoing support to keep your site performing",
     ],
     href: "/services/web-development",
-    dark: false,
+    dark: true,
   },
   {
     number: "02",
     icon: ClipboardList,
-    category: "Event Management",
-    title: "Event Registration",
+    title: "Sports Operations Platform",
     tagline: "From sign-up to showtime — fully handled.",
     description:
-      "Our registration platform is purpose-built for sports organizations, schools, and camps. Handle payments, waivers, check-ins, and real-time reporting — all in one system that scales from 50 to 50,000 participants.",
+      "A centralized sports operations platform to manage registrations, events, payments, and communications — all in one place. Built for organizations of any size, it simplifies operations while giving you full visibility from sign-up to execution.",
     features: [
-      "Online registration & payment processing",
-      "Digital waiver & consent management",
-      "Automated confirmations & reminders",
-      "Real-time check-in and reporting",
-      "Stripe & PayPal integrations built-in",
-    ],
-    stats: [
-      { label: "Registrations Processed", value: "100K+" },
-      { label: "Revenue Generated", value: "$2M+" },
+      "Seamless online sign-up for athletes, teams, and participants",
+      "Organize games, sessions, and events with flexible scheduling tools",
+      "Send automated confirmations, reminders, and updates",
+      "Access real-time data on registrations, attendance, and revenue",
+      "Secure payment processing with built-in integrations",
+      "Digital forms and consent management for every participant",
     ],
     href: "/services/event-registration",
     dark: true,
@@ -52,7 +44,10 @@ const services = [
 
 export default function Services() {
   return (
-    <section className="relative overflow-hidden" style={{ background: "#f8f9fb" }}>
+    <section
+      className="relative overflow-hidden"
+      style={{ background: "#f8f9fb" }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Barlow:wght@400;500;600&display=swap');
 
@@ -65,24 +60,9 @@ export default function Services() {
           font-size:.68rem;letter-spacing:.18em;
         }
 
-        /* Halftone dot — matches hero */
-        .sv-halftone {
-          background-image: radial-gradient(circle, rgba(0,0,0,.04) 1px, transparent 1px);
-          background-size: 22px 22px;
-          pointer-events:none;
-        }
+     
 
-        /* Jersey stripe — matches hero */
-        .sv-jersey {
-          background-image: repeating-linear-gradient(
-            -55deg,
-            transparent,
-            transparent 18px,
-            rgba(0,0,0,.015) 18px,
-            rgba(0,0,0,.015) 36px
-          );
-          pointer-events:none;
-        }
+        
 
         /* ── Card ── */
         .sv-card {
@@ -181,14 +161,18 @@ export default function Services() {
           flex-shrink:0;
           transition:background .2s;
         }
-
+          /* Icon hover effect */
+.sv-icon { transition: background .22s ease, color .22s ease; }
+.sv-card:hover .sv-icon {
+  background: #e8192c !important;
+  color: #fff !important;
+}
         /* Tagline border-left accent */
         .sv-tagline {
           font-family:'Barlow Condensed',sans-serif;
           font-weight:700;font-style:italic;text-transform:uppercase;
           font-size:1rem;letter-spacing:.04em;color:#e8192c;
-          border-left:3px solid #e8192c;
-          padding-left:12px;
+  
         }
 
         /* Section number badge */
@@ -216,45 +200,44 @@ export default function Services() {
         }
       `}</style>
 
-      {/* Texture layers */}
-      <div className="sv-halftone absolute inset-0 pointer-events-none" />
-      <div className="sv-jersey  absolute inset-0 pointer-events-none" />
-
       {/* Top red bar */}
-      <div className="absolute top-0 left-0 right-0 h-0.75" style={{ background: "#e8192c" }} />
+      <div
+        className="absolute top-0 left-0 right-0 h-0.75"
+        style={{ background: "#e8192c" }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-20 lg:py-28">
-
         {/* ── Section header ── */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-0.5 shrink-0" style={{ background: "#e8192c" }} />
-              <span className="sv-tag" style={{ color: "#e8192c" }}>What We Do</span>
-            </div>
             <h2
               className="sv-display font-black uppercase text-[#0f1623] leading-[.9]"
-              style={{ fontSize: "clamp(2.4rem,5vw,5rem)", letterSpacing: ".01em" }}
+              style={{
+                fontSize: "clamp(2.4rem,5vw,5rem)",
+                letterSpacing: ".01em",
+              }}
             >
               Two Services.
               <br />
               <span
                 className="italic"
-                style={{ WebkitTextStroke: "2.5px #e8192c", color: "transparent" }}
+                style={{
+                  WebkitTextStroke: "2.5px #e8192c",
+                  color: "transparent",
+                }}
               >
                 One Vision.
               </span>
             </h2>
           </div>
-          <p className="sv-body text-slate-500 max-w-sm leading-relaxed text-sm lg:text-right lg:pb-1">
-            Everything your organization needs to grow online and run events with confidence —
-            delivered under one roof.
+          <p className="sv-body text-black max-w-sm leading-relaxed text-sm lg:text-right lg:pb-1">
+            Everything your organization needs to grow online and run events
+            with confidence — delivered under one roof.
           </p>
         </div>
 
         {/* ── Two-column cards ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative items-stretch">
           {/* Faint center slash — visual echo of hero */}
           <div className="sv-slash-deco hidden lg:block" />
 
@@ -263,7 +246,7 @@ export default function Services() {
             return (
               <div
                 key={s.number}
-                className={`sv-card ${isDark ? "sv-card-dark" : "sv-card-light"}`}
+                className={`sv-card flex flex-col ${isDark ? "sv-card-dark" : "sv-card-light"}`}
               >
                 {/* Animated top bar */}
                 <div className="sv-card-bar" />
@@ -277,35 +260,34 @@ export default function Services() {
                       ? "1.5px rgba(255,255,255,.04)"
                       : "1.5px rgba(232,25,44,.05)",
                   }}
-                >
-                  {s.number}
-                </div>
+                ></div>
 
-                <div className="relative z-10 p-8 lg:p-10 flex flex-col gap-6">
-
+                <div className="relative z-10 p-8 lg:p-10 flex flex-col gap-6 flex-1">
                   {/* Header row */}
                   <div className="flex items-start gap-4">
                     <div
                       className="sv-icon"
                       style={{
-                        background: isDark ? "rgba(232,25,44,.14)" : "rgba(232,25,44,.07)",
+                        background: isDark
+                          ? "rgba(232,25,44,.14)"
+                          : "rgba(232,25,44,.07)",
                         color: "#e8192c",
                       }}
                     >
                       <s.icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="sv-num mb-0.5">{s.number}</div>
+                      <div className="sv-tagline">{s.tagline}</div>
                       <div
                         className="sv-tag mb-0.5"
-                        style={{ color: isDark ? "rgba(255,255,255,.3)" : "#94a3b8" }}
-                      >
-                        {s.category}
-                      </div>
+                        style={{
+                          color: isDark ? "rgba(255,255,255,.3)" : "#94a3b8",
+                        }}
+                      ></div>
                       <h3
                         className="sv-display font-black uppercase leading-none"
                         style={{
-                          fontSize: "clamp(1.6rem,2.8vw,2.2rem)",
+                          fontSize: "clamp(1.2rem,2vw,1.7rem)",
                           letterSpacing: ".02em",
                           color: isDark ? "#fff" : "#0f1623",
                         }}
@@ -316,7 +298,6 @@ export default function Services() {
                   </div>
 
                   {/* Tagline */}
-                  <div className="sv-tagline">{s.tagline}</div>
 
                   {/* Description */}
                   <p
@@ -330,74 +311,43 @@ export default function Services() {
                   </p>
 
                   {/* Feature list */}
-                  <ul className="space-y-2.5">
+                  <ul className="space-y-2.5 flex-1">
                     {s.features.map((f) => (
                       <li
                         key={f}
                         className="sv-feature"
-                        style={{ color: isDark ? "rgba(255,255,255,.65)" : "#475569" }}
+                        style={{
+                          color: isDark ? "rgba(255,255,255,.65)" : "#475569",
+                        }}
                       >
                         <div
                           className="sv-check"
                           style={{
-                            background: isDark ? "rgba(232,25,44,.18)" : "rgba(232,25,44,.07)",
+                            background: isDark
+                              ? "rgba(232,25,44,.18)"
+                              : "rgba(232,25,44,.07)",
                           }}
                         >
-                          <Check className="w-3 h-3" style={{ color: "#e8192c" }} />
+                          <Check
+                            className="w-3 h-3"
+                            style={{ color: "#e8192c" }}
+                          />
                         </div>
                         {f}
                       </li>
                     ))}
                   </ul>
 
-                  {/* Stat chips */}
-                  <div className="flex gap-3">
-                    {s.stats.map(({ label, value }) => (
-                      <div
-                        key={label}
-                        className="sv-stat"
-                        style={{
-                          background: isDark
-                            ? "rgba(255,255,255,.04)"
-                            : "rgba(232,25,44,.03)",
-                          border: isDark
-                            ? "1px solid rgba(255,255,255,.07)"
-                            : "1.5px solid #e2e8f0",
-                        }}
-                      >
-                        <div
-                          className="sv-display font-black"
-                          style={{
-                            fontSize: "1.6rem",
-                            lineHeight: 1,
-                            color: isDark ? "#fff" : "#0f1623",
-                          }}
-                        >
-                          {value}
-                        </div>
-                        <div
-                          className="sv-tag mt-1"
-                          style={{
-                            color: isDark ? "rgba(255,255,255,.3)" : "#94a3b8",
-                            fontSize: ".6rem",
-                          }}
-                        >
-                          {label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
                   {/* CTA */}
                   <div
-                    className="pt-2 border-t"
-                    style={{ borderColor: isDark ? "rgba(255,255,255,.07)" : "#f1f5f9" }}
+                    className="mt-auto pt-2 border-t"
+                    style={{ borderColor: "rgba(255,255,255,.07)" }}
                   >
-                    <Link href={s.href} className={isDark ? "sv-btn-ghost" : "sv-btn"}>
-                      Learn More <ArrowRight className="w-4 h-4 shrink-0" />
-                    </Link>
+                    <button className="sv-btn">
+                      Get a Performance Audit{" "}
+                      <ArrowRight className="w-4 h-4 shrink-0" />
+                    </button>
                   </div>
-
                 </div>
               </div>
             );
@@ -405,33 +355,6 @@ export default function Services() {
         </div>
 
         {/* ── Bottom CTA band ── */}
-        <div
-          className="sv-cta-band mt-10 p-7 lg:p-9 flex flex-col sm:flex-row items-center justify-between gap-5"
-          style={{ background: "#0f1623" }}
-        >
-          {/* Jersey stripe on the band */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage: "repeating-linear-gradient(-55deg,transparent,transparent 18px,rgba(255,255,255,.015) 18px,rgba(255,255,255,.015) 36px)",
-            }}
-          />
-          <div className="relative z-10">
-            <div
-              className="sv-display font-black italic uppercase text-white mb-1"
-              style={{ fontSize: "1.15rem", letterSpacing: ".03em" }}
-            >
-              Not sure which service you need?
-            </div>
-            <p className="sv-body text-slate-400 text-sm">
-              Most clients use both. Let's figure out what fits your goals.
-            </p>
-          </div>
-          <Link href="/contact" className="sv-btn relative z-10 shrink-0">
-            Book a Free Call <ArrowRight className="w-4 h-4 shrink-0" />
-          </Link>
-        </div>
-
       </div>
     </section>
   );
