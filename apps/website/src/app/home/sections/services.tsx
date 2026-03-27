@@ -160,7 +160,11 @@ export default function Services() {
           flex-shrink:0;
           transition:background .2s;
         }
-
+.sv-icon { transition: background .22s ease, color .22s ease; }
+.sv-card:hover .sv-icon {
+  background: #e8192c !important;
+  color: #fff !important;
+}
         /* Tagline border-left accent */
         .sv-tagline {
           font-family:'Barlow Condensed',sans-serif;
