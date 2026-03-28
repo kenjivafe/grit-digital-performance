@@ -40,10 +40,8 @@ const defaultStats: StatItem[] = [
   },
 ];
 
-/* Alternating card themes — both dark, but different tones */
 const cardThemes = [
   {
-    /* even — slightly elevated dark */
     bg: "rgba(255,255,255,.04)",
     border: "1px solid rgba(255,255,255,.09)",
     valueColor: "#fff",
@@ -55,7 +53,6 @@ const cardThemes = [
     dividerBg: "rgba(232,25,44,.3)",
   },
   {
-    /* odd — deeper, near-black */
     bg: "rgba(0,0,0,.25)",
     border: "1px solid rgba(255,255,255,.04)",
     valueColor: "#fff",
@@ -68,115 +65,101 @@ const cardThemes = [
   },
 ];
 
+// Only what Tailwind cannot express: @keyframes, ::after pseudo-element,
+// parent-context hover selectors, clip-path, clamp() font sizes, @import.
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:wght@400;500;600&display=swap');
+
+  .font-barlow           { font-family: 'Barlow', sans-serif; }
+  .font-barlow-condensed { font-family: 'Barlow Condensed', sans-serif; }
+
+  /* Fluid font sizes */
+  .text-stats-heading { font-size: clamp(2.2rem, 4.5vw, 4rem); }
+  .text-stat-value    { font-size: clamp(2.4rem, 4vw,   3.2rem); }
+
+  /* Clip-path */
+  .clip-icon { clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
+
+  /* Card hover: lift + shadow */
+  .ss-card {
+    transition: transform .22s ease, box-shadow .22s ease;
+    cursor: default;
+  }
+  .ss-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 56px rgba(0,0,0,.45);
+    z-index: 2;
+  }
+
+  /* Red underline reveal on hover (::after pseudo — can't do this in Tailwind) */
+  .ss-card { position: relative; overflow: hidden; }
+  .ss-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: #e8192c;
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .ss-card:hover::after { transform: scaleX(1); }
+
+  /* Icon background + color swap on parent hover */
+  .ss-icon-wrap { transition: background .22s ease, color .22s ease; }
+  .ss-card:hover .ss-icon-wrap {
+    background: #e8192c !important;
+    color: #fff !important;
+  }
+`;
+
 const Stats = ({ stats = defaultStats, className }: SportsStatsProps) => {
   return (
     <section
-      className={cn("relative overflow-hidden", className)}
-      style={{ background: "#0f1623" }}
+      className={cn("font-barlow relative overflow-hidden bg-[#0f1623]", className)}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Barlow:wght@400;500;600&display=swap');
+      <style>{GLOBAL_CSS}</style>
 
-        .ss-display { font-family:'Barlow Condensed',sans-serif; }
-        .ss-body    { font-family:'Barlow',sans-serif; }
+      {/* Halftone texture */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
 
-        /* Halftone — matches hero */
-        .ss-halftone {
-          background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
-          background-size: 22px 22px;
-          pointer-events:none;
-        }
-
-        /* Jersey stripe — matches hero */
-        .ss-jersey {
-          background-image: repeating-linear-gradient(
-            -55deg,
-            transparent,
-            transparent 18px,
-            rgba(255,255,255,.015) 18px,
-            rgba(255,255,255,.015) 36px
-          );
-          pointer-events:none;
-        }
-
-        /* Card */
-        .ss-card {
-          position: relative;
-          overflow: hidden;
-          transition: transform .22s ease, box-shadow .22s ease;
-          cursor: default;
-        }
-        .ss-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 24px 56px rgba(0,0,0,.45);
-          z-index: 2;
-        }
-
-        /* Red underline reveal */
-        .ss-card::after {
-          content:'';
-          position:absolute;bottom:0;left:0;right:0;
-          height:3px;background:#e8192c;
-          transform:scaleX(0);transform-origin:left;
-          transition:transform .3s cubic-bezier(.22,1,.36,1);
-        }
-        .ss-card:hover::after { transform:scaleX(1); }
-
-        /* Icon hover */
-        .ss-card:hover .ss-icon-wrap {
-          background: #e8192c !important;
-          color: #fff !important;
-        }
-        .ss-icon-wrap { transition: background .22s ease, color .22s ease; }
-
-        /* Ghost */
-        .ss-ghost {
-          font-family:'Barlow Condensed',sans-serif;
-          font-weight:900;font-style:italic;
-          color:transparent;line-height:1;
-          user-select:none;pointer-events:none;
-          position:absolute;bottom:-10px;right:-8px;
-          font-size:7rem;white-space:nowrap;
-        }
-
-        .ss-value {
-          font-family:'Barlow Condensed',sans-serif;
-          font-style:italic;text-transform:uppercase;
-          color:#fff;line-height:1;
-        }
-
-        .ss-label {
-          font-family:'Barlow Condensed',sans-serif;
-          font-weight:700;text-transform:uppercase;
-          letter-spacing:.08em;font-size:1.4rem;
-          color:#e8192c;
-        }
-
-        /* Top accent bar */
-        .ss-topbar {
-          position:absolute;top:0;left:0;right:0;height:4px;
-          background:linear-gradient(to right,#e8192c 0%,#e8192c 30%,rgba(232,25,44,.1) 100%);
-        }
-
-        /* Red glow bloom */
-        .ss-bloom {
-          position:absolute;
-          border-radius:50%;
-          background:radial-gradient(circle,rgba(232,25,44,.09) 0%,transparent 65%);
-          pointer-events:none;
-        }
-      `}</style>
-
-      {/* Texture layers */}
-      <div className="ss-halftone absolute inset-0 z-0" />
-      <div className="ss-jersey  absolute inset-0 z-0" />
+      {/* Jersey diagonal stripes */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(-55deg, transparent, transparent 18px, rgba(255,255,255,.015) 18px, rgba(255,255,255,.015) 36px)",
+        }}
+      />
 
       {/* Red bloom accents */}
-      <div className="ss-bloom" style={{ width: "40vw", height: "40vw", top: "-10%", left: "-5%" }} />
-      <div className="ss-bloom" style={{ width: "30vw", height: "30vw", bottom: "-10%", right: "5%" }} />
+      <div
+        className="absolute rounded-full pointer-events-none z-0"
+        style={{
+          width: "40vw", height: "40vw", top: "-10%", left: "-5%",
+          background: "radial-gradient(circle, rgba(232,25,44,.09) 0%, transparent 65%)",
+        }}
+      />
+      <div
+        className="absolute rounded-full pointer-events-none z-0"
+        style={{
+          width: "30vw", height: "30vw", bottom: "-10%", right: "5%",
+          background: "radial-gradient(circle, rgba(232,25,44,.09) 0%, transparent 65%)",
+        }}
+      />
 
       {/* Top accent bar */}
-      <div className="ss-topbar" />
+      <div
+        className="absolute top-0 left-0 right-0 h-[4px] z-10"
+        style={{
+          background:
+            "linear-gradient(to right, #e8192c 0%, #e8192c 30%, rgba(232,25,44,.1) 100%)",
+        }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-20">
 
@@ -184,32 +167,21 @@ const Stats = ({ stats = defaultStats, className }: SportsStatsProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-end mb-16">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-0.5 shrink-0" style={{ background: "#e8192c" }} />
-              <span
-                className="ss-display font-bold uppercase text-xs tracking-[.18em]"
-                style={{ color: "#e8192c" }}
-              >
+              <div className="w-8 h-0.5 shrink-0 bg-[#e8192c]" />
+              <span className="font-barlow-condensed font-bold uppercase text-xs tracking-[.18em] text-[#e8192c]">
                 Proven Track Record
               </span>
             </div>
-            <h2
-              className="ss-display font-black italic uppercase leading-[.9]"
-              style={{ fontSize: "clamp(2.2rem,4.5vw,4rem)", color: "#fff" }}
-            >
+            <h2 className="font-barlow-condensed font-black italic uppercase leading-[.9] text-stats-heading text-white">
               Numbers That
               <br />
-              <span
-                style={{
-                  WebkitTextStroke: "2px #e8192c",
-                  color: "transparent",
-                }}
-              >
+              <span className="text-stroke-red">
                 Speak for Themselves
               </span>
             </h2>
           </div>
           <p
-            className="ss-body text-sm leading-relaxed lg:text-right lg:pb-1 max-w-xs"
+            className="font-barlow text-sm leading-relaxed lg:text-right lg:pb-1 max-w-xs"
             style={{ color: "rgba(255,255,255,.4)" }}
           >
             Across marketing websites and event registration systems, we deliver
@@ -217,7 +189,7 @@ const Stats = ({ stats = defaultStats, className }: SportsStatsProps) => {
           </p>
         </div>
 
-        {/* Stats grid — alternating tones */}
+        {/* Stats grid */}
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
           style={{
@@ -238,40 +210,48 @@ const Stats = ({ stats = defaultStats, className }: SportsStatsProps) => {
                   borderBottom: i >= 2 ? "none" : undefined,
                 }}
               >
+                {/* Ghost value */}
                 <div
-                  className="ss-ghost"
                   aria-hidden="true"
-                  style={{ WebkitTextStroke: `1px ${t.ghostStroke}` }}
+                  className="font-barlow-condensed font-black italic absolute bottom-[-10px] right-[-8px] text-[7rem] leading-none select-none pointer-events-none whitespace-nowrap"
+                  style={{
+                    color: "transparent",
+                    WebkitTextStroke: `1px ${t.ghostStroke}`,
+                  }}
                 >
                   {stat.value}
                 </div>
 
+                {/* Icon */}
                 <div
-                  className="ss-icon-wrap w-11 h-11 flex items-center justify-center mb-5 shrink-0"
-                  style={{
-                    background: t.iconBg,
-                    color: t.iconColor,
-                    clipPath: "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))",
-                  }}
+                  className="ss-icon-wrap clip-icon w-11 h-11 flex items-center justify-center mb-5 shrink-0"
+                  style={{ background: t.iconBg, color: t.iconColor }}
                 >
                   {stat.icon}
                 </div>
 
+                {/* Value */}
                 <div
-                  className="ss-value mb-1"
-                  style={{ fontSize: "clamp(2.4rem,4vw,3.2rem)", color: t.valueColor }}
+                  className="font-barlow-condensed font-black italic uppercase leading-none mb-1 text-stat-value"
+                  style={{ color: t.valueColor }}
                 >
                   {stat.value}
                 </div>
 
-                <div className="ss-label mb-3" style={{ color: t.labelColor }}>
+                {/* Label */}
+                <div
+                  className="font-barlow-condensed font-bold uppercase tracking-[.08em] text-[1.4rem] mb-3"
+                  style={{ color: t.labelColor }}
+                >
                   {stat.label}
                 </div>
 
+                {/* Divider */}
                 <div className="w-8 h-0.5 mb-3" style={{ background: t.dividerBg }} />
 
+                {/* Description */}
                 {stat.description && (
-                  <p className="ss-body text-sm leading-relaxed" style={{ color: t.descColor }}>
+                  <p className="font-barlow text-sm leading-relaxed" style={{ color: t.descColor }}>
                     {stat.description}
                   </p>
                 )}
@@ -285,9 +265,14 @@ const Stats = ({ stats = defaultStats, className }: SportsStatsProps) => {
           className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
           style={{ borderTop: "1px solid rgba(255,255,255,.07)" }}
         >
-          <p className="ss-body text-sm text-center sm:text-left" style={{ color: "rgba(255,255,255,.35)" }}>
+          <p
+            className="font-barlow text-sm text-center sm:text-left"
+            style={{ color: "rgba(255,255,255,.35)" }}
+          >
             Trusted by coaches, athletic directors, school admins, and camp organizers{" "}
-            <span style={{ color: "rgba(255,255,255,.75)", fontWeight: 600 }}>nationwide</span>
+            <span className="font-semibold" style={{ color: "rgba(255,255,255,.75)" }}>
+              nationwide
+            </span>
           </p>
           <div className="flex items-center gap-2">
             {["#e8192c", "#1c2638", "#b91220", "#243044", "#0f1623"].map((bg, i) => (
@@ -305,7 +290,7 @@ const Stats = ({ stats = defaultStats, className }: SportsStatsProps) => {
               </div>
             ))}
             <span
-              className="ss-display font-bold uppercase text-xs tracking-wider ml-3"
+              className="font-barlow-condensed font-bold uppercase text-xs tracking-wider ml-3"
               style={{ color: "rgba(255,255,255,.3)" }}
             >
               50+ Organizations

@@ -3,37 +3,36 @@
 import { ArrowRight, Globe, ClipboardList } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
-const ticker = [
-  "Marketing Websites",
-  "Event Registration",
-  "Sports Consulting",
-  "School Camps",
-  "Youth Athletics",
-  "Tournament Systems",
-  "Fan Engagement",
-  "Mobile-First Design",
-];
+// const ticker = [
+//   "Marketing Websites",
+//   "Event Registration",
+//   "Sports Consulting",
+//   "School Camps",
+//   "Youth Athletics",
+//   "Tournament Systems",
+//   "Fan Engagement",
+//   "Mobile-First Design",
+// ];
 
-const services = [
-  {
-    icon: Globe,
-    label: "Marketing Websites",
-    desc: "Custom-built sites that convert visitors into clients",
-    stat: "50+",
-    statLabel: "Sites Launched",
-    accent: "#e8192c",
-  },
-  {
-    icon: ClipboardList,
-    label: "Event Registration",
-    desc: "End-to-end systems for sports orgs, schools & camps",
-    stat: "100K+",
-    statLabel: "Registrations",
-    accent: "rgba(255,255,255,.7)",
-  },
-];
+// const services = [
+//   {
+//     icon: Globe,
+//     label: "Marketing Websites",
+//     desc: "Custom-built sites that convert visitors into clients",
+//     stat: "50+",
+//     statLabel: "Sites Launched",
+//     accent: "#e8192c",
+//   },
+//   {
+//     icon: ClipboardList,
+//     label: "Event Registration",
+//     desc: "End-to-end systems for sports orgs, schools & camps",
+//     stat: "100K+",
+//     statLabel: "Registrations",
+//     accent: "rgba(255,255,255,.7)",
+//   },
+// ];
 
-/* Simple count-up hook */
 function useCountUp(target: string, duration = 1400, delay = 800) {
   const [display, setDisplay] = useState("0");
   useEffect(() => {
@@ -63,6 +62,64 @@ function StatCount({ value, delay }: { value: string; delay: number }) {
   return <>{v}</>;
 }
 
+// Keyframe animations and a tiny set of design tokens that cannot be expressed
+// in Tailwind utility classes (clip-path values, stroke-dasharray, @keyframes,
+// clamp() font-sizes, custom font imports). Everything else is Tailwind.
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Barlow:wght@400;500;600&display=swap');
+
+  @keyframes h-up    { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
+  @keyframes h-left  { from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);} }
+  @keyframes h-right { from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);} }
+  @keyframes h-ticker{ 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
+  @keyframes h-fade  { from{opacity:0;}to{opacity:1;} }
+  @keyframes slash-draw { from{stroke-dashoffset:2000;}to{stroke-dashoffset:0;} }
+  @keyframes live-pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);} }
+
+  .animate-h-up    { animation: h-up    0.7s  cubic-bezier(.22,1,.36,1) both; }
+  .animate-h-left  { animation: h-left  0.65s cubic-bezier(.22,1,.36,1) both; }
+  .animate-h-right { animation: h-right 0.65s cubic-bezier(.22,1,.36,1) both; }
+  .animate-h-fade  { animation: h-fade  0.6s  ease both; }
+  .animate-ticker  { animation: h-ticker 28s linear infinite; }
+  .animate-live-pulse { animation: live-pulse 1.6s ease-in-out infinite; }
+
+  .animate-word-in {
+    display: block;
+    transform: translateY(100%);
+    opacity: 0;
+    animation: h-up 0.7s cubic-bezier(.22,1,.36,1) forwards;
+  }
+
+  .slash-line {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: slash-draw 0.9s cubic-bezier(.22,1,.36,1) 0.2s forwards;
+  }
+
+  /* Delay helpers */
+  .delay-d0 { animation-delay: .05s; }
+  .delay-d1 { animation-delay: .18s; }
+  .delay-d2 { animation-delay: .32s; }
+  .delay-d3 { animation-delay: .46s; }
+  .delay-d4 { animation-delay: .60s; }
+  .delay-d5 { animation-delay: .75s; }
+  .delay-d6 { animation-delay: .90s; }
+  .delay-d7 { animation-delay: 1.05s; }
+
+  /* Font families */
+  .font-barlow           { font-family: 'Barlow', sans-serif; }
+  .font-barlow-condensed { font-family: 'Barlow Condensed', sans-serif; }
+
+  /* Fluid font size — no Tailwind equivalent */
+  .text-headline { font-size: clamp(3rem, 9vw, 10rem); }
+  .text-body     { font-size: clamp(.9rem, 1.15vw, 1.02rem); }
+
+  /* Clip-path shapes */
+  .clip-cta  { clip-path: polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,11px 100%,0 calc(100% - 11px)); }
+  .clip-icon { clip-path: polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px)); }
+  .clip-stat { clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
+`;
+
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const slashRef = useRef<SVGLineElement>(null);
@@ -73,192 +130,53 @@ export default function Hero() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Barlow:wght@400;500;600&display=swap');
-
-        .h-root    { font-family:'Barlow',sans-serif; background:#0f1623; }
-        .h-display { font-family:'Barlow Condensed',sans-serif; }
-
-        /* ── Animations ── */
-        @keyframes h-up    { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
-        @keyframes h-left  { from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);} }
-        @keyframes h-right { from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);} }
-        @keyframes h-ticker{ 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
-        @keyframes h-fade  { from{opacity:0;}to{opacity:1;} }
-
-        /* Slash draw-down */
-        @keyframes slash-draw {
-          from { stroke-dashoffset: 2000; }
-          to   { stroke-dashoffset: 0; }
-        }
-        .h-slash-line {
-          stroke-dasharray: 2000;
-          stroke-dashoffset: 2000;
-          animation: slash-draw .9s cubic-bezier(.22,1,.36,1) .2s forwards;
-        }
-
-        /* Headline word stagger */
-        .h-word { display:block; overflow:hidden; }
-        .h-word-inner {
-          display:block;
-          transform:translateY(100%);
-          opacity:0;
-          animation:h-up .7s cubic-bezier(.22,1,.36,1) forwards;
-        }
-
-        .h-au  { animation:h-up    .65s cubic-bezier(.22,1,.36,1) both; }
-        .h-al  { animation:h-left  .65s cubic-bezier(.22,1,.36,1) both; }
-        .h-ar  { animation:h-right .65s cubic-bezier(.22,1,.36,1) both; }
-        .h-af  { animation:h-fade  .6s  ease both; }
-
-        .h-d0 { animation-delay:.05s; }
-        .h-d1 { animation-delay:.18s; }
-        .h-d2 { animation-delay:.32s; }
-        .h-d3 { animation-delay:.46s; }
-        .h-d4 { animation-delay:.60s; }
-        .h-d5 { animation-delay:.75s; }
-        .h-d6 { animation-delay:.90s; }
-        .h-d7 { animation-delay:1.05s; }
-
-        .h-ticker { animation:h-ticker 28s linear infinite; white-space:nowrap; }
-
-        /* ── Halftone dot bg ── */
-        .h-halftone {
-          background-image: radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px);
-          background-size: 22px 22px;
-          pointer-events:none;
-        }
-
-        /* ── Jersey diagonal stripe ── */
-        .h-jersey {
-          background-image: repeating-linear-gradient(
-            -55deg,
-            transparent,
-            transparent 18px,
-            rgba(255,255,255,.018) 18px,
-            rgba(255,255,255,.018) 36px
-          );
-          pointer-events:none;
-        }
-
-        /* ── Noise grain ── */
-        .h-grain {
-          background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          opacity:.055; mix-blend-mode:overlay; pointer-events:none;
-        }
-
-        /* ── Vignette ── */
-        .h-vignette {
-          background: radial-gradient(ellipse at 40% 50%, transparent 30%, rgba(5,8,14,.65) 100%);
-          pointer-events:none;
-        }
-
-        /* ── Headline ── */
-        .h-headline {
-          font-family:'Barlow Condensed',sans-serif;
-          font-weight:900; font-style:italic; text-transform:uppercase;
-          line-height:.88; letter-spacing:-.01em;
-          font-size: clamp(4rem, 9vw, 10rem);
-        }
-
-        .h-outline {
-          -webkit-text-stroke: 3px #e8192c;
-          color: transparent;
-        }
-
-        .h-tag {
-          font-family:'Barlow Condensed',sans-serif;
-          font-weight:700; text-transform:uppercase;
-          font-size:.68rem; letter-spacing:.18em;
-        }
-
-        /* ── CTA buttons ── */
-        .h-btn-red {
-          font-family:'Barlow Condensed',sans-serif;font-weight:700;
-          text-transform:uppercase;letter-spacing:.09em;
-          background:#e8192c;color:#fff;
-          clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,11px 100%,0 calc(100% - 11px));
-          transition:background .18s,transform .18s;
-          display:inline-flex;align-items:center;gap:8px;
-          padding:13px 28px;font-size:1rem;white-space:nowrap;
-        }
-        .h-btn-red:hover { background:#b91220; transform:translateX(3px); }
-
-        .h-btn-ghost {
-          font-family:'Barlow Condensed',sans-serif;font-weight:700;
-          text-transform:uppercase;letter-spacing:.09em;color:#fff;
-          border:1.5px solid rgba(255,255,255,.22);
-          clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,11px 100%,0 calc(100% - 11px));
-          transition:border-color .18s,background .18s;
-          display:inline-flex;align-items:center;gap:8px;
-          padding:13px 28px;font-size:1rem;white-space:nowrap;
-        }
-        .h-btn-ghost:hover { border-color:rgba(255,255,255,.55); background:rgba(255,255,255,.07); }
-
-        /* ── Scoreboard panel ── */
-        .h-board {
-          border-left: 3px solid #e8192c;
-          background: rgba(255,255,255,.03);
-          backdrop-filter: blur(4px);
-          position:relative; overflow:hidden;
-        }
-
-        .h-board-row {
-          transition: background .2s;
-          position:relative;
-        }
-        .h-board-row:hover { background: rgba(232,25,44,.06); }
-
-        /* Live indicator pulse */
-        @keyframes live-pulse {
-          0%,100% { opacity:1; transform:scale(1); }
-          50%      { opacity:.4; transform:scale(.7); }
-        }
-        .h-live-dot {
-          width:7px;height:7px;border-radius:50%;background:#e8192c;
-          animation:live-pulse 1.6s ease-in-out infinite;
-          flex-shrink:0;
-        }
-
-        /* Scoreboard stat count */
-        .h-score-val {
-          font-family:'Barlow Condensed',sans-serif;
-          font-weight:900;font-style:italic;
-          font-size:2.4rem;line-height:1;
-          color:#fff;
-        }
-
-        /* Divider line */
-        .h-divider {
-          height:1px;
-          background:linear-gradient(to right,rgba(255,255,255,.08),transparent);
-        }
-
-        /* Red left glow behind panel */
-        .h-panel-glow {
-          position:absolute;left:-60px;top:20%;bottom:20%;width:120px;
-          background:radial-gradient(ellipse at right,rgba(232,25,44,.18),transparent 70%);
-          pointer-events:none;
-        }
-
-        /* Bottom rule */
-        .h-rule {
-          height:1px;
-          background:linear-gradient(to right,#e8192c,rgba(232,25,44,.2),transparent);
-        }
-      `}</style>
+      <style>{GLOBAL_CSS}</style>
 
       <section
-        className="h-root relative overflow-hidden flex flex-col"
-        style={{ height: "70vh" }}
+        className="font-barlow h-[70vh] relative overflow-hidden flex flex-col bg-[#0f1623]"
       >
         {/* ── BG TEXTURE STACK ── */}
-        <div className="h-halftone absolute inset-0 z-0" />
-        <div className="h-jersey  absolute inset-0 z-0" />
-        <div className="h-grain   absolute inset-0 z-0" />
-        <div className="h-vignette absolute inset-0 z-0" />
 
-        {/* Soft red bloom — top left */}
+        {/* Halftone dots */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+
+        {/* Jersey diagonal stripes */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(-55deg, transparent, transparent 18px, rgba(255,255,255,.018) 18px, rgba(255,255,255,.018) 36px)",
+          }}
+        />
+
+        {/* Noise grain */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            opacity: 0.055,
+            mixBlendMode: "overlay",
+          }}
+        />
+
+        {/* Vignette */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 40% 50%, transparent 30%, rgba(5,8,14,.65) 100%)",
+          }}
+        />
+
+        {/* Red bloom — top left */}
         <div
           className="absolute z-0 pointer-events-none"
           style={{
@@ -268,17 +186,16 @@ export default function Hero() {
             height: "55vw",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle,rgba(232,25,44,.07) 0%,transparent 65%)",
+              "radial-gradient(circle, rgba(232,25,44,.07) 0%, transparent 65%)",
           }}
         />
 
         {/* Top red bar */}
         <div
-          className="absolute top-0 left-0 right-0 h-0.75 z-30"
-          style={{ background: "#e8192c" }}
+          className="absolute top-0 left-0 right-0 z-30 h-px bg-[#e8192c]"
         />
 
-        {/* ── SVG Diagonal slash — full height, sits between left & right ── */}
+        {/* ── SVG Diagonal slash ── */}
         <svg
           className="absolute inset-0 w-full h-full z-10 pointer-events-none"
           preserveAspectRatio="none"
@@ -287,7 +204,7 @@ export default function Hero() {
         >
           <line
             ref={slashRef}
-            className="h-slash-line"
+            className="slash-line"
             x1="62"
             y1="-2"
             x2="52"
@@ -296,7 +213,6 @@ export default function Hero() {
             strokeWidth=".35"
             vectorEffect="non-scaling-stroke"
           />
-          {/* Faint shadow echo */}
           <line
             x1="63.4"
             y1="-2"
@@ -311,29 +227,32 @@ export default function Hero() {
         {/* ── MAIN CONTENT ── */}
         <div className="relative z-20 flex items-center">
           <div className="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-12 xl:py-0">
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-10 xl:gap-0 items-stretch min-h-[calc(80vh-56px)]">
+            <div
+              className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-10 xl:gap-0 items-stretch"
+              style={{ minHeight: "calc(80vh - 56px)" }}
+            >
               {/* ════ LEFT ════ */}
               <div className="flex flex-col justify-center gap-7 xl:pr-16 py-8">
-                {/* Tag */}
 
-                {/* Headline — 3 word stagger */}
+                {/* Headline */}
                 <div>
-                  <h1 className="h-headline">
-                    {/* GRIT */}
-                    <span className="h-word">
+                  <h1
+                    className="font-barlow-condensed font-black italic uppercase text-headline leading-[.88] tracking-[-0.01em]"
+                  >
+                    {/* GRIT DIGITAL */}
+                    <span className="block overflow-hidden">
                       <span
-                        className="h-word-inner text-white"
+                        className="animate-word-in text-white block"
                         style={{ animationDelay: ".1s" }}
                       >
                         GRIT DIGITAL
                       </span>
                     </span>
-                    {/* DIGITAL */}
 
                     {/* PERFORMANCE — outline */}
-                    <span className="h-word">
+                    <span className="block overflow-hidden">
                       <span
-                        className="h-word-inner h-outline"
+                        className="animate-word-in text-stroke-red block"
                         style={{ animationDelay: ".4s" }}
                       >
                         PERFORMANCE.
@@ -342,15 +261,19 @@ export default function Hero() {
                   </h1>
                 </div>
 
-                {/* Rule */}
+                {/* Divider rule */}
                 <div
-                  className={`h-rule ${mounted ? "h-af h-d3" : "opacity-0"}`}
+                  className={mounted ? "animate-h-fade delay-d3 h-px" : "opacity-0 h-px"}
+                  style={{
+                    background:
+                      "linear-gradient(to right, #e8192c, rgba(232,25,44,.2), transparent)",
+                  }}
                 />
 
                 {/* Body copy */}
                 <p
-                  className={`text-slate-400 leading-relaxed max-w-md ${mounted ? "h-au h-d4" : "opacity-0"}`}
-                  style={{ fontSize: "clamp(.9rem,1.15vw,1.02rem)" }}
+                  className={`text-slate-400 leading-relaxed max-w-md text-body ${mounted ? "animate-h-up delay-d4" : "opacity-0"
+                    }`}
                 >
                   Strategy, systems, and execution designed to drive measurable
                   growth across every digital channel.
@@ -358,143 +281,101 @@ export default function Hero() {
 
                 {/* CTAs */}
                 <div
-                  className={`flex flex-col sm:flex-row gap-3 ${mounted ? "h-au h-d5" : "opacity-0"}`}
+                  className={`flex flex-col sm:flex-row gap-3 ${mounted ? "animate-h-up delay-d5" : "opacity-0"
+                    }`}
                 >
-                  <button className="h-btn-red">
+                  {/* Primary red button */}
+                  <button
+                    className="clip-cta font-barlow-condensed font-bold uppercase tracking-[.09em] bg-[#e8192c] text-white inline-flex items-center gap-2 px-7 py-3 text-base whitespace-nowrap transition-colors duration-180 hover:bg-[#b91220] hover:translate-x-[3px]"
+                  >
                     Get a Performance Audit{" "}
                     <ArrowRight className="w-4 h-4 shrink-0" />
                   </button>
-                  <button className="h-btn-ghost">View Our Work</button>
-                </div>
 
-                {/* Social proof */}
-                {/*<div
-                  className={`flex items-center gap-3 flex-wrap ${mounted ? "h-au h-d6" : "opacity-0"}`}
-                >
-                  <div className="flex -space-x-2 shrink-0">
-                    {["#e8192c", "#1c2638", "#b91220", "#243044"].map(
-                      (bg, i) => (
-                        <div
-                          key={i}
-                          className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-white text-xs font-bold"
-                          style={{ background: bg, borderColor: "#0f1623" }}
-                        >
-                          {String.fromCharCode(65 + i)}
-                        </div>
-                      ),
-                    )}
-                  </div>
-                  <p className="text-slate-400 text-sm">
-                    Trusted by{" "}
-                    <span className="text-white font-semibold">
-                      50+ organizations
-                    </span>{" "}
-                    nationwide
-                  </p>
-                </div> */}
+                  {/* Ghost button */}
+                  <button
+                    className="clip-cta font-barlow-condensed font-bold uppercase tracking-[.09em] text-white border border-white/20 inline-flex items-center gap-2 px-7 py-3 text-base whitespace-nowrap transition-[border-color,background] duration-180 hover:border-white/50 hover:bg-white/[.07]"
+                  >
+                    View Our Work
+                  </button>
+                </div>
               </div>
 
-              {/* ════ RIGHT — Scoreboard panel ════ */}
-              {/*   <div
-                className={`hidden xl:flex flex-col justify-center py-16 xl:pl-14 ${mounted ? "h-ar h-d3" : "opacity-0"}`}
+              {/* ════ RIGHT — Scoreboard panel (commented out, preserved) ════ */}
+              {/*
+              <div
+                className={`hidden xl:flex flex-col justify-center py-16 xl:pl-14 ${
+                  mounted ? "animate-h-right delay-d3" : "opacity-0"
+                }`}
               >
-                <div className="h-board p-0 relative">
-                  <div className="h-panel-glow" />
+                <div
+                  className="border-l-[3px] border-[#e8192c] bg-white/[.03] backdrop-blur-[4px] relative overflow-hidden p-0"
+                >
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{
+                      left: -60, top: "20%", bottom: "20%", width: 120,
+                      background:
+                        "radial-gradient(ellipse at right, rgba(232,25,44,.18), transparent 70%)",
+                    }}
+                  />
 
-            
                   {services.map((s, i) => (
                     <div key={i}>
-                      <div className="h-board-row px-6 py-6">
+                      <div className="px-6 py-6 transition-colors duration-200 hover:bg-[rgba(232,25,44,.06)]">
                         <div className="flex items-start gap-4">
-                       
                           <div
-                            className="shrink-0 mt-0.5"
-                            style={{
-                              width: 38,
-                              height: 38,
-                              background: "rgba(232,25,44,.12)",
-                              clipPath:
-                                "polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: "#e8192c",
-                            }}
+                            className="clip-icon shrink-0 mt-0.5 flex items-center justify-center bg-[rgba(232,25,44,.12)] text-[#e8192c]"
+                            style={{ width: 38, height: 38 }}
                           >
                             <s.icon style={{ width: 16, height: 16 }} />
                           </div>
-
                           <div className="flex-1 min-w-0">
-                            <div
-                              className="h-display font-bold uppercase text-white mb-1"
-                              style={{
-                                fontSize: ".95rem",
-                                letterSpacing: ".05em",
-                              }}
-                            >
+                            <div className="font-barlow-condensed font-bold uppercase text-white mb-1 text-[.95rem] tracking-[.05em]">
                               {s.label}
                             </div>
-                            <p
-                              className="text-slate-500 leading-snug"
-                              style={{ fontSize: ".78rem" }}
-                            >
+                            <p className="text-slate-500 leading-snug text-[.78rem]">
                               {s.desc}
                             </p>
                           </div>
-
                           <div className="text-right shrink-0 ml-3">
-                            <div className="h-score-val">
+                            <div className="font-barlow-condensed font-black italic text-white text-[2.4rem] leading-none">
                               {mounted ? (
-                                <StatCount
-                                  value={s.stat}
-                                  delay={900 + i * 300}
-                                />
+                                <StatCount value={s.stat} delay={900 + i * 300} />
                               ) : (
                                 "0"
                               )}
                             </div>
-                            <div
-                              className="h-tag"
-                              style={{
-                                color: "rgba(255,255,255,.3)",
-                                fontSize: ".55rem",
-                              }}
-                            >
+                            <div className="font-barlow-condensed font-bold uppercase text-[.55rem] tracking-[.18em] text-white/30">
                               {s.statLabel}
                             </div>
                           </div>
                         </div>
                       </div>
                       {i < services.length - 1 && (
-                        <div className="h-divider mx-6" />
+                        <div
+                          className="mx-6 h-px"
+                          style={{
+                            background:
+                              "linear-gradient(to right, rgba(255,255,255,.08), transparent)",
+                          }}
+                        />
                       )}
                     </div>
                   ))}
 
-             
                   <div
-                    className="px-6 py-4 border-t flex items-center justify-between"
-                    style={{
-                      borderColor: "rgba(255,255,255,.07)",
-                      background: "rgba(232,25,44,.06)",
-                    }}
+                    className="px-6 py-4 border-t border-white/[.07] flex items-center justify-between bg-[rgba(232,25,44,.06)]"
                   >
-                    <span
-                      className="h-tag text-white"
-                      style={{ opacity: 0.35, fontSize: ".58rem" }}
-                    >
+                    <span className="font-barlow-condensed font-bold uppercase text-[.58rem] tracking-[.18em] text-white opacity-35">
                       Est. USA · Grit Digital Performance
                     </span>
-                    <div
-                      className="h-tag"
-                      style={{ color: "#e8192c", fontSize: ".6rem" }}
-                    >
+                    <div className="font-barlow-condensed font-bold uppercase text-[.6rem] tracking-[.18em] text-[#e8192c]">
                       98% Satisfaction
                     </div>
                   </div>
                 </div>
 
-         
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   {[
                     { value: "300%", label: "Avg. Growth" },
@@ -502,33 +383,19 @@ export default function Hero() {
                   ].map(({ value, label }, i) => (
                     <div
                       key={i}
-                      style={{
-                        background: "rgba(255,255,255,.03)",
-                        border: "1px solid rgba(255,255,255,.07)",
-                        clipPath:
-                          "polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))",
-                        padding: ".9rem 1.1rem",
-                      }}
+                      className="clip-stat bg-white/[.03] border border-white/[.07] p-[.9rem_1.1rem]"
                     >
-                      <div
-                        className="h-display font-black italic text-white"
-                        style={{ fontSize: "1.8rem", lineHeight: 1 }}
-                      >
+                      <div className="font-barlow-condensed font-black italic text-white text-[1.8rem] leading-none">
                         {value}
                       </div>
-                      <div
-                        className="h-tag mt-1"
-                        style={{
-                          color: "rgba(255,255,255,.3)",
-                          fontSize: ".58rem",
-                        }}
-                      >
+                      <div className="font-barlow-condensed font-bold uppercase text-[.58rem] tracking-[.18em] text-white/30 mt-1">
                         {label}
                       </div>
                     </div>
                   ))}
                 </div>
-              </div> */}
+              </div>
+              */}
             </div>
           </div>
         </div>
