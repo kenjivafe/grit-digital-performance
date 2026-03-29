@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     siteName: "Grit Digital Performance",
     images: [
       {
-        url: "/og",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "Grit Digital Performance - Sports Website & Registration Platforms",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     title: "Grit Digital Performance",
     description:
       "High-performance websites and registration systems for sports organizations.",
-    images: ["/og"],
+    images: ["/opengraph-image"],
   },
 
   robots: {
