@@ -417,3 +417,5 @@ For support or inquiries:
 ---
 
 **Built with ❤️ for sports organizations worldwide**
+
+<!-- Vercel Trigger 20260831063339 -->
